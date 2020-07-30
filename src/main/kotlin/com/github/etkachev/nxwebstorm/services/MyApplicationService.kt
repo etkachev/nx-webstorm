@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.etkachev.nxwebstorm.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.etkachev.nxwebstorm.MyBundle
 
 class MyApplicationService {
 

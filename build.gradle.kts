@@ -53,8 +53,7 @@ intellij {
 
 //  Plugin Dependencies:
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
-//
-//  setPlugins("java")
+  setPlugins("JavaScriptLanguage")
 }
 
 // Configure detekt plugin.
@@ -81,6 +80,10 @@ tasks {
             kotlinOptions.jvmTarget = "1.8"
         }
     }
+
+//    runIde {
+//        ideDirectory = file("/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/202.6397.88/WebStorm.app/Contents")
+//    }
 
     withType<Detekt> {
         jvmTarget = "1.8"

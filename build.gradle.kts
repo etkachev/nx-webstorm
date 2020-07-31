@@ -42,6 +42,7 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.10.0")
 }
 
+
 // Configure gradle-intellij-plugin plugin.
 // Read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
@@ -55,6 +56,8 @@ intellij {
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
   setPlugins("JavaScriptLanguage")
 }
+
+
 
 // Configure detekt plugin.
 // Read more: https://detekt.github.io/detekt/kotlindsl.html
@@ -81,9 +84,9 @@ tasks {
         }
     }
 
-//    runIde {
-//        ideDirectory = file("/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/202.6397.88/WebStorm.app/Contents")
-//    }
+    runIde {
+        setIdeDirectory("/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/202.6397.88/WebStorm.app/Contents")
+    }
 
     withType<Detekt> {
         jvmTarget = "1.8"

@@ -1,0 +1,21 @@
+package com.github.etkachev.nxwebstorm.actions
+
+import com.github.etkachev.nxwebstorm.ui.SchematicsListDialog
+import com.github.etkachev.nxwebstorm.utils.GetNxData
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+
+class Generate: AnAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+        if (e.project == null) {
+            return
+        }
+
+        val proj = e.project!!
+        val schematics = GetNxData().getCustomSchematics(proj)
+
+        val dialog = SchematicsListDialog(proj, schematics)
+        dialog.setSize(800, 100)
+        dialog.show()
+    }
+}

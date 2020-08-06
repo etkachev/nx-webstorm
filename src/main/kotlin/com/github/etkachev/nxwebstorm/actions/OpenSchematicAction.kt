@@ -1,10 +1,18 @@
 package com.github.etkachev.nxwebstorm.actions
 
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
-import java.awt.event.ActionEvent
+import com.intellij.ui.components.JBList
+import javax.swing.event.ListSelectionEvent
+import javax.swing.event.ListSelectionListener
 
-fun openSchematicButtonAction(id: String): (ActionEvent) -> Unit {
-    return fun(_: ActionEvent): Unit {
-        Messages.showMessageDialog("Opening schematic for $id", "Nx", Messages.getInformationIcon())
+class SchematicActionListener(private val list: JBList<String>, private val panel: DialogWrapper): ListSelectionListener {
+    override fun valueChanged(e: ListSelectionEvent?) {
+        if (!list.valueIsAdjusting) {
+            val id = list.selectedValue
+            panel.close(0)
+            Messages.showMessageDialog("Schematic for $id", "Nx", Messages.getInformationIcon())
+        }
     }
+
 }

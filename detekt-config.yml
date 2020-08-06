@@ -4,3 +4,4 @@
 formatting:
   Indentation:
     active: true
+    indentSize: 2

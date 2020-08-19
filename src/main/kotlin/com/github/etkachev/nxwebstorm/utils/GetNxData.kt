@@ -17,21 +17,23 @@ class GetNxData {
         return projects.toList()
     }
 
-    fun getCustomSchematics(project: Project): List<String> {
+    fun getCustomSchematics(project: Project): Map<String, String> {
         val root = ProjectRootManager.getInstance(project).contentRoots[0]
-        val psiDir = PsiManager.getInstance(project).findDirectory(root) ?: return emptyList()
-        val schematics = psiDir.findSubdirectory("tools")!!.findSubdirectory("schematics") ?: return emptyList()
+        val psiDir = PsiManager.getInstance(project).findDirectory(root) ?: return emptyMap()
+        val schematics = psiDir.findSubdirectory("tools")!!.findSubdirectory("schematics") ?: return emptyMap()
 
         val files = FilenameIndex.getFilesByName(project, "schema.json", GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile))
-        return files.mapNotNull { file -> getIdsFromSchema(file) }
+        return files.mapNotNull { file -> getIdsFromSchema(file) }.toMap()
     }
 
-    private fun getIdsFromSchema(file: PsiFile): String? {
+    private fun getIdsFromSchema(file: PsiFile): Pair<String, String>? {
         val json = JsonParser.parseString(file.text).asJsonObject ?: return null
         if (!json.has("id")) {
             return null
         }
-        return json.get("id").asString
+        val id = json.get("id").asString
+        val fileLocation = "/tools/schematics/$id/schema.json"
+        return id to fileLocation
     }
 
     private fun readNxJson(project: Project): JsonObject {

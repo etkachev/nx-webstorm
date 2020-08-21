@@ -14,7 +14,10 @@ class SchematicActionListener(private val project: Project, private val list: JB
             panel.close(0)
             val dialog = RunSchematicDialog(project, id, fileLocation)
             dialog.setSize(800, 600)
-            dialog.show()
+            val ok = dialog.showAndGet()
+            if (ok) {
+                val panel = dialog.currentPanel
+            }
     }
 
 }

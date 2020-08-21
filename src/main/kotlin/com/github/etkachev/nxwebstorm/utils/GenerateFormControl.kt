@@ -1,16 +1,26 @@
 package com.github.etkachev.nxwebstorm.utils
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 
 enum class FormControlType {
-    INVALID, BOOL, STRING, NUMBER, INTEGER
+    INVALID, BOOL, STRING, NUMBER, INTEGER, LIST
 }
 
-class FormCombo(val component: JComponent?, val type: FormControlType, val name: String, val description: String?) {
+class FormCombo(
+        val component: JComponent?,
+        private val initialType: FormControlType,
+        val name: String,
+        val description: String?,
+        val enums: JsonArray?) {
 
+    val type: FormControlType
+        get() = if (enums != null) FormControlType.LIST else initialType
+
+    var value: String? = null
 }
 
 
@@ -18,6 +28,8 @@ class FormCombo(val component: JComponent?, val type: FormControlType, val name:
  * Generate Form control based on json representation of schema.json of schematic
  */
 class GenerateFormControl {
+    var generated: FormCombo? = null
+
     fun getFormControl(prop: JsonObject, name: String): FormCombo? {
         if (!prop.has("type")) {
             return null
@@ -25,13 +37,16 @@ class GenerateFormControl {
 
         val type = prop.get("type").asString
         val description = if (prop.has("description")) prop.get("description").asString else null
-        return when(type) {
-            "boolean" -> FormCombo(getBoolControl(description), FormControlType.BOOL, name, description)
-            "string" -> FormCombo(getTextField(), FormControlType.STRING, name, description)
-            "number" -> FormCombo(getTextField(), FormControlType.NUMBER, name, description)
-            "integer" -> FormCombo(getTextField(), FormControlType.INTEGER, name, description)
-            else -> FormCombo(null, FormControlType.INVALID, name, description)
+        val enums = if (prop.has("enum")) prop.get("enum").asJsonArray else null
+        val result =  when(type) {
+            "boolean" -> FormCombo(getBoolControl(description), FormControlType.BOOL, name, description, enums)
+            "string" -> FormCombo(getTextField(), FormControlType.STRING, name, description, enums)
+            "number" -> FormCombo(getTextField(), FormControlType.NUMBER, name, description, enums)
+            "integer" -> FormCombo(getTextField(), FormControlType.INTEGER, name, description, enums)
+            else -> FormCombo(null, FormControlType.INVALID, name, description, enums)
         }
+        generated = result
+        return result
     }
 
     private fun getTextField(): JBTextField {

@@ -20,14 +20,19 @@ class FormCombo(
     val type: FormControlType
         get() = if (enums != null) FormControlType.LIST else initialType
 
-    var value: String? = null
+    val value: String?
+        get() = if (component == null) null else when(component) {
+            is JBTextField -> component.text
+            is JBCheckBox -> if (component.isSelected) "true" else "false"
+            else -> null
+        }
 }
 
 
 /**
  * Generate Form control based on json representation of schema.json of schematic
  */
-class GenerateFormControl {
+class GenerateFormControl() {
     var generated: FormCombo? = null
 
     fun getFormControl(prop: JsonObject, name: String): FormCombo? {

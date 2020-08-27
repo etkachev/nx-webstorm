@@ -16,7 +16,7 @@ class SchematicActionListener(private val project: Project, private val list: JB
             dialog.setSize(800, 600)
             val ok = dialog.showAndGet()
             if (ok) {
-                val panel = dialog.currentPanel
+                val values = dialog.formValue
             }
     }
 

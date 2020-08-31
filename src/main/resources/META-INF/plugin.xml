@@ -9,6 +9,7 @@
     <depends>JavaScript</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.json</depends>
+    <depends>org.jetbrains.plugins.terminal</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyApplicationService"/>
@@ -25,7 +26,7 @@
             <add-to-group group-id="MainMenu" anchor="last"/>
             <action class="com.github.etkachev.nxwebstorm.actions.Welcome" id="Nx.Actions.Welcome"
                     text="Welcome to Nx"/>
-            <action class="com.github.etkachev.nxwebstorm.actions.Generate" id="Nx.Actions.Generate" text="Generate" />
+            <action class="com.github.etkachev.nxwebstorm.actions.Generate" id="Nx.Actions.Generate" text="Generate"/>
         </group>
     </actions>
 </idea-plugin>

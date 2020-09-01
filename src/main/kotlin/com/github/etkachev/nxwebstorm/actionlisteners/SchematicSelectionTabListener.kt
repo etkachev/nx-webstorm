@@ -12,48 +12,52 @@ import java.awt.event.ActionEvent
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
 
-class SchematicSelectionTabListener(private val project: Project, private val list: JBList<String>,
-                                    private val schematics: Map<String, String>, private val toolWindow: ToolWindow) :
-        ListSelectionListener {
-  private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
-  private var runTerminal = RunTerminalWindow(project, "Run")
-  private var tabName = "Generate - Schematic"
+class SchematicSelectionTabListener(
+  private val project: Project, private val list: JBList<String>,
+  private val schematics: Map<String, String>, private val toolWindow: ToolWindow
+) :
+    ListSelectionListener {
+    private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
+    private var runTerminal = RunTerminalWindow(project, "Run")
+    private var tabName = "Generate - Schematic"
 
-  private fun dryRunAction(id: String, formMap: FormValueMap): (ActionEvent) -> Unit {
-    return { run(id, formMap) }
-  }
-
-  private fun runAction(id: String, formMap: FormValueMap): (ActionEvent) -> Unit {
-    return { run(id, formMap, false) }
-  }
-
-  private fun run(id: String, formMap: FormValueMap, dryRun: Boolean = true) {
-    val values = formMap.formVal
-    val command = getSchematicCommandFromValues(id, values, dryRun)
-    if (dryRun) {
-      dryRunTerminal.runAndShow(command)
-    } else {
-      runTerminal.runAndShow(command)
+    private fun dryRunAction(id: String, formMap: FormValueMap): (ActionEvent) -> Unit {
+        return { run(id, formMap) }
     }
-  }
 
-  override fun valueChanged(e: ListSelectionEvent?) {
-    if (e == null || e.valueIsAdjusting) {
-      return
+    private fun runAction(id: String, formMap: FormValueMap): (ActionEvent) -> Unit {
+        return { run(id, formMap, false) }
     }
-    val id = list.selectedValue
-    val fileLocation = schematics[id] ?: return
-    val formMap = FormValueMap()
-    val schematicPanel = RunSchematicPanel(project, id, fileLocation, formMap)
-    val panel = schematicPanel.generateCenterPanel(withBorder = true, addButtons = true,
-            dryRunAction = dryRunAction(id, formMap), runAction = runAction(id, formMap))
-    val contentFactory = ContentFactory.SERVICE.getInstance()
-    val content = contentFactory.createContent(panel, tabName, false)
-    val existingTab = toolWindow.contentManager.findContent(tabName)
-    if (existingTab != null) {
-      toolWindow.contentManager.removeContent(existingTab, true)
+
+    private fun run(id: String, formMap: FormValueMap, dryRun: Boolean = true) {
+        val values = formMap.formVal
+        val command = getSchematicCommandFromValues(id, values, dryRun)
+        if (dryRun) {
+            dryRunTerminal.runAndShow(command)
+        } else {
+            runTerminal.runAndShow(command)
+        }
     }
-    toolWindow.contentManager.addContent(content)
-    toolWindow.contentManager.setSelectedContent(content)
-  }
+
+    override fun valueChanged(e: ListSelectionEvent?) {
+        if (e == null || e.valueIsAdjusting) {
+            return
+        }
+        val id = list.selectedValue
+        val fileLocation = schematics[id] ?: return
+        val formMap = FormValueMap()
+        val schematicPanel = RunSchematicPanel(project, id, fileLocation, formMap)
+        val panel = schematicPanel.generateCenterPanel(
+          withBorder = true, addButtons = true,
+          dryRunAction = dryRunAction(id, formMap), runAction = runAction(id, formMap)
+        )
+        val contentFactory = ContentFactory.SERVICE.getInstance()
+        val content = contentFactory.createContent(panel, tabName, false)
+        val existingTab = toolWindow.contentManager.findContent(tabName)
+        if (existingTab != null) {
+            toolWindow.contentManager.removeContent(existingTab, true)
+        }
+        toolWindow.contentManager.addContent(content)
+        toolWindow.contentManager.setSelectedContent(content)
+    }
 }

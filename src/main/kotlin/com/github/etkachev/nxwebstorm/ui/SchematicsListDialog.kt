@@ -9,26 +9,26 @@ import javax.swing.ListSelectionModel
 import com.github.etkachev.nxwebstorm.actionlisteners.SchematicActionListener
 
 class SchematicsListDialog(val project: Project?, private val schematics: Map<String, String>) :
-  DialogWrapper(project) {
-  var schematicSelection: MutableMap<String, String> = mutableMapOf()
+    DialogWrapper(project) {
+    var schematicSelection: MutableMap<String, String> = mutableMapOf()
 
-  private var cellWidth = 800
+    private var cellWidth = 800
 
-  init {
-    super.init()
-    schematicSelection = mutableMapOf()
-  }
-
-  override fun createCenterPanel(): JComponent? {
-    val ids = schematics.keys
-    val list = JBList(ids)
-    list.selectionMode = ListSelectionModel.SINGLE_SELECTION
-    list.fixedCellWidth = cellWidth
-    list.addListSelectionListener(SchematicActionListener(list, schematics, this))
-    return panel {
-      row {
-        list()
-      }
+    init {
+        super.init()
+        schematicSelection = mutableMapOf()
     }
-  }
+
+    override fun createCenterPanel(): JComponent? {
+        val ids = schematics.keys
+        val list = JBList(ids)
+        list.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        list.fixedCellWidth = cellWidth
+        list.addListSelectionListener(SchematicActionListener(list, schematics, this))
+        return panel {
+            row {
+                list()
+            }
+        }
+    }
 }

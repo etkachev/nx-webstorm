@@ -7,18 +7,18 @@ import javax.swing.Action
 import javax.swing.JComponent
 
 class RunSchematicDialog(private val project: Project, private val id: String, private val schematicLocation: String) :
-        DialogWrapper(project) {
-  var formMap: FormValueMap = FormValueMap()
+    DialogWrapper(project) {
+    var formMap: FormValueMap = FormValueMap()
 
-  init {
-    super.init()
-  }
+    init {
+        super.init()
+    }
 
-  override fun createLeftSideActions(): Array<Action> {
-    return arrayOf(DryRunAction(project, id, formMap, this))
-  }
+    override fun createLeftSideActions(): Array<Action> {
+        return arrayOf(DryRunAction(project, id, formMap, this))
+    }
 
-  override fun createCenterPanel(): JComponent? {
-    return RunSchematicPanel(project, id, schematicLocation, formMap).generateCenterPanel()
-  }
+    override fun createCenterPanel(): JComponent? {
+        return RunSchematicPanel(project, id, schematicLocation, formMap).generateCenterPanel()
+    }
 }

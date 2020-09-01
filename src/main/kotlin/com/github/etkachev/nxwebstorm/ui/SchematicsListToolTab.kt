@@ -12,17 +12,17 @@ import javax.swing.ListSelectionModel
 
 class SchematicsListToolTab(val project: Project, private val schematics: Map<String, String>) {
 
-  fun createCenterPanel(toolWindow: ToolWindow): JComponent? {
-    val ids = schematics.keys
-    val list = JBList(ids)
-    list.selectionMode = ListSelectionModel.SINGLE_SELECTION
-    list.background = Color(0, 0, 0, 0)
-    list.addListSelectionListener(SchematicSelectionTabListener(project, list, schematics, toolWindow))
-    val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    return panel {
-      row {
-        list()
-      }
-    }.withBorder(border)
-  }
+    fun createCenterPanel(toolWindow: ToolWindow): JComponent? {
+        val ids = schematics.keys
+        val list = JBList(ids)
+        list.selectionMode = ListSelectionModel.SINGLE_SELECTION
+        list.background = Color(0, 0, 0, 0)
+        list.addListSelectionListener(SchematicSelectionTabListener(project, list, schematics, toolWindow))
+        val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        return panel {
+            row {
+                list()
+            }
+        }.withBorder(border)
+    }
 }

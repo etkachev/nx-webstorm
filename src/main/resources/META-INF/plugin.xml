@@ -14,6 +14,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyApplicationService"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyProjectService"/>
+        <toolWindow id="Nx" anchor="right"
+                    factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"></toolWindow>
     </extensions>
 
     <projectListeners>

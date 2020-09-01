@@ -1,21 +1,28 @@
 package com.github.etkachev.nxwebstorm.ui
 
-import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
+import org.jetbrains.plugins.terminal.ShellTerminalWidget
 import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
 import org.jetbrains.plugins.terminal.TerminalView
 
 
-class RunTerminalWindow(private val proj: Project) {
+class RunTerminalWindow(private val proj: Project, private val tabName: String? = null) {
 
-    fun runAndShow(command: String, tabName: String? = null) {
-        val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
-        val terminalView = TerminalView.getInstance(proj)
-        if (window == null) return
+  var terminalView: TerminalView = TerminalView.getInstance(proj)
+  var shell: ShellTerminalWidget? = null
 
-//        val console = TextConsoleBuilderFactory.getInstance().createBuilder(proj).console
-//        window.show()
-        terminalView.createLocalShellWidget(null, tabName).executeCommand(command)
+  private fun createShell() {
+    shell = terminalView.createLocalShellWidget(null, tabName)
+  }
+
+  fun runAndShow(command: String) {
+    val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
+            ?: return
+
+    if (shell == null) {
+      createShell()
     }
+    shell!!.executeCommand(command)
+  }
 }

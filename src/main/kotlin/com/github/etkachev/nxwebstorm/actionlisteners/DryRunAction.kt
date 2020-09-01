@@ -9,7 +9,9 @@ import java.awt.event.ActionEvent
 import javax.swing.AbstractAction
 
 class DryRunAction(
-    proj: Project, private val id: String, private val formValues: FormValueMap,
+    proj: Project,
+    private val id: String,
+    private val formValues: FormValueMap,
     private val dialog: DialogWrapper
 ) : AbstractAction("Dry Run") {
     private var terminal = RunTerminalWindow(proj, "Dry Run")

@@ -13,8 +13,10 @@ import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
 
 class SchematicSelectionTabListener(
-  private val project: Project, private val list: JBList<String>,
-  private val schematics: Map<String, String>, private val toolWindow: ToolWindow
+    private val project: Project,
+    private val list: JBList<String>,
+    private val schematics: Map<String, String>,
+    private val toolWindow: ToolWindow
 ) :
     ListSelectionListener {
     private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
@@ -48,8 +50,8 @@ class SchematicSelectionTabListener(
         val formMap = FormValueMap()
         val schematicPanel = RunSchematicPanel(project, id, fileLocation, formMap)
         val panel = schematicPanel.generateCenterPanel(
-          withBorder = true, addButtons = true,
-          dryRunAction = dryRunAction(id, formMap), runAction = runAction(id, formMap)
+            withBorder = true, addButtons = true,
+            dryRunAction = dryRunAction(id, formMap), runAction = runAction(id, formMap)
         )
         val contentFactory = ContentFactory.SERVICE.getInstance()
         val content = contentFactory.createContent(panel, tabName, false)

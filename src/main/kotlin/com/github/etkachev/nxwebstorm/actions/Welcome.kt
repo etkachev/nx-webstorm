@@ -23,8 +23,8 @@ class Welcome : AnAction() {
         }
         val firstFew = projects.take(5).joinToString(",")
         Messages.showMessageDialog(
-          e.project, "First projects are $firstFew", "Hello from Nx",
-          Messages.getInformationIcon()
+            e.project, "First projects are $firstFew", "Hello from Nx",
+            Messages.getInformationIcon()
         )
     }
 }

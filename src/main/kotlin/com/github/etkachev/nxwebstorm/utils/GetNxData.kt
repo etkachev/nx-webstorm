@@ -22,8 +22,8 @@ class GetNxData {
         val psiDir = PsiManager.getInstance(project).findDirectory(root) ?: return emptyMap()
         val schematics = psiDir.findSubdirectory("tools")!!.findSubdirectory("schematics") ?: return emptyMap()
         val files = FilenameIndex.getFilesByName(
-          project, "schema.json",
-          GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile)
+            project, "schema.json",
+            GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile)
         )
         return files.mapNotNull { file -> getIdsFromSchema(file) }.toMap()
     }

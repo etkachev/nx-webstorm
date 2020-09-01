@@ -10,12 +10,12 @@ enum class FormControlType {
 }
 
 class FormCombo(
-  val component: JComponent?,
-  private val initialType: FormControlType,
-  val name: String,
-  val description: String?,
-  val enums: Array<String>?,
-  private val required: List<String>
+    val component: JComponent?,
+    private val initialType: FormControlType,
+    val name: String,
+    val description: String?,
+    val enums: Array<String>?,
+    private val required: List<String>
 ) {
 
     val type: FormControlType
@@ -26,9 +26,9 @@ class FormCombo(
 
     val value: String?
         get() = if (component == null) null else when (component) {
-          is JBTextField -> component.text
-          is JBCheckBox -> if (component.isSelected) "true" else "false"
-          is ComboBox<*> -> component.selectedItem.toString()
+            is JBTextField -> component.text
+            is JBCheckBox -> if (component.isSelected) "true" else "false"
+            is ComboBox<*> -> component.selectedItem.toString()
             else -> null
         }
 }

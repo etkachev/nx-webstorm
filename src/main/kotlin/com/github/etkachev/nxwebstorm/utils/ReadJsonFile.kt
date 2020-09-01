@@ -8,7 +8,10 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.psi.PsiManager
 
-class ComputeReadJsonFile(private val project: Project, private val filePath: String) :
+class ComputeReadJsonFile(
+    private val project: Project,
+    private val filePath: String
+) :
     ThrowableComputable<JsonObject, NoSuchElementException> {
     override fun compute(): JsonObject {
         val file = ProjectRootManager.getInstance(project).contentRoots[0].findFileByRelativePath(filePath)

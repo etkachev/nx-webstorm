@@ -16,7 +16,7 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
   }
 
   fun runAndShow(command: String) {
-    val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
+    ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
       ?: return
 
     if (shell == null) {

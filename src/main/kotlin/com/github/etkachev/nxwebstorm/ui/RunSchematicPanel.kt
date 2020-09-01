@@ -49,7 +49,7 @@ class RunSchematicPanel(private val project: Project, private val id: String, pr
                         private val formMap: FormValueMap = FormValueMap()) {
 
   private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
-
+    System.console().printf("Default Action")
   }
 
   fun generateCenterPanel(withBorder: Boolean = false, addButtons: Boolean = false,
@@ -81,13 +81,13 @@ class RunSchematicPanel(private val project: Project, private val id: String, pr
           }
           row {
             when (control.type) {
-                FormControlType.LIST -> (comboBox<String>(DefaultComboBoxModel(control.enums), nvg,
-                        nvs).component.editor.editorComponent as JTextField).document.addDocumentListener(
-                        TextControlListener(formMap, control))
-                FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField(vg,
-                        vs).component.document.addDocumentListener(TextControlListener(formMap, control))
-                FormControlType.BOOL -> checkBox(control.description
-                        ?: "", vbg, vbs).component.addActionListener(CheckboxListener(formMap, control))
+              FormControlType.LIST -> (comboBox<String>(DefaultComboBoxModel(control.enums), nvg,
+                      nvs).component.editor.editorComponent as JTextField).document.addDocumentListener(
+                      TextControlListener(formMap, control))
+              FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField(vg,
+                      vs).component.document.addDocumentListener(TextControlListener(formMap, control))
+              FormControlType.BOOL -> checkBox(control.description
+                      ?: "", vbg, vbs).component.addActionListener(CheckboxListener(formMap, control))
               else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }

@@ -5,7 +5,6 @@ import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 import com.intellij.openapi.ui.ComboBox
 
-
 enum class FormControlType {
   INVALID, BOOL, STRING, NUMBER, INTEGER, LIST
 }

@@ -6,7 +6,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.openapi.ui.ComboBox
 
-
 /**
  * Generate Form control based on json representation of schema.json of schematic
  */
@@ -26,11 +25,11 @@ class GenerateFormControl(private val required: JsonArray?) {
     val enums = if (prop.has("enum")) prop.get("enum").asJsonArray else null
     val default = if (prop.has("default")) prop.get("default").asString else null
     val result = when (type) {
-        "boolean" -> FormCombo(getBoolControl(description, default), FormControlType.BOOL, name, description, null,
-                requiredFields)
-        "string" -> getFormComboOfString(name, description, enums, default)
-        "number" -> FormCombo(getTextField(default), FormControlType.NUMBER, name, description, null, requiredFields)
-        "integer" -> FormCombo(getTextField(default), FormControlType.INTEGER, name, description, null, requiredFields)
+      "boolean" -> FormCombo(getBoolControl(description, default), FormControlType.BOOL, name, description, null,
+              requiredFields)
+      "string" -> getFormComboOfString(name, description, enums, default)
+      "number" -> FormCombo(getTextField(default), FormControlType.NUMBER, name, description, null, requiredFields)
+      "integer" -> FormCombo(getTextField(default), FormControlType.INTEGER, name, description, null, requiredFields)
       else -> FormCombo(null, FormControlType.INVALID, name, description, null, requiredFields)
     }
     generated = result
@@ -45,7 +44,7 @@ class GenerateFormControl(private val required: JsonArray?) {
 
   private fun getBoolControl(description: String?, default: String?): JBCheckBox {
     val selected = when (default) {
-        "true", "yes", "1" -> true
+      "true", "yes", "1" -> true
       else -> false
     }
     return JBCheckBox(description, selected)

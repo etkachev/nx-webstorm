@@ -3,8 +3,15 @@
 
 formatting:
   Indentation:
-    active: true
+    active: false
     indentSize: 2
     continuationIndentSize: 2
   ParameterListWrapping:
+    active: false
     indentSize: 2
+
+style:
+  ReturnCount:
+    active: false
+  MagicNumber:
+    active: false

@@ -6,7 +6,6 @@ import org.jetbrains.plugins.terminal.ShellTerminalWidget
 import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
 import org.jetbrains.plugins.terminal.TerminalView
 
-
 class RunTerminalWindow(private val proj: Project, private val tabName: String? = null) {
 
   var terminalView: TerminalView = TerminalView.getInstance(proj)
@@ -18,7 +17,7 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
 
   fun runAndShow(command: String) {
     val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
-            ?: return
+      ?: return
 
     if (shell == null) {
       createShell()

@@ -45,16 +45,18 @@ class FormValueMap {
   }
 }
 
-class RunSchematicPanel(private val project: Project, private val id: String, private val schematicLocation: String,
-                        private val formMap: FormValueMap = FormValueMap()) {
+class RunSchematicPanel(
+  private val project: Project, private val id: String, private val schematicLocation: String,
+  private val formMap: FormValueMap = FormValueMap()) {
 
   private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
     System.console().printf("Default Action")
   }
 
-  fun generateCenterPanel(withBorder: Boolean = false, addButtons: Boolean = false,
-                          dryRunAction: (ActionEvent) -> Unit = defaultAction,
-                          runAction: (ActionEvent) -> Unit = defaultAction): JComponent? {
+  fun generateCenterPanel(
+    withBorder: Boolean = false, addButtons: Boolean = false,
+    dryRunAction: (ActionEvent) -> Unit = defaultAction,
+    runAction: (ActionEvent) -> Unit = defaultAction): JComponent? {
     val json = ReadJsonFile().fromFileUrl(project, schematicLocation)
     val props = json.get("properties")?.asJsonObject ?: return null
     val required = if (json.has("required")) json.get("required").asJsonArray else null
@@ -87,7 +89,7 @@ class RunSchematicPanel(private val project: Project, private val id: String, pr
               FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField(vg,
                       vs).component.document.addDocumentListener(TextControlListener(formMap, control))
               FormControlType.BOOL -> checkBox(control.description
-                      ?: "", vbg, vbs).component.addActionListener(CheckboxListener(formMap, control))
+                ?: "", vbg, vbs).component.addActionListener(CheckboxListener(formMap, control))
               else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }

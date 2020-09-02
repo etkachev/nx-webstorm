@@ -6,9 +6,9 @@ import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
 class CheckboxListener(private val formValues: FormValueMap, private val formCombo: FormCombo) : ActionListener {
-    override fun actionPerformed(e: ActionEvent?) {
-        val existingValue = formValues.formVal[formCombo.name] ?: "false"
-        val newValue = if (existingValue == "false") "true" else "false"
-        formValues.setFormValueOfKey(formCombo.name, newValue)
-    }
+  override fun actionPerformed(e: ActionEvent?) {
+    val existingValue = formValues.formVal[formCombo.name] ?: "false"
+    val newValue = if (existingValue == "false") "true" else "false"
+    formValues.setFormValueOfKey(formCombo.name, newValue)
+  }
 }

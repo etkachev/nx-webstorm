@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.utils
 
+import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
@@ -11,13 +12,13 @@ import com.intellij.psi.search.GlobalSearchScopes
 
 class GetNxData {
   fun getProjects(project: Project): List<String> {
-    val json = this.readNxJson(project)
+    val json = this.readNxJson(project) ?: return emptyList()
 
     val projects = json.getAsJsonObject("projects").keySet()
     return projects.toList()
   }
 
-  fun getCustomSchematics(project: Project): Map<String, String> {
+  fun getCustomSchematics(project: Project): Map<String, SchematicInfo> {
     val root = ProjectRootManager.getInstance(project).contentRoots[0]
     val psiDir = PsiManager.getInstance(project).findDirectory(root) ?: return emptyMap()
     val schematics = psiDir.findSubdirectory("tools")!!.findSubdirectory("schematics") ?: return emptyMap()
@@ -28,22 +29,19 @@ class GetNxData {
     return files.mapNotNull { file -> getIdsFromSchema(file) }.toMap()
   }
 
-  private fun getIdsFromSchema(file: PsiFile): Pair<String, String>? {
+  private fun getIdsFromSchema(file: PsiFile): Pair<String, SchematicInfo>? {
     val json = JsonParser.parseString(file.text).asJsonObject ?: return null
     if (!json.has("id")) {
       return null
     }
     val id = json.get("id").asString
+    //TODO need to find safer way to build file location.
     val fileLocation = "/tools/schematics/$id/schema.json"
-    return id to fileLocation
+    val info = SchematicInfo(fileLocation)
+    return "workspace-schematic--SPLIT--$id" to info
   }
 
-  private fun readNxJson(project: Project): JsonObject {
-    return try {
-      ReadJsonFile().fromFileUrl(project, "nx.json")
-    } catch (e: NoSuchElementException) {
-      null
-    }
-      ?: throw NoSuchElementException("Could not find nx.json file")
+  private fun readNxJson(project: Project): JsonObject? {
+    return ReadFile(project).readJsonFromFileUrl("nx.json")
   }
 }

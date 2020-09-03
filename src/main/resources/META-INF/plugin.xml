@@ -15,8 +15,7 @@
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyApplicationService"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyProjectService"/>
         <toolWindow id="Nx" anchor="right"
-                    icon="PluginIcons.NRWL_ICON"
-                    factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"></toolWindow>
+                    factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"/>
     </extensions>
 
     <projectListeners>

@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.ui
 
+import com.github.etkachev.nxwebstorm.utils.FindSchematics
 import com.github.etkachev.nxwebstorm.utils.GetNxData
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -10,6 +11,7 @@ class GenerateToolWindow : ToolWindowFactory {
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val schematics = GetNxData().getCustomSchematics(project)
+    val more = FindSchematics(project, arrayOf("node_modules/@nrwl/angular")).findSchematics()
     val listPanel = SchematicsListToolTab(project, schematics).createCenterPanel(toolWindow)
     val content = contentFactory.createContent(listPanel, "Generate", false)
     toolWindow.contentManager.addContent(content)

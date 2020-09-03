@@ -1,6 +1,6 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
-import com.github.etkachev.nxwebstorm.ui.FormValueMap
+import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.utils.FormCombo
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener

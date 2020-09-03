@@ -1,6 +1,7 @@
 package com.github.etkachev.nxwebstorm.ui
 
 import com.github.etkachev.nxwebstorm.actionlisteners.DryRunAction
+import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.project.Project
 import javax.swing.Action

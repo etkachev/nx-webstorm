@@ -1,6 +1,6 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
-import com.github.etkachev.nxwebstorm.ui.FormValueMap
+import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.intellij.openapi.project.Project

@@ -2,9 +2,11 @@ package com.github.etkachev.nxwebstorm.ui
 
 import com.github.etkachev.nxwebstorm.actionlisteners.CheckboxListener
 import com.github.etkachev.nxwebstorm.actionlisteners.TextControlListener
+import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
-import com.github.etkachev.nxwebstorm.utils.ReadJsonFile
+import com.github.etkachev.nxwebstorm.utils.ReadFile
+import com.google.gson.JsonArray
 import com.intellij.openapi.project.Project
 import com.intellij.ui.layout.panel
 import java.awt.event.ActionEvent
@@ -13,44 +15,18 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.JTextField
 
-class FormValueMap {
-  var formVal: MutableMap<String, String> = mutableMapOf()
-
-  fun valueGetter(key: String): () -> String {
-    return { formVal[key] ?: "" }
-  }
-
-  fun valueSetter(key: String): (String) -> Unit {
-    return { x: String -> setFormValueOfKey(key, x) }
-  }
-
-  fun nullValueGetter(key: String): () -> String? {
-    return { formVal[key] }
-  }
-
-  fun nullValueSetter(key: String): (String?) -> Unit {
-    return { x: String? -> setFormValueOfKey(key, x) }
-  }
-
-  fun boolValueGetter(key: String): () -> Boolean {
-    return { formVal[key] == "true" }
-  }
-
-  fun boolValueSetter(key: String): (Boolean) -> Unit {
-    return { x: Boolean -> formVal[key] = if (x) "true" else "false" }
-  }
-
-  fun setFormValueOfKey(key: String, value: String?) {
-    formVal[key] = value ?: ""
-  }
-}
-
 class RunSchematicPanel(
-  private val project: Project,
+  project: Project,
   private val id: String,
-  private val schematicLocation: String,
+  schematicLocation: String,
   private val formMap: FormValueMap = FormValueMap()
 ) {
+  var json = ReadFile(project).readJsonFromFileUrl(schematicLocation)
+  var required: JsonArray? = null
+
+  init {
+    required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
+  }
 
   private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
     System.console().printf("Default Action")
@@ -62,19 +38,22 @@ class RunSchematicPanel(
     dryRunAction: (ActionEvent) -> Unit = defaultAction,
     runAction: (ActionEvent) -> Unit = defaultAction
   ): JComponent? {
-    val json = ReadJsonFile().fromFileUrl(project, schematicLocation)
-    val props = json.get("properties")?.asJsonObject ?: return null
-    val required = if (json.has("required")) json.get("required").asJsonArray else null
+    val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = props.keySet()
       .mapNotNull { key -> GenerateFormControl(required).getFormControl(props.get(key).asJsonObject, key) }
     formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
 
+    val splitId = id.split("--SPLIT--")
+    if (splitId.count() != 2) {
+      return null
+    }
+    val cleanedId = splitId[1]
     val panel = panel {
       row {
-        label("ng generate workspace-schematic:$id")
+        label("ng generate workspace-schematic:$cleanedId")
       }
       formControls.mapNotNull { control ->
-        val comp = control.component ?: return null
+        val comp = control.component ?: return@mapNotNull null
         val key = control.name
         val vg = formMap.valueGetter(key)
         val vs = formMap.valueSetter(key)

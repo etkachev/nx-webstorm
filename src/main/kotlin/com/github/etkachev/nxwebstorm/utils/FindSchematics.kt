@@ -1,0 +1,47 @@
+package com.github.etkachev.nxwebstorm.utils
+
+import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.intellij.openapi.project.Project
+
+class FindSchematics(project: Project, private val directories: Array<String>) {
+  var jsonFileReader = ReadFile(project)
+  var schematicPropName = "schematics"
+
+  private fun getSchematicsFromDirectory(directory: String): Map<String, SchematicInfo>? {
+    val packageFile = jsonFileReader.findVirtualFile("$directory/package.json") ?: return null
+    val packageFileJson = jsonFileReader.readJsonFromFile(packageFile) ?: return null
+    val packageName = (if (packageFileJson.has("name")) packageFileJson["name"].asString else null) ?: return null
+    val schematicProp =
+      (if (packageFileJson.has(schematicPropName)) packageFileJson[schematicPropName].asString else null)
+        ?: return null
+    val schematicCollection = jsonFileReader.findVirtualFile(schematicProp, packageFile.parent) ?: return null
+    val collectionJson = jsonFileReader.readJsonFromFile(schematicCollection) ?: return null
+    val schematicsOptions =
+      (if (collectionJson.has(schematicPropName)) collectionJson[schematicPropName].asJsonObject else null)
+        ?: return null
+    val schematicEntries =
+      schematicsOptions.entrySet().toTypedArray().fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
+        val value = e.value.asJsonObject
+        if (value.has("hidden") && value["hidden"].asBoolean) {
+          return@fold acc
+        }
+
+        val schemaFileLocation = (if (value.has("schema")) value["schema"].asString else null) ?: return@fold acc
+        val schemaFile =
+          jsonFileReader.findVirtualFile(schemaFileLocation, schematicCollection.parent) ?: return@fold acc
+        val splitFile = schemaFile.path.split(directory)
+        val relativePath = if (splitFile.count() == 2) splitFile[1] else null ?: return@fold acc
+        val fileLocation = "${directory}${relativePath}"
+        val id = "$packageName--SPLIT--${e.key}"
+        val description = if (value.has("description")) value["description"].asString else null
+        acc[id] = SchematicInfo(fileLocation, description)
+        return@fold acc
+      })
+
+    return schematicEntries.toMap()
+  }
+
+  fun findSchematics() {
+    val allSchematics = directories.mapNotNull { dir -> getSchematicsFromDirectory(dir) }
+  }
+}

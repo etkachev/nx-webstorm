@@ -16,12 +16,17 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
   }
 
   fun runAndShow(command: String) {
-    ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
+    val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
       ?: return
 
     if (shell == null) {
       createShell()
     }
+    val existingTab = window.contentManager.findContent(tabName)
+    if (existingTab == null) {
+      createShell()
+    }
+    window.show()
     shell!!.executeCommand(command)
   }
 }

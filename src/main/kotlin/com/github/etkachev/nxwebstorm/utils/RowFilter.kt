@@ -20,18 +20,18 @@ fun createRowFilter(table: JTable): JBTextField {
   val tf = JBTextField(15)
   tf.document.addDocumentListener(object : DocumentListener {
     override fun insertUpdate(e: DocumentEvent) {
-      update(e)
+      update()
     }
 
     override fun removeUpdate(e: DocumentEvent) {
-      update(e)
+      update()
     }
 
     override fun changedUpdate(e: DocumentEvent) {
-      update(e)
+      update()
     }
 
-    private fun update(e: DocumentEvent) {
+    private fun update() {
       val text = tf.text
       if (text.trim { it <= ' ' }.isEmpty()) {
         rowSorter.setRowFilter(null)

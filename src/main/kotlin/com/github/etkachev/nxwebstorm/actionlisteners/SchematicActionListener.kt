@@ -16,8 +16,12 @@ class SchematicActionListener(
     if (e != null && e.valueIsAdjusting) {
       return
     }
-    val type = table.getValueAt(table.selectedRow, 0).toString()
-    val id = table.getValueAt(table.selectedRow, 1).toString()
+    if (table.selectedRow == -1) {
+      return
+    }
+    val selectedRow = table.selectedRow
+    val type = table.getValueAt(selectedRow, 0).toString()
+    val id = table.getValueAt(selectedRow, 1).toString()
     val fullId = findFullSchematicIdByTypeAndId(type, id, schematics) ?: return
     val info = schematics[fullId] ?: return
     panel.schematicSelection["id"] = id

@@ -15,6 +15,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
 import java.awt.event.ActionEvent
+import javax.swing.SwingUtilities
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
 
@@ -70,8 +71,16 @@ class SchematicSelectionTabListener(
     if (e == null || e.valueIsAdjusting) {
       return
     }
-    val type = table.getValueAt(table.selectedRow, 0).toString()
-    val id = table.getValueAt(table.selectedRow, 1).toString()
+    SwingUtilities.invokeLater { runSelectedLogic() }
+  }
+
+  private fun runSelectedLogic() {
+    val selectedRow = table.selectedRow
+    if (selectedRow == -1) {
+      return
+    }
+    val type = table.getValueAt(selectedRow, 0).toString()
+    val id = table.getValueAt(selectedRow, 1).toString()
     val fullId = findFullSchematicIdByTypeAndId(type, id, schematics) ?: return
     val info = schematics[fullId] ?: return
     val formMap = FormValueMap()

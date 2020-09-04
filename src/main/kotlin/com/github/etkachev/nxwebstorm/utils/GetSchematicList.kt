@@ -4,19 +4,6 @@ import com.github.etkachev.nxwebstorm.models.FullSchematicInfo
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.models.SplitSchematicId
 
-@Deprecated("Don't use eventually")
-fun getSchematicListDescriptions(schematics: Map<String, SchematicInfo>): List<Pair<String, String>> {
-  val ids = schematics.keys
-  return ids.mapNotNull { id ->
-    val splitData = splitSchematicId(id) ?: return@mapNotNull null
-    val prefix = splitData.type
-    val schematicId = splitData.id
-    val description = schematics[id]?.description
-    val suffix = if (description != null) " - $description" else ""
-    id to "$prefix - $schematicId$suffix"
-  }
-}
-
 fun splitSchematicId(id: String): SplitSchematicId? {
   val split = id.split("--SPLIT--")
   if (split.count() != 2) {

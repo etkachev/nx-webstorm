@@ -9,7 +9,10 @@ import com.intellij.ui.layout.panel
 import javax.swing.BorderFactory
 import javax.swing.JComponent
 
-class SchematicsListToolTab(val project: Project, private val schematics: Map<String, SchematicInfo>) {
+class SchematicsListToolTab(
+  val project: Project,
+  private val schematics: Map<String, SchematicInfo>
+) {
 
   fun createCenterPanel(toolWindow: ToolWindow): JComponent? {
     val generateTable = GenerateTable(schematics)

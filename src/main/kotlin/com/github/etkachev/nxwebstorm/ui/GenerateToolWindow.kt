@@ -9,13 +9,14 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 
 class GenerateToolWindow : ToolWindowFactory {
+  private var tabName = "Generate"
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val customSchematics = GetNxData().getCustomSchematics(project)
     val more = FindSchematics(project, arrayOf("node_modules/@nrwl/angular")).findSchematics()
     val allSchematics = flattenMultipleMaps(customSchematics, more)
     val listPanel = SchematicsListToolTab(project, allSchematics).createCenterPanel(toolWindow)
-    val content = contentFactory.createContent(listPanel, "Generate", false)
+    val content = contentFactory.createContent(listPanel, tabName, false)
     toolWindow.contentManager.addContent(content)
   }
 

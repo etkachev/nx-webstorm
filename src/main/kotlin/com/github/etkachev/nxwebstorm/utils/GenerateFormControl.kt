@@ -23,13 +23,16 @@ class GenerateFormControl(private val required: JsonArray?) {
     val type = prop.get("type").asString
     val description = if (prop.has("description")) prop.get("description").asString else null
     val enums = if (prop.has("enum")) prop.get("enum").asJsonArray else null
+    val xPrompt = if (prop.has("x-prompt")) prop.get("x-prompt") else null
+    val xPromptIsObject = xPrompt?.isJsonObject == true
+    val xPromptObj = if (xPromptIsObject) xPrompt!!.asJsonObject else null
     val default = if (prop.has("default")) prop.get("default").asString else null
     val result = when (type) {
       "boolean" -> FormCombo(
         getBoolControl(description, default), FormControlType.BOOL, name, description, null,
         requiredFields
       )
-      "string" -> getFormComboOfString(name, description, enums, default)
+      "string" -> getFormComboOfString(name, description, enums, xPromptObj, default)
       "number" -> FormCombo(
         getTextField(default),
         FormControlType.NUMBER,
@@ -70,13 +73,22 @@ class GenerateFormControl(private val required: JsonArray?) {
     name: String,
     description: String?,
     enums: JsonArray?,
+    xPrompt: JsonObject?,
     default: String?
   ): FormCombo {
-    if (enums == null) {
+    val isList = if (xPrompt?.has("type") == true) xPrompt.get("type").asString == "list" else false
+    val xPromptItems = if (xPrompt?.has("items") == true) xPrompt.get("items").asJsonArray else null
+    if (enums == null && (!isList || xPromptItems == null)) {
       return FormCombo(getTextField(default), FormControlType.STRING, name, description, enums, requiredFields)
     }
 
-    val stringOptions = enums.map { o -> o.asString }.toTypedArray()
+    val stringOptions = enums?.map { o -> o.asString }?.toTypedArray()
+      ?: (xPromptItems?.mapNotNull { i ->
+        val obj = i.asJsonObject
+        val value = if (obj.has("value")) obj.get("value").asString else null
+        value
+      }?.toTypedArray()
+        ?: emptyArray<String>())
     return FormCombo(
       getSelectDropdown(stringOptions, default), FormControlType.LIST, name, description, stringOptions,
       requiredFields

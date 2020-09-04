@@ -3,7 +3,7 @@ package com.github.etkachev.nxwebstorm.actions
 import com.github.etkachev.nxwebstorm.ui.RunSchematicDialog
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.ui.SchematicsListDialog
-import com.github.etkachev.nxwebstorm.utils.GetNxData
+import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -15,7 +15,7 @@ class Generate : AnAction() {
     }
 
     val proj = e.project!!
-    val schematics = GetNxData().getCustomSchematics(proj)
+    val schematics = FindAllSchematics(proj).findAll()
 
     val dialog = SchematicsListDialog(proj, schematics)
     dialog.setSize(1000, 800)

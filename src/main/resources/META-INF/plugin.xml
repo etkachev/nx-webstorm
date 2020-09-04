@@ -24,7 +24,8 @@
     </projectListeners>
     <actions>
         <!--Actions here-->
-        <group id="Nx.Main" text="Nx" description="Opens Nx Console">
+        <group id="Nx.Main" class="com.github.etkachev.nxwebstorm.actions.NxActionGroup" text="Nx"
+               description="Opens Nx Console">
             <add-to-group group-id="MainMenu" anchor="last"/>
             <action class="com.github.etkachev.nxwebstorm.actions.Generate" id="Nx.Actions.Generate" text="Generate"/>
         </group>

@@ -42,6 +42,10 @@ class GetNxData {
     return uniqueId to info
   }
 
+  fun isValidNxProject(project: Project): Boolean {
+    return readNxJson(project) != null
+  }
+
   private fun readNxJson(project: Project): JsonObject? {
     return ReadFile(project).readJsonFromFileUrl("nx.json")
   }

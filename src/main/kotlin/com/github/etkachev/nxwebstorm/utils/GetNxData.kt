@@ -35,7 +35,7 @@ class GetNxData {
       return null
     }
     val id = json.get("id").asString
-    //TODO need to find safer way to build file location.
+    // TODO need to find safer way to build file location.
     val fileLocation = "/tools/schematics/$id/schema.json"
     val info = SchematicInfo(fileLocation)
     val uniqueId = generateUniqueSchematicKey("workspace-schematic", id)

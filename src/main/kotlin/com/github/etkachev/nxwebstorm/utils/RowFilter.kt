@@ -16,7 +16,7 @@ fun createRowFilter(table: JTable): JBTextField {
     rs = table.rowSorter
   }
   val rowSorter: TableRowSorter<out TableModel?> = (if (rs is TableRowSorter<*>) rs else null)
-    ?: throw RuntimeException("Cannot find appropriate rowSorter: $rs")
+    ?: throw NoSuchElementException("Cannot find appropriate rowSorter: $rs")
   val tf = JBTextField(15)
   tf.document.addDocumentListener(object : DocumentListener {
     override fun insertUpdate(e: DocumentEvent) {
@@ -42,4 +42,3 @@ fun createRowFilter(table: JTable): JBTextField {
   })
   return tf
 }
-

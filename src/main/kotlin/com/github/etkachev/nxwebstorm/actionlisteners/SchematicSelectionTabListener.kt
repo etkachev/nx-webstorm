@@ -4,23 +4,26 @@ import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
+import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.google.gson.JsonArray
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
+import com.intellij.ui.table.JBTable
 import java.awt.event.ActionEvent
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
 
 class SchematicSelectionTabListener(
   private val project: Project,
-  private val list: JBList<String>,
-  private val schematicList: List<Pair<String, String>>,
+  private val table: JBTable,
   private val schematics: Map<String, SchematicInfo>,
-  private val toolWindow: ToolWindow
+  private val toolWindow: ToolWindow,
+  private val searchField: JBTextField
 ) :
   ListSelectionListener {
   private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
@@ -67,9 +70,10 @@ class SchematicSelectionTabListener(
     if (e == null || e.valueIsAdjusting) {
       return
     }
-    val selected = list.selectedValue
-    val id = schematicList.find { e -> e.second == selected }?.first ?: return
-    val info = schematics[id] ?: return
+    val type = table.getValueAt(table.selectedRow, 0).toString()
+    val id = table.getValueAt(table.selectedRow, 1).toString()
+    val fullId = findFullSchematicIdByTypeAndId(type, id, schematics) ?: return
+    val info = schematics[fullId] ?: return
     val formMap = FormValueMap()
     val schematicPanel = RunSchematicPanel(project, id, info.fileLocation, formMap)
     val required = schematicPanel.required
@@ -77,13 +81,16 @@ class SchematicSelectionTabListener(
       withBorder = true, addButtons = true,
       dryRunAction = dryRunAction(id, formMap, required), runAction = runAction(id, formMap, required)
     )
+    val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()
-    val content = contentFactory.createContent(panel, tabName, false)
+    val content = contentFactory.createContent(scrollPane, tabName, false)
     val existingTab = toolWindow.contentManager.findContent(tabName)
     if (existingTab != null) {
       toolWindow.contentManager.removeContent(existingTab, true)
     }
     toolWindow.contentManager.addContent(content)
     toolWindow.contentManager.setSelectedContent(content)
+    searchField.text = ""
+    table.clearSelection()
   }
 }

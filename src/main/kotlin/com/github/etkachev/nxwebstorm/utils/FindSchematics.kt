@@ -32,7 +32,7 @@ class FindSchematics(project: Project, private val directories: Array<String>) {
         val splitFile = schemaFile.path.split(directory)
         val relativePath = if (splitFile.count() == 2) splitFile[1] else null ?: return@fold acc
         val fileLocation = "${directory}${relativePath}"
-        val id = "$packageName--SPLIT--${e.key}"
+        val id = generateUniqueSchematicKey(packageName, e.key)
         val description = if (value.has("description")) value["description"].asString else null
         acc[id] = SchematicInfo(fileLocation, description)
         return@fold acc
@@ -41,7 +41,14 @@ class FindSchematics(project: Project, private val directories: Array<String>) {
     return schematicEntries.toMap()
   }
 
-  fun findSchematics() {
-    val allSchematics = directories.mapNotNull { dir -> getSchematicsFromDirectory(dir) }
+  fun findSchematics(): Map<String, SchematicInfo> {
+    return directories.mapNotNull { dir -> getSchematicsFromDirectory(dir) }
+      .fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
+        for (key in e.keys) {
+          val info = e[key] ?: continue
+          acc[key] = info
+        }
+        return@fold acc
+      }).toMap()
   }
 }

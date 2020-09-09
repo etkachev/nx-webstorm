@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.1.1] - 2020-09-09
+### Fixed
+- Fixed terminal commands so that it won't add flags that have empty values
+
 ## [0.1.0] - 2020-09-09
 ### Fixed
 - Fixed terminal commands generated on non custom schematics (such as @nrwl/workspace).

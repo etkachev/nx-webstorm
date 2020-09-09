@@ -12,7 +12,7 @@ fun getSchematicCommandFromValues(
     val value = values[key]
     val finalText = if (value == "true" || value == "false") {
       if (value == "true") "--$key" else null
-    } else if (value != null) {
+    } else if (value != null && value.isNotBlank()) {
       "--$key=$value"
     } else {
       null

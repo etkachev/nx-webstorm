@@ -25,6 +25,7 @@ class SchematicActionListener(
     val fullId = findFullSchematicIdByTypeAndId(type, id, schematics) ?: return
     val info = schematics[fullId] ?: return
     panel.schematicSelection["id"] = id
+    panel.schematicSelection["type"] = type
     panel.schematicSelection["file"] = info.fileLocation
   }
 }

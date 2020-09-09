@@ -7,7 +7,12 @@ import com.intellij.openapi.project.Project
 import javax.swing.Action
 import javax.swing.JComponent
 
-class RunSchematicDialog(private val project: Project, private val id: String, private val schematicLocation: String) :
+class RunSchematicDialog(
+  private val project: Project,
+  private val type: String,
+  private val id: String,
+  private val schematicLocation: String
+) :
   DialogWrapper(project) {
   var formMap: FormValueMap = FormValueMap()
 
@@ -16,7 +21,7 @@ class RunSchematicDialog(private val project: Project, private val id: String, p
   }
 
   override fun createLeftSideActions(): Array<Action> {
-    return arrayOf(DryRunAction(project, id, formMap, this))
+    return arrayOf(DryRunAction(project, type, id, formMap, this))
   }
 
   override fun createCenterPanel(): JComponent? {

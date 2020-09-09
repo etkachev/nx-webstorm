@@ -10,6 +10,7 @@ import javax.swing.AbstractAction
 
 class DryRunAction(
   proj: Project,
+  private val type: String,
   private val id: String,
   private val formValues: FormValueMap,
   private val dialog: DialogWrapper
@@ -17,7 +18,7 @@ class DryRunAction(
   private var terminal = RunTerminalWindow(proj, "Dry Run")
   override fun actionPerformed(e: ActionEvent?) {
     val values = formValues.formVal
-    val command = getSchematicCommandFromValues(id, values)
+    val command = getSchematicCommandFromValues(type, id, values)
     dialog.close(DialogWrapper.CANCEL_EXIT_CODE)
     terminal.runAndShow(command)
   }

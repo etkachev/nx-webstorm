@@ -1,6 +1,11 @@
 package com.github.etkachev.nxwebstorm.utils
 
-fun getSchematicCommandFromValues(id: String, values: MutableMap<String, String>, dryRun: Boolean = true): String {
+fun getSchematicCommandFromValues(
+  type: String,
+  id: String,
+  values: MutableMap<String, String>,
+  dryRun: Boolean = true
+): String {
   val keys = values.keys
   val dryRunString = if (dryRun) " --dry-run" else ""
   val flagCommands = keys.mapNotNull { key ->
@@ -14,6 +19,7 @@ fun getSchematicCommandFromValues(id: String, values: MutableMap<String, String>
     }
     finalText
   }
+  val prefix = if (type == "workspace-schematic") "nx workspace-schematic $id" else "ng generate $type:$id"
   val flags = flagCommands.joinToString(" ")
-  return "nx workspace-schematic $id $flags --no-interactive$dryRunString"
+  return "$prefix $flags --no-interactive$dryRunString"
 }

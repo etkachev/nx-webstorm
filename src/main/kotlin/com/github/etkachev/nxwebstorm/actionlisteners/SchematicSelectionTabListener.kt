@@ -31,18 +31,23 @@ class SchematicSelectionTabListener(
   private var runTerminal = RunTerminalWindow(project, "Run")
   private var tabName = "Generate - Schematic"
 
-  private fun dryRunAction(id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
-    return { run(id, formMap, required) }
+  private fun dryRunAction(
+    type: String,
+    id: String,
+    formMap: FormValueMap,
+    required: JsonArray?
+  ): (ActionEvent) -> Unit {
+    return { run(type, id, formMap, required) }
   }
 
-  private fun runAction(id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
-    return { run(id, formMap, required, false) }
+  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
+    return { run(type, id, formMap, required, false) }
   }
 
-  private fun run(id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
+  private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
     val values = formMap.formVal
     checkRequiredFields(required, values)
-    val command = getSchematicCommandFromValues(id, values, dryRun)
+    val command = getSchematicCommandFromValues(type, id, values, dryRun)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
     } else {
@@ -88,7 +93,7 @@ class SchematicSelectionTabListener(
     val required = schematicPanel.required
     val panel = schematicPanel.generateCenterPanel(
       withBorder = true, addButtons = true,
-      dryRunAction = dryRunAction(id, formMap, required), runAction = runAction(id, formMap, required)
+      dryRunAction = dryRunAction(type, id, formMap, required), runAction = runAction(type, id, formMap, required)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

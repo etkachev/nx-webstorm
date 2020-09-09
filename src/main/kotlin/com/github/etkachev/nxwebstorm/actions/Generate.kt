@@ -22,12 +22,13 @@ class Generate : AnAction() {
     val ok = dialog.showAndGet()
     if (ok && dialog.schematicSelection.containsKey("id")) {
       val id = dialog.schematicSelection["id"] ?: ""
+      val type = dialog.schematicSelection["type"] ?: ""
       val fileLocation = dialog.schematicSelection["file"] ?: ""
-      val formDialog = RunSchematicDialog(proj, id, fileLocation)
+      val formDialog = RunSchematicDialog(proj, type, id, fileLocation)
       val formOk = formDialog.showAndGet()
       if (formOk) {
         val values = formDialog.formMap.formVal
-        val command = getSchematicCommandFromValues(id, values, false)
+        val command = getSchematicCommandFromValues(type, id, values, false)
         val terminal = RunTerminalWindow(proj, "Run")
         terminal.runAndShow(command)
       }

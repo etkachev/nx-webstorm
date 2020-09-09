@@ -12,6 +12,18 @@
 ### Removed
 
 ### Fixed
+
+### Security
+## [0.1.1]
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
 - Fixed terminal commands so that it won't add flags that have empty values
 
 ### Security

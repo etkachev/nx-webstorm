@@ -6,7 +6,7 @@
 ### Added
 
 ### Changed
-
+- Updating Readme to latest badges with new plugin id
 ### Deprecated
 
 ### Removed

@@ -3,19 +3,13 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
-### Added
-
 ### Changed
 - Updating Readme to the latest badges with new plugin id
-### Deprecated
-
-### Removed
 
 ### Fixed
 - Fixed to use `nx generate` vs `ng generate` in executing commands
 - Fixed flag values that have spaces to be wrapped in single quotes
 
-### Security
 ## [0.1.1]
 ### Fixed
 - Fixed terminal commands so that it won't add flags that have empty values

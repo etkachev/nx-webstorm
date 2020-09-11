@@ -3,6 +3,19 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.1.2]
 ### Changed
 - Updating Readme to the latest badges with new plugin id
 

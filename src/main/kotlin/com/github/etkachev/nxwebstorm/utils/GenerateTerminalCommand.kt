@@ -13,13 +13,14 @@ fun getSchematicCommandFromValues(
     val finalText = if (value == "true" || value == "false") {
       if (value == "true") "--$key" else null
     } else if (value != null && value.isNotBlank()) {
-      "--$key=$value"
+      val cleanedValue = if (value.contains(" ")) "'$value'" else value
+      "--$key=$cleanedValue"
     } else {
       null
     }
     finalText
   }
-  val prefix = if (type == "workspace-schematic") "nx workspace-schematic $id" else "ng generate $type:$id"
+  val prefix = if (type == "workspace-schematic") "nx workspace-schematic $id" else "nx generate $type:$id"
   val flags = flagCommands.joinToString(" ")
   return "$prefix $flags --no-interactive$dryRunString"
 }

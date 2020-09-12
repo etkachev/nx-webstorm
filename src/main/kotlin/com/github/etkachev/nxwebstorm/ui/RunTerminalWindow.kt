@@ -1,7 +1,9 @@
 package com.github.etkachev.nxwebstorm.ui
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.ui.content.Content
 import org.jetbrains.plugins.terminal.ShellTerminalWidget
 import org.jetbrains.plugins.terminal.TerminalToolWindowFactory
 import org.jetbrains.plugins.terminal.TerminalView
@@ -10,23 +12,43 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
 
   var terminalView: TerminalView = TerminalView.getInstance(proj)
   var shell: ShellTerminalWidget? = null
+  var terminalWindow = getWindowManager()
 
-  private fun createShell() {
+  private fun createShell(window: ToolWindow): Content {
     shell = terminalView.createLocalShellWidget(null, tabName)
+    val tabContent = window.contentManager.findContent(tabName)
+    return tabContent!!
   }
 
   fun runAndShow(command: String) {
-    val window = ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
-      ?: return
+    if (terminalWindow == null) {
+      return
+    }
 
+    val window = terminalWindow!!
+
+    // If shell instance doesn't exist, cleanup tabs and create new instance of the shell
     if (shell == null) {
-      createShell()
+      cleanUpExistingTabs(window)
+      createShell(window)
     }
-    val existingTab = window.contentManager.findContent(tabName)
-    if (existingTab == null) {
-      createShell()
-    }
+
+    // If tab with matching name doesn't exist, create new shell instance with matching tab name
+    val existingTab = window.contentManager.findContent(tabName) ?: createShell(window)
     window.show()
+    window.contentManager.setSelectedContent(existingTab)
     shell!!.executeCommand(command)
+  }
+
+  private fun getWindowManager(): ToolWindow? {
+    return ToolWindowManager.getInstance(proj).getToolWindow(TerminalToolWindowFactory.TOOL_WINDOW_ID)
+  }
+
+  private fun cleanUpExistingTabs(window: ToolWindow) {
+    // if it can't find the existing tab, then leave recursive flow
+    val existingTab = window.contentManager.findContent(tabName) ?: return
+
+    window.contentManager.removeContent(existingTab, true)
+    cleanUpExistingTabs(window)
   }
 }

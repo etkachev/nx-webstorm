@@ -12,6 +12,8 @@
 ### Removed
 
 ### Fixed
+- When going between doing `Dry Run` and `Run`, UI now switches tabs to the currently running shell.
+- When there are required fields that aren't filled out, it won't run the terminal commands anymore
 
 ### Security
 

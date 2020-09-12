@@ -46,7 +46,10 @@ class SchematicSelectionTabListener(
 
   private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
     val values = formMap.formVal
-    checkRequiredFields(required, values)
+    val missingRequired = checkRequiredFields(required, values)
+    if (missingRequired) {
+      return
+    }
     val command = getSchematicCommandFromValues(type, id, values, dryRun)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
@@ -55,21 +58,22 @@ class SchematicSelectionTabListener(
     }
   }
 
-  private fun checkRequiredFields(required: JsonArray?, values: MutableMap<String, String>) {
+  private fun checkRequiredFields(required: JsonArray?, values: MutableMap<String, String>): Boolean {
     if (required == null) {
-      return
+      return false
     }
 
     val mappedRequired = required.mapNotNull { r -> r.asString }.toTypedArray()
     val missing =
       values.keys.filter { k -> mappedRequired.contains(k) && (values[k] == null || values[k]!!.trim() == "") }
     if (missing.count() == 0) {
-      return
+      return false
     }
 
     val joinedKeys = missing.joinToString()
     val message = "Missing the following required fields: $joinedKeys"
     Messages.showMessageDialog(message, "Oops", Messages.getWarningIcon())
+    return true
   }
 
   override fun valueChanged(e: ListSelectionEvent?) {

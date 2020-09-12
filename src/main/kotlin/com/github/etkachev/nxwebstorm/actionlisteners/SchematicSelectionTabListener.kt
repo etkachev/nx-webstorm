@@ -46,8 +46,7 @@ class SchematicSelectionTabListener(
 
   private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
     val values = formMap.formVal
-    val missingRequired = checkRequiredFields(required, values)
-    if (missingRequired) {
+    if (isMissingRequiredFields(required, values)) {
       return
     }
     val command = getSchematicCommandFromValues(type, id, values, dryRun)
@@ -58,7 +57,7 @@ class SchematicSelectionTabListener(
     }
   }
 
-  private fun checkRequiredFields(required: JsonArray?, values: MutableMap<String, String>): Boolean {
+  private fun isMissingRequiredFields(required: JsonArray?, values: MutableMap<String, String>): Boolean {
     if (required == null) {
       return false
     }

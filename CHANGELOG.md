@@ -3,6 +3,21 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- When going between doing `Dry Run` and `Run`, UI now switches tabs to the currently running shell.
+- When there are required fields that aren't filled out, it won't run the terminal commands anymore
+
+### Security
+
+## [0.1.2]
 ### Changed
 - Updating Readme to the latest badges with new plugin id
 

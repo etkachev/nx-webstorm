@@ -20,7 +20,8 @@ fun getSchematicCommandFromValues(
     }
     finalText
   }
-  val prefix = if (type == "workspace-schematic") "nx workspace-schematic $id" else "nx generate $type:$id"
+  val nx = "node node_modules/@nrwl/cli/bin/nx.js"
+  val prefix = if (type == "workspace-schematic") "$nx workspace-schematic $id" else "$nx generate $type:$id"
   val flags = flagCommands.joinToString(" ")
   return "$prefix $flags --no-interactive$dryRunString"
 }

@@ -6,6 +6,18 @@
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.2.0]
+### Added
+
+### Changed
 - When running nx commands, use local installed nx cli instead of global
 
 ### Deprecated

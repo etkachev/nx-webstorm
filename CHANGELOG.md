@@ -6,6 +6,7 @@
 ### Added
 
 ### Changed
+- When running nx commands, use local installed nx cli instead of global
 
 ### Deprecated
 

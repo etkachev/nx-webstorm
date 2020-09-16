@@ -35,6 +35,10 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
 
     // If tab with matching name doesn't exist, create new shell instance with matching tab name
     val existingTab = window.contentManager.findContent(tabName) ?: createShell(window)
+    // If shell is still running commands, don't continue
+    if (shell!!.hasRunningCommands()) {
+      return
+    }
     window.show()
     window.contentManager.setSelectedContent(existingTab)
     shell!!.executeCommand(command)

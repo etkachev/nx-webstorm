@@ -27,10 +27,17 @@ class SchematicsListToolTab(
     tabName, this, schematicFetcher
   )
 
+  /**
+   * Return function that will be used within `ReFetchSchematicListener` to cleanup un-needed listener.
+   * Honestly I don't know if this is automatically cleaned up with the garbage collector, but just in case...
+   */
   private fun getRemoveSelectionListener(table: JBTable, listener: SchematicSelectionTabListener): () -> Unit {
     return { removeRowSelectionListener(table, listener) }
   }
 
+  /**
+   * function that is used to remove list selection listener for the given table passed in.
+   */
   private fun removeRowSelectionListener(table: JBTable, listener: SchematicSelectionTabListener) {
     table.selectionModel.removeListSelectionListener(listener)
   }

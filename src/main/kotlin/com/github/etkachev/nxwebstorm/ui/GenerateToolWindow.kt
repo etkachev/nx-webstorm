@@ -11,8 +11,12 @@ class GenerateToolWindow : ToolWindowFactory {
   private var tabName = "Generate"
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentFactory = ContentFactory.SERVICE.getInstance()
-    val allSchematics = FindAllSchematics(project).findAll()
-    val listPanel = SchematicsListToolTab(project, allSchematics).createCenterPanel(toolWindow)
+    val schematicFetcher = FindAllSchematics(project)
+    val allSchematics = schematicFetcher.findAll()
+    val listPanel =
+      SchematicsListToolTab(project, toolWindow, contentFactory, tabName, schematicFetcher).createCenterPanel(
+        allSchematics
+      )
     val content = contentFactory.createContent(listPanel, tabName, false)
     toolWindow.contentManager.addContent(content)
   }

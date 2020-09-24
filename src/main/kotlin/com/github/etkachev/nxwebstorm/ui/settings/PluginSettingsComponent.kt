@@ -24,7 +24,10 @@ class PluginSettingsComponent {
     myExternalLibsField = textArea
 
     val checkBox =
-      JBCheckBox("Scan only explicit external libs (recommended). If off, it will scan all of node_modules (not recommended).")
+      JBCheckBox(
+        "Scan only explicit external libs (recommended). " +
+          "If off, it will scan all of node_modules (not recommended)."
+      )
     myScanExplicitLibsStatus = checkBox
   }
 

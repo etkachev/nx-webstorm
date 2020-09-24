@@ -28,20 +28,20 @@ class PluginSettingsConfigurable : Configurable {
   override fun isModified(): Boolean {
     val settings: PluginSettingsState = PluginSettingsState.instance
     var modified: Boolean = mySettingsComponent!!.externalLibsText != settings.externalLibs
-    modified = modified or (mySettingsComponent!!.scanEverythingStatus != settings.scanEveryThing)
+    modified = modified or (mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs)
     return modified
   }
 
   override fun apply() {
     val settings: PluginSettingsState = PluginSettingsState.instance
     settings.externalLibs = mySettingsComponent!!.externalLibsText
-    settings.scanEveryThing = mySettingsComponent!!.scanEverythingStatus
+    settings.scanExplicitLibs = mySettingsComponent!!.scanExplicitLibsStatus
   }
 
   override fun reset() {
     val settings: PluginSettingsState = PluginSettingsState.instance
     mySettingsComponent!!.externalLibsText = settings.externalLibs
-    mySettingsComponent!!.scanEverythingStatus = settings.scanEveryThing
+    mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
   }
 
   override fun disposeUIResources() {

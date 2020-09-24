@@ -26,7 +26,7 @@ class PluginSettingsState : PersistentStateComponent<PluginSettingsState?> {
     "@nestjs/schematics",
     "@ngrx/schematics"
   ).joinToString(", ")
-  var scanEveryThing = false
+  var scanExplicitLibs = true
 
   override fun getState(): PluginSettingsState? {
     return this

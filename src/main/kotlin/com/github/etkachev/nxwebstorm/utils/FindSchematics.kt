@@ -1,6 +1,7 @@
 package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.google.gson.JsonObject
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -75,19 +76,16 @@ class FindSchematics(project: Project, private val externalLibs: Array<String>) 
 class FindAllSchematics(private val project: Project) {
   fun findAll(): Map<String, SchematicInfo> {
     val customSchematics = GetNxData().getCustomSchematics(project)
+    val settings: PluginSettingsState = PluginSettingsState.instance
+    val others = settings.externalLibs.split(",").mapNotNull { value ->
+      val trimmed = value.trim()
+      val final = if (trimmed.isEmpty()) null else trimmed
+      final
+    }
     val more =
       FindSchematics(
         project,
-        arrayOf(
-          "@nrwl/angular",
-          "@nrwl/nest",
-          "@nrwl/node",
-          "@nrwl/storybook",
-          "@nrwl/workspace",
-          "@schematics/angular",
-          "@nestjs/schematics",
-          "@ngrx/schematics"
-        )
+        others.toTypedArray()
       ).findByExternalLibs()
     return flattenMultipleMaps(customSchematics, more)
   }

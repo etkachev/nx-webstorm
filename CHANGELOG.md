@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.2.1]
+### Added
 - Added mechanism to refresh list of schematics. Should be a button next to the search bar on panel showing list of schematics.
 
 ### Changed

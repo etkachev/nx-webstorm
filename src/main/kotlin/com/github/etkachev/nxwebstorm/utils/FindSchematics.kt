@@ -28,22 +28,43 @@ class FindSchematics(private val project: Project, private val externalLibs: Arr
     return PackageJsonInfo(packageName, packageFileJson, file)
   }
 
-  private fun findAllPackageJsonFiles() {
+  private fun findAllPackageJsonFiles(): Map<String, SchematicInfo> {
     val root = ProjectRootManager.getInstance(project).contentRoots[0]
-    val psiDir = PsiManager.getInstance(project).findDirectory(root)
-    //TODO check null psiDir
+    val psiDir = PsiManager.getInstance(project).findDirectory(root) ?: return emptyMap()
 
-    val nodeModules = psiDir!!.findSubdirectory(nodeModulesFolder)
-    //TODO check node modules
-
+    val nodeModules = psiDir.findSubdirectory(nodeModulesFolder) ?: return emptyMap()
+    val splitProjectRootPath = psiDir.virtualFile.path.split("/")
+    val projectRootFolder = splitProjectRootPath[splitProjectRootPath.count() - 1]
     val packageJsonFiles = FilenameIndex.getFilesByName(
       project,
       "package.json",
-      GlobalSearchScopes.directoriesScope(project, true, nodeModules!!.virtualFile)
+      GlobalSearchScopes.directoriesScope(project, true, nodeModules.virtualFile)
     ).mapNotNull { f ->
-      val packageJsonFile = getPackageFileByVirtualFile(f.virtualFile)
-      packageJsonFile
+      val (packageName, packageFileJson, packageFile) = getPackageFileByVirtualFile(f.virtualFile)
+        ?: return@mapNotNull null
+      val (schematicsOptions, schematicCollection) = getSchematicOptions(packageFileJson, packageFile)
+        ?: return@mapNotNull null
+      val splitFullFileLocation = f.parent!!.virtualFile.path.split("$projectRootFolder/$nodeModulesFolder/")
+      val nodeModulesFileLocation = splitFullFileLocation[1]
+      val packageFileLocation = "$nodeModulesFolder/$nodeModulesFileLocation"
+      val schematicEntries =
+        schematicsOptions.entrySet().toTypedArray().fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
+          val value = e.value.asJsonObject
+          if (value.has("hidden") && value["hidden"].asBoolean) {
+            return@fold acc
+          }
+
+          val relativePath = getRelativePath(nodeModulesFileLocation, value, schematicCollection) ?: return@fold acc
+          val schematicsFileLocation = "$packageFileLocation$relativePath"
+          val id = generateUniqueSchematicKey(packageName, e.key)
+          val description = if (value.has("description")) value["description"].asString else null
+          acc[id] = SchematicInfo(schematicsFileLocation, description)
+          return@fold acc
+        })
+      val results = schematicEntries.toMap()
+      return@mapNotNull if (results.isNotEmpty()) results else null
     }.toTypedArray()
+    return foldListOfSchematicMaps(packageJsonFiles)
   }
 
   private fun getSchematicOptions(packageFileJson: JsonObject, packageFile: VirtualFile): CollectionInfo? {
@@ -88,17 +109,22 @@ class FindSchematics(private val project: Project, private val externalLibs: Arr
   }
 
   fun findByExternalLibs(): Map<String, SchematicInfo> {
-    return externalLibs.mapNotNull { dir -> getSchematicsFromDirectory(dir) }
-      .fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
-        for (key in e.keys) {
-          val info = e[key] ?: continue
-          acc[key] = info
-        }
-        return@fold acc
-      }).toMap()
+    val schematicMaps = externalLibs.mapNotNull { dir -> getSchematicsFromDirectory(dir) }
+    return foldListOfSchematicMaps(schematicMaps.toTypedArray())
   }
 
-  fun scanAllForExternalSchematics() {
+  private fun foldListOfSchematicMaps(schematicMaps: Array<Map<String, SchematicInfo>>): Map<String, SchematicInfo> {
+    return schematicMaps.fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
+      for (key in e.keys) {
+        val info = e[key] ?: continue
+        acc[key] = info
+      }
+      return@fold acc
+    }).toMap()
+  }
+
+  fun scanAllForExternalSchematics(): Map<String, SchematicInfo> {
+    return findAllPackageJsonFiles()
   }
 }
 
@@ -107,16 +133,21 @@ class FindAllSchematics(private val project: Project) {
     val customSchematics = GetNxData(project).getCustomSchematics()
     val settings: PluginSettingsState = PluginSettingsState.instance
     val findExplicitSchematics = settings.scanExplicitLibs
-    val others = if (findExplicitSchematics) settings.externalLibs.split(",").mapNotNull { value ->
-      val trimmed = value.trim()
-      val final = if (trimmed.isEmpty()) null else trimmed
-      final
-    } else emptyList()
-    val more =
-      FindSchematics(
-        project,
-        others.toTypedArray()
-      ).findByExternalLibs()
-    return flattenMultipleMaps(customSchematics, more)
+    if (findExplicitSchematics) {
+      val others = settings.externalLibs.split(",").mapNotNull { value ->
+        val trimmed = value.trim()
+        val final = if (trimmed.isEmpty()) null else trimmed
+        final
+      }
+      val more =
+        FindSchematics(
+          project,
+          others.toTypedArray()
+        ).findByExternalLibs()
+      return flattenMultipleMaps(customSchematics, more)
+    } else {
+      val allScanned = FindSchematics(project, emptyArray()).scanAllForExternalSchematics()
+      return flattenMultipleMaps(customSchematics, allScanned)
+    }
   }
 }

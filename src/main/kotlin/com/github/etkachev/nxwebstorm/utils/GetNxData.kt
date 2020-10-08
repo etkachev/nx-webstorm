@@ -15,7 +15,6 @@ import com.intellij.psi.search.GlobalSearchScopes
 class GetNxData(private val project: Project) {
   var defaultToolsSchematicDir = "/tools/schematics"
   var configToolsSchematicDir: String
-  var rootPsiDirectory: PsiDirectory?
   private val cleanedUpConfigToolsSchematicDir: String
     get() = if (configToolsSchematicDir.startsWith("/")) configToolsSchematicDir else "/$configToolsSchematicDir"
   private val toolsSchematicDir: String
@@ -26,8 +25,6 @@ class GetNxData(private val project: Project) {
   init {
     val settings: PluginSettingsState = PluginSettingsState.instance
     configToolsSchematicDir = settings.customSchematicLocation
-    val root = ProjectRootManager.getInstance(project).contentRoots[0]
-    rootPsiDirectory = PsiManager.getInstance(project).findDirectory(root)
   }
 
   fun getProjects(): List<String> {
@@ -38,7 +35,9 @@ class GetNxData(private val project: Project) {
   }
 
   fun getCustomSchematics(): Map<String, SchematicInfo> {
-    val schematics = findPsiDirectoryBySplitFolders(splitSchematicDir) ?: return emptyMap()
+    val root = ProjectRootManager.getInstance(project).contentRoots[0]
+    val rootPsiDirectory = PsiManager.getInstance(project).findDirectory(root)
+    val schematics = findPsiDirectoryBySplitFolders(splitSchematicDir, rootPsiDirectory) ?: return emptyMap()
     val files = FilenameIndex.getFilesByName(
       project, "schema.json",
       GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile)
@@ -48,6 +47,7 @@ class GetNxData(private val project: Project) {
 
   private fun findPsiDirectoryBySplitFolders(
     dir: Array<String>,
+    rootPsiDirectory: PsiDirectory?,
     dirIndex: Int = 0,
     checkedDirectory: PsiDirectory? = null
   ): PsiDirectory? {
@@ -64,7 +64,7 @@ class GetNxData(private val project: Project) {
 
     val currentDir = dir[dirIndex]
     val subPsiDir = currentPsiDir.findSubdirectory(currentDir) ?: return null
-    return findPsiDirectoryBySplitFolders(dir, dirIndex + 1, subPsiDir)
+    return findPsiDirectoryBySplitFolders(dir, rootPsiDirectory, dirIndex + 1, subPsiDir)
   }
 
   private fun getIdsFromSchema(file: PsiFile): Pair<String, SchematicInfo>? {

@@ -27,6 +27,7 @@ class PluginSettingsState : PersistentStateComponent<PluginSettingsState?> {
     "@ngrx/schematics"
   ).joinToString(", ")
   var scanExplicitLibs = true
+  var customSchematicLocation = "/tools/schematics"
 
   override fun getState(): PluginSettingsState? {
     return this

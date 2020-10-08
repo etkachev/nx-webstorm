@@ -25,8 +25,8 @@ class PluginSettingsComponent {
 
     val checkBox =
       JBCheckBox(
-        "Scan only explicit external libs (recommended). " +
-          "If off, it will scan all of node_modules (not recommended)."
+        "Scan only explicit external libs (faster). " +
+          "If off, it will scan all of node_modules (slower)."
       )
     myScanExplicitLibsStatus = checkBox
   }

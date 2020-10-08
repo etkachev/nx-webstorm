@@ -4,20 +4,46 @@ import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.google.gson.JsonObject
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScopes
 
 data class CollectionInfo(val json: JsonObject, val file: VirtualFile)
 data class PackageJsonInfo(val packageName: String, val json: JsonObject, val file: VirtualFile)
-class FindSchematics(project: Project, private val externalLibs: Array<String>) {
+class FindSchematics(private val project: Project, private val externalLibs: Array<String>) {
   var jsonFileReader = ReadFile(project)
   var schematicPropName = "schematics"
   var nodeModulesFolder = "node_modules"
 
   private fun getPackageFileInfo(directory: String): PackageJsonInfo? {
     val packageFile = jsonFileReader.findVirtualFile("$nodeModulesFolder/$directory/package.json") ?: return null
-    val packageFileJson = jsonFileReader.readJsonFromFile(packageFile) ?: return null
+    return getPackageFileByVirtualFile(packageFile)
+  }
+
+  private fun getPackageFileByVirtualFile(file: VirtualFile): PackageJsonInfo? {
+    val packageFileJson = jsonFileReader.readJsonFromFile(file) ?: return null
     val packageName = (if (packageFileJson.has("name")) packageFileJson["name"].asString else null) ?: return null
-    return PackageJsonInfo(packageName, packageFileJson, packageFile)
+    return PackageJsonInfo(packageName, packageFileJson, file)
+  }
+
+  private fun findAllPackageJsonFiles() {
+    val root = ProjectRootManager.getInstance(project).contentRoots[0]
+    val psiDir = PsiManager.getInstance(project).findDirectory(root)
+    //TODO check null psiDir
+
+    val nodeModules = psiDir!!.findSubdirectory(nodeModulesFolder)
+    //TODO check node modules
+
+    val packageJsonFiles = FilenameIndex.getFilesByName(
+      project,
+      "package.json",
+      GlobalSearchScopes.directoriesScope(project, true, nodeModules!!.virtualFile)
+    ).mapNotNull { f ->
+      val packageJsonFile = getPackageFileByVirtualFile(f.virtualFile)
+      packageJsonFile
+    }.toTypedArray()
   }
 
   private fun getSchematicOptions(packageFileJson: JsonObject, packageFile: VirtualFile): CollectionInfo? {
@@ -71,17 +97,21 @@ class FindSchematics(project: Project, private val externalLibs: Array<String>) 
         return@fold acc
       }).toMap()
   }
+
+  fun scanAllForExternalSchematics() {
+  }
 }
 
 class FindAllSchematics(private val project: Project) {
   fun findAll(): Map<String, SchematicInfo> {
-    val customSchematics = GetNxData().getCustomSchematics(project)
+    val customSchematics = GetNxData(project).getCustomSchematics()
     val settings: PluginSettingsState = PluginSettingsState.instance
-    val others = settings.externalLibs.split(",").mapNotNull { value ->
+    val findExplicitSchematics = settings.scanExplicitLibs
+    val others = if (findExplicitSchematics) settings.externalLibs.split(",").mapNotNull { value ->
       val trimmed = value.trim()
       val final = if (trimmed.isEmpty()) null else trimmed
       final
-    }
+    } else emptyList()
     val more =
       FindSchematics(
         project,

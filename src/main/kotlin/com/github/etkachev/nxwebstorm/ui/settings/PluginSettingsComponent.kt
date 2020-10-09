@@ -2,6 +2,7 @@ package com.github.etkachev.nxwebstorm.ui.settings
 
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextArea
+import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 import javax.swing.JPanel
 import com.intellij.ui.layout.panel
@@ -15,6 +16,7 @@ class PluginSettingsComponent {
   val panel: JPanel
   private val myExternalLibsField: JBTextArea
   private val myScanExplicitLibsStatus: JBCheckBox
+  private val myCustomSchematicsDirectory: JBTextField = JBTextField()
 
   init {
     val textArea = JBTextArea(5, 20)
@@ -43,6 +45,11 @@ class PluginSettingsComponent {
     set(newStatus) {
       myScanExplicitLibsStatus.isSelected = newStatus
     }
+  var customSchematicsDirText: String
+    get() = myCustomSchematicsDirectory.text
+    set(dir) {
+      myCustomSchematicsDirectory.text = dir
+    }
 
   init {
     panel = panel {
@@ -57,6 +64,14 @@ class PluginSettingsComponent {
         }
         row {
           myExternalLibsField().enableIf(myScanExplicitLibsStatus.selected)
+        }
+      }
+      titledRow("Custom Schematics Directory") {
+        row {
+          label("Enter directory where custom schematics are located")
+        }
+        row {
+          myCustomSchematicsDirectory()
         }
       }
     }.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))

@@ -118,7 +118,7 @@ class FindAllSchematics(private val project: Project) {
 
   init {
     val settings: PluginSettingsState = PluginSettingsState.instance
-    configToolsSchematicDir = settings.customSchematicLocation
+    configToolsSchematicDir = settings.customSchematicsLocation
   }
 
   fun findAll(): Map<String, SchematicInfo> {

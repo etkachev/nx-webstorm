@@ -28,7 +28,8 @@ class PluginSettingsConfigurable : Configurable {
   override fun isModified(): Boolean {
     val settings: PluginSettingsState = PluginSettingsState.instance
     var modified: Boolean = mySettingsComponent!!.externalLibsText != settings.externalLibs
-    modified = modified or (mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs)
+    modified =
+      modified or (mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs) or (mySettingsComponent!!.customSchematicsDirText != settings.customSchematicsLocation)
     return modified
   }
 
@@ -36,12 +37,14 @@ class PluginSettingsConfigurable : Configurable {
     val settings: PluginSettingsState = PluginSettingsState.instance
     settings.externalLibs = mySettingsComponent!!.externalLibsText
     settings.scanExplicitLibs = mySettingsComponent!!.scanExplicitLibsStatus
+    settings.customSchematicsLocation = mySettingsComponent!!.customSchematicsDirText
   }
 
   override fun reset() {
     val settings: PluginSettingsState = PluginSettingsState.instance
     mySettingsComponent!!.externalLibsText = settings.externalLibs
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
+    mySettingsComponent!!.customSchematicsDirText = settings.customSchematicsLocation
   }
 
   override fun disposeUIResources() {

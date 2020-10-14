@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.3.0]
+### Added
 - Added settings to configure plugin. Be able to configure things such as external packages to scan for schematics, and configuring location of custom schematics.
 
 ### Changed

@@ -28,7 +28,6 @@ class ExternalSchematicsSettingsConfigurable : Configurable {
   }
 
   override fun getDisplayName(): String {
-    val hi = "jetbrains://WebStorm/settings?name=Tools--Nx+Plugin+Settings--External+Schematics"
     return "External Schematics"
   }
 

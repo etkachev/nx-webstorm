@@ -11,7 +11,6 @@ class NewExternalSchematicDialog(private val existingList: Array<String>) : Dial
 
   init {
     super.init()
-    super.initValidation()
     super.setTitle("New Item")
   }
 
@@ -28,6 +27,10 @@ class NewExternalSchematicDialog(private val existingList: Array<String>) : Dial
   }
 
   private fun validateText(field: JBTextField): ValidationInfo? {
+    val emptyText = field.text.isNullOrEmpty()
+    if (emptyText) {
+      return ValidationInfo("Cannot be empty", field)
+    }
     val alreadyExists = existingList.find { s -> s == field.text } ?: return null
     return ValidationInfo("$alreadyExists is already in use. Try something else.", field)
   }

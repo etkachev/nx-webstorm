@@ -19,16 +19,9 @@
 ### Added
 - Added mechanism to refresh list of schematics. Should be a button next to the search bar on panel showing list of schematics.
 
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 - If shell tab is still executing commands, do not try to run commands again. 
 
-### Security
 ## [0.2.0]
 ### Changed
 - When running nx commands, use local installed nx cli instead of global

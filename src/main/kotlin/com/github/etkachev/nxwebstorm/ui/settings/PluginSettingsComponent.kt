@@ -1,12 +1,11 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
+import com.intellij.ui.CollectionListModel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 import javax.swing.JPanel
 import com.intellij.ui.layout.panel
-import com.intellij.ui.layout.selected
 import javax.swing.BorderFactory
 
 /**
@@ -14,32 +13,12 @@ import javax.swing.BorderFactory
  */
 class PluginSettingsComponent {
   val panel: JPanel
-  private val myExternalLibsField: JBTextArea
   private val myScanExplicitLibsStatus: JBCheckBox
   private val myCustomSchematicsDirectory: JBTextField = JBTextField()
-
-  init {
-    val textArea = JBTextArea(5, 20)
-    textArea.lineWrap = true
-    textArea.wrapStyleWord = true
-    textArea.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    myExternalLibsField = textArea
-
-    val checkBox =
-      JBCheckBox(
-        "Scan only explicit external libs (faster). " +
-          "If off, it will scan all of node_modules (slower)."
-      )
-    myScanExplicitLibsStatus = checkBox
-  }
+  private val myExternalLibsList: CollectionListModel<String>
 
   val preferredFocusedComponent: JComponent
-    get() = myExternalLibsField
-  var externalLibsText: String
-    get() = myExternalLibsField.text
-    set(libs) {
-      myExternalLibsField.text = libs
-    }
+    get() = myScanExplicitLibsStatus
   var scanExplicitLibsStatus: Boolean
     get() = myScanExplicitLibsStatus.isSelected
     set(newStatus) {
@@ -52,18 +31,21 @@ class PluginSettingsComponent {
     }
 
   init {
+    val checkBox =
+      JBCheckBox(
+        "Scan only explicit external libs (faster). " +
+          "If off, it will scan all of node_modules (slower)."
+      )
+    myScanExplicitLibsStatus = checkBox
+    myExternalLibsList = CollectionListModel()
+
     panel = panel {
-      titledRow("Scan Explicit External Libs? (WIP)") {
+      titledRow("Scan Explicit External Libs?") {
         row {
           myScanExplicitLibsStatus()
         }
-      }
-      titledRow("External Libs") {
         row {
-          label("Enter external libs to scan:")
-        }
-        row {
-          myExternalLibsField().enableIf(myScanExplicitLibsStatus.selected)
+          label("If turned on, head over to 'External Schematics' setting page to configure")
         }
       }
       titledRow("Custom Schematics Directory") {

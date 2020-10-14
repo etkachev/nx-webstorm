@@ -19,8 +19,14 @@
                     factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"/>
         <applicationConfigurable parentId="tools"
                                  instance="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
+                                 nonDefaultProject="true"
                                  id="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
-                                 displayName="Nx Plugin Settings"/>
+                                 displayName="Nx Plugin Settings">
+            <configurable nonDefaultProject="true"
+                          id="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
+                          instance="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
+                          displayName="External Schematics"/>
+        </applicationConfigurable>
     </extensions>
 
     <projectListeners>

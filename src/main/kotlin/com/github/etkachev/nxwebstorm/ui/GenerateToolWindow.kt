@@ -22,6 +22,6 @@ class GenerateToolWindow : ToolWindowFactory {
   }
 
   override fun isApplicable(project: Project): Boolean {
-    return GetNxData().isValidNxProject(project)
+    return GetNxData(project).isValidNxProject()
   }
 }

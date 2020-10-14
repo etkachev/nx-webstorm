@@ -12,7 +12,7 @@ class NxActionGroup : DefaultActionGroup() {
       event.presentation.isEnabled = false
       return
     }
-    val isValidNx = GetNxData().isValidNxProject(project)
+    val isValidNx = GetNxData(project).isValidNxProject()
     event.presentation.isEnabled = isValidNx
   }
 }

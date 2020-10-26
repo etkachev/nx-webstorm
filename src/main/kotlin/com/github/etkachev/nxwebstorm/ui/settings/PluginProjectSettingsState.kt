@@ -33,7 +33,5 @@ class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSetting
     fun getInstance(project: Project): PluginProjectSettingsState {
       return ServiceManager.getService(project, PluginProjectSettingsState::class.java)
     }
-    // val instance: PluginProjectSettingsState
-    //   get() = project.getService(PluginProjectSettingsState::class.java)
   }
 }

@@ -1,11 +1,12 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.Nullable
 import javax.swing.JComponent
 
-class PluginSettingsConfigurable : Configurable {
+class PluginSettingsConfigurable(val project: Project) : Configurable {
   private var mySettingsComponent: PluginSettingsComponent? = null
 
   // A default constructor with no arguments is required because this implementation
@@ -26,7 +27,7 @@ class PluginSettingsConfigurable : Configurable {
   }
 
   override fun isModified(): Boolean {
-    val settings: PluginSettingsState = PluginSettingsState.instance
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     var modified: Boolean = mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs
     modified =
       modified or (mySettingsComponent!!.customSchematicsDirText != settings.customSchematicsLocation)
@@ -34,13 +35,13 @@ class PluginSettingsConfigurable : Configurable {
   }
 
   override fun apply() {
-    val settings: PluginSettingsState = PluginSettingsState.instance
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     settings.scanExplicitLibs = mySettingsComponent!!.scanExplicitLibsStatus
     settings.customSchematicsLocation = mySettingsComponent!!.customSchematicsDirText
   }
 
   override fun reset() {
-    val settings: PluginSettingsState = PluginSettingsState.instance
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
     mySettingsComponent!!.customSchematicsDirText = settings.customSchematicsLocation
   }

@@ -1,6 +1,5 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
-import com.intellij.ui.CollectionListModel
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
@@ -15,7 +14,6 @@ class PluginSettingsComponent {
   val panel: JPanel
   private val myScanExplicitLibsStatus: JBCheckBox
   private val myCustomSchematicsDirectory: JBTextField = JBTextField()
-  private val myExternalLibsList: CollectionListModel<String>
 
   val preferredFocusedComponent: JComponent
     get() = myScanExplicitLibsStatus
@@ -33,11 +31,10 @@ class PluginSettingsComponent {
   init {
     val checkBox =
       JBCheckBox(
-        "Scan only explicit external libs (faster). " +
+        "Scan explicit external libs (faster). " +
           "If off, it will scan all of node_modules (slower)."
       )
     myScanExplicitLibsStatus = checkBox
-    myExternalLibsList = CollectionListModel()
 
     panel = panel {
       titledRow("Scan Explicit External Libs?") {

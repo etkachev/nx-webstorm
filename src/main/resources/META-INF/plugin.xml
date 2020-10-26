@@ -14,19 +14,20 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyApplicationService"/>
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState"/>
+        <projectService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyProjectService"/>
         <toolWindow id="Nx" anchor="right"
                     factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"/>
-        <applicationConfigurable parentId="tools"
-                                 instance="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
-                                 nonDefaultProject="true"
-                                 id="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
-                                 displayName="Nx Plugin Settings">
+        <projectConfigurable parentId="tools"
+                             instance="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
+                             nonDefaultProject="true"
+                             id="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
+                             displayName="Nx Plugin Settings">
             <configurable nonDefaultProject="true"
                           id="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
                           instance="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
                           displayName="External Schematics"/>
-        </applicationConfigurable>
+        </projectConfigurable>
     </extensions>
 
     <projectListeners>

@@ -1,7 +1,7 @@
 package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
-import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
+import com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
@@ -117,15 +117,15 @@ class FindAllSchematics(private val project: Project) {
     get() = toolsSchematicDir.split("/").mapNotNull { s -> if (s.isBlank()) null else s }.toTypedArray()
 
   init {
-    val settings: PluginSettingsState = PluginSettingsState.instance
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(project)
     configToolsSchematicDir = settings.customSchematicsLocation
   }
 
   fun findAll(): Map<String, SchematicInfo> {
     val customSchematics = getCustomSchematics()
-    val settings: PluginSettingsState = PluginSettingsState.instance
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(project)
     if (settings.scanExplicitLibs) {
-      val others = settings.externalLibs.split(",").mapNotNull { value ->
+      val others = settings.externalLibs.mapNotNull { value ->
         val trimmed = value.trim()
         val final = if (trimmed.isEmpty()) null else trimmed
         final

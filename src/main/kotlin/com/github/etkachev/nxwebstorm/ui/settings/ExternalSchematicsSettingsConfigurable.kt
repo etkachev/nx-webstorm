@@ -1,9 +1,10 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.Project
 import javax.swing.JComponent
 
-class ExternalSchematicsSettingsConfigurable : Configurable {
+class ExternalSchematicsSettingsConfigurable(val project: Project) : Configurable {
   private var externalSchematicsComponent: ExternalSchematicsSettingsComponent? = null
 
   override fun createComponent(): JComponent? {
@@ -12,15 +13,15 @@ class ExternalSchematicsSettingsConfigurable : Configurable {
   }
 
   override fun isModified(): Boolean {
-    val settings: PluginSettingsState = PluginSettingsState.instance
-    val current = settings.externalLibs
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
+    val current = settings.externalLibs.joinToString(",")
     val newList = externalSchematicsComponent!!.externalSchematics.joinToString(",")
     return newList != current
   }
 
   override fun apply() {
-    val settings: PluginSettingsState = PluginSettingsState.instance
-    settings.externalLibs = externalSchematicsComponent!!.externalSchematics.joinToString(",")
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
+    settings.externalLibs = externalSchematicsComponent!!.externalSchematics
   }
 
   override fun getPreferredFocusedComponent(): JComponent {
@@ -32,8 +33,8 @@ class ExternalSchematicsSettingsConfigurable : Configurable {
   }
 
   override fun reset() {
-    val settings: PluginSettingsState = PluginSettingsState.instance
-    externalSchematicsComponent!!.externalSchematics = settings.externalLibs.split(",").toTypedArray()
+    val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
+    externalSchematicsComponent!!.externalSchematics = settings.externalLibs
   }
 
   override fun disposeUIResources() {

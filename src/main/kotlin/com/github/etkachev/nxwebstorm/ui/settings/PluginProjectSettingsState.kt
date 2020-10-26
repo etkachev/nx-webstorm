@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 
 /**
@@ -12,23 +13,13 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * these persistent application settings are stored.
  */
 @State(
-  name = "com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState",
+  name = "com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState",
   storages = [Storage("NxPluginProjectSettings.xml")]
 )
 class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSettingsState?> {
-  var nodeModulesFolder = "node_modules"
-  var externalLibs = arrayOf(
-    "$nodeModulesFolder/@nrwl/angular",
-    "$nodeModulesFolder/@nrwl/nest",
-    "$nodeModulesFolder/@nrwl/node",
-    "$nodeModulesFolder/@nrwl/storybook",
-    "$nodeModulesFolder/@nrwl/workspace",
-    "$nodeModulesFolder/@schematics/angular",
-    "$nodeModulesFolder/@nestjs/schematics",
-    "$nodeModulesFolder/@ngrx/schematics"
-  )
-  var scanExplicitLibs = true
-  var customSchematicsLocation = "/tools/schematics"
+  var externalLibs = PluginSettingsState.instance.externalLibs.split(",").toTypedArray()
+  var scanExplicitLibs = PluginSettingsState.instance.scanExplicitLibs
+  var customSchematicsLocation = PluginSettingsState.instance.customSchematicsLocation
 
   override fun getState(): PluginProjectSettingsState? {
     return this
@@ -39,7 +30,10 @@ class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSetting
   }
 
   companion object {
-    val instance: PluginProjectSettingsState
-      get() = ServiceManager.getService(PluginProjectSettingsState::class.java)
+    fun getInstance(project: Project): PluginProjectSettingsState {
+      return ServiceManager.getService(project, PluginProjectSettingsState::class.java)
+    }
+    // val instance: PluginProjectSettingsState
+    //   get() = project.getService(PluginProjectSettingsState::class.java)
   }
 }

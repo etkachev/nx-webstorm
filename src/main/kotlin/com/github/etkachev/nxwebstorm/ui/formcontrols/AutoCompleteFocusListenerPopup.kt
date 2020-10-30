@@ -33,7 +33,7 @@ class AutoCompleteFocusListenerPopup(
   }
 
   fun closePopup() {
-    if (this.popup == null || this.popup!!.isDisposed) {
+    if (!this.popupExists) {
       return
     }
 

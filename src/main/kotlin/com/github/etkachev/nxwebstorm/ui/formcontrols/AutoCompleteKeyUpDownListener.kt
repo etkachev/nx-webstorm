@@ -11,9 +11,11 @@ class AutoCompleteKeyUpDownListener(
   private val autoCompleteFocusListener: AutoCompleteFocusListenerPopup
 ) : KeyListener {
   override fun keyTyped(e: KeyEvent?) {
+    this.logEvent()
   }
 
   override fun keyPressed(e: KeyEvent?) {
+    this.logEvent()
   }
 
   override fun keyReleased(e: KeyEvent?) {
@@ -26,6 +28,10 @@ class AutoCompleteKeyUpDownListener(
       KeyEvent.VK_ENTER -> makeTableSelection()
       else -> makeSurePopupIsOpen()
     }
+  }
+
+  private fun logEvent() {
+    System.console().printf("Key Event")
   }
 
   private fun makeSurePopupIsOpen() {

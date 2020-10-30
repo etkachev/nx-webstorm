@@ -3,11 +3,14 @@ package com.github.etkachev.nxwebstorm.ui
 import com.github.etkachev.nxwebstorm.actionlisteners.CheckboxListener
 import com.github.etkachev.nxwebstorm.actionlisteners.TextControlListener
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.utils.FormCombo
 import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.layout.panel
 import java.awt.event.ActionEvent
@@ -50,13 +53,7 @@ class RunSchematicPanel(
     return textArea
   }
 
-  fun generateCenterPanel(
-    withBorder: Boolean = false,
-    addButtons: Boolean = false,
-    dryRunAction: (ActionEvent) -> Unit = defaultAction,
-    runAction: (ActionEvent) -> Unit = defaultAction
-  ): JComponent? {
-    val props = json?.get("properties")?.asJsonObject ?: return null
+  private fun getFormControlKeys(props: JsonObject): List<FormCombo> {
     val formControls = props.keySet()
       .mapNotNull { key ->
         formControlGenerator.getFormControl(
@@ -65,6 +62,17 @@ class RunSchematicPanel(
         )
       }
     formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
+    return formControls
+  }
+
+  fun generateCenterPanel(
+    withBorder: Boolean = false,
+    addButtons: Boolean = false,
+    dryRunAction: (ActionEvent) -> Unit = defaultAction,
+    runAction: (ActionEvent) -> Unit = defaultAction
+  ): JComponent? {
+    val props = json?.get("properties")?.asJsonObject ?: return null
+    val formControls = getFormControlKeys(props)
 
     val panel = panel {
       row {
@@ -118,9 +126,13 @@ class RunSchematicPanel(
       }
     }
 
+    this.setBorder(panel, withBorder)
+    return panel
+  }
+
+  private fun setBorder(panel: DialogPanel, withBorder: Boolean) {
     if (withBorder) {
       panel.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))
     }
-    return panel
   }
 }

@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.utils
 
+import com.github.etkachev.nxwebstorm.models.FormComboStringParams
 import com.github.etkachev.nxwebstorm.ui.formcontrols.BasicAutoCompleteField
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -37,7 +38,7 @@ class GenerateFormControl(private val required: JsonArray?, val project: Project
         getBoolControl(description, default), FormControlType.BOOL, name, description, null,
         requiredFields
       )
-      "string" -> getFormComboOfString(name, description, enums, xPromptObj, default, source)
+      "string" -> getFormComboOfString(FormComboStringParams(name, description, enums, xPromptObj, default, source))
       "number" -> FormCombo(
         getTextField(default),
         FormControlType.NUMBER,
@@ -75,13 +76,9 @@ class GenerateFormControl(private val required: JsonArray?, val project: Project
   }
 
   private fun getFormComboOfString(
-    name: String,
-    description: String?,
-    enums: JsonArray?,
-    xPrompt: JsonObject?,
-    default: String?,
-    source: JsonElement?
+    params: FormComboStringParams
   ): FormCombo {
+    val (name, description, enums, xPrompt, default, source) = params
     val isList = if (xPrompt?.has("type") == true) xPrompt.get("type").asString == "list" else false
     val xPromptItems = if (xPrompt?.has("items") == true) xPrompt.get("items").asJsonArray else null
     if (enums == null && (!isList || xPromptItems == null)) {

@@ -31,6 +31,3 @@ class BasicAutoCompleteField(list: Array<String>) {
     field.text = selection
   }
 }
-
-
-

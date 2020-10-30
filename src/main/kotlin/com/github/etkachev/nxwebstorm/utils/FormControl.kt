@@ -4,9 +4,10 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.TextFieldWithAutoCompletion
 
 enum class FormControlType {
-  INVALID, BOOL, STRING, NUMBER, INTEGER, LIST
+  INVALID, BOOL, STRING, NUMBER, INTEGER, LIST, AUTOCOMPLETE
 }
 
 class FormCombo(
@@ -29,6 +30,7 @@ class FormCombo(
       is JBTextField -> component.text
       is JBCheckBox -> if (component.isSelected) "true" else "false"
       is ComboBox<*> -> component.selectedItem.toString()
+      is TextFieldWithAutoCompletion<*> -> component.text
       else -> null
     }
 }

@@ -25,9 +25,11 @@ class RunSchematicPanel(
 ) {
   var json = ReadFile(project).readJsonFromFileUrl(schematicLocation)
   var required: JsonArray? = null
+  private var formControlGenerator: GenerateFormControl
 
   init {
     required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
+    formControlGenerator = GenerateFormControl(required, project)
   }
 
   private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
@@ -56,7 +58,7 @@ class RunSchematicPanel(
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = props.keySet()
-      .mapNotNull { key -> GenerateFormControl(required).getFormControl(props.get(key).asJsonObject, key) }
+      .mapNotNull { key -> formControlGenerator.getFormControl(props.get(key).asJsonObject, key) }
     formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
 
     val panel = panel {
@@ -93,6 +95,7 @@ class RunSchematicPanel(
               FormControlType.BOOL -> checkBox(
                 control.description ?: "", vbg, vbs
               ).component.addActionListener(CheckboxListener(formMap, control))
+              FormControlType.AUTOCOMPLETE -> comp()
               else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }

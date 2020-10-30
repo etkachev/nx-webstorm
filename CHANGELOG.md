@@ -4,8 +4,13 @@
 
 ## [Unreleased]
 ### Added
+- Nrwl icon added to Nx tool tab
+- Added autocomplete dropdown to show list of projects to choose from. 
+This is for schematic properties that have `$default.$source` set to `projectName`.
 
 ### Changed
+- Plugin Settings are transferred to be project settings instead of application settings.
+- Some general refactor and performance tweaks
 
 ### Deprecated
 
@@ -18,15 +23,6 @@
 ### Added
 - Added settings to configure plugin. Be able to configure things such as external packages to scan for schematics, and configuring location of custom schematics.
 
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 ## [0.2.1]
 ### Added
 - Added mechanism to refresh list of schematics. Should be a button next to the search bar on panel showing list of schematics.

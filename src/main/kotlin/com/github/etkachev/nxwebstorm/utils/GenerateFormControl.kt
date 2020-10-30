@@ -9,14 +9,12 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.openapi.ui.ComboBox
 
-// import com.intellij.ui.TextFieldWithAutoCompletion
-
 /**
  * Generate Form control based on json representation of schema.json of schematic
  */
 class GenerateFormControl(private val required: JsonArray?, val project: Project) {
   private var generated: FormCombo? = null
-  private var nxReader = GetNxData(project)
+  private var allProjects = GetNxData(project).getProjects()
 
   private val requiredFields: List<String>
     get() = required?.mapNotNull { r -> r?.asString } ?: emptyList()
@@ -89,8 +87,7 @@ class GenerateFormControl(private val required: JsonArray?, val project: Project
     if (enums == null && (!isList || xPromptItems == null)) {
       if (source != null) {
         if (source.asString == "projectName") {
-          val projectList = nxReader.getProjects()
-          val autoComplete = BasicAutoCompleteField(projectList).createComponent(default)
+          val autoComplete = BasicAutoCompleteField(this.allProjects).createComponent(default)
           return FormCombo(autoComplete, FormControlType.AUTOCOMPLETE, name, description, null, requiredFields)
         }
       }

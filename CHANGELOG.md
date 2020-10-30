@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.4.0]
+### Added
 - Nrwl icon added to Nx tool tab
 - Added autocomplete dropdown to show list of projects to choose from. 
 This is for schematic properties that have `$default.$source` set to `projectName`.

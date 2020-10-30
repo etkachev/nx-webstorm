@@ -3,11 +3,14 @@ package com.github.etkachev.nxwebstorm.ui
 import com.github.etkachev.nxwebstorm.actionlisteners.CheckboxListener
 import com.github.etkachev.nxwebstorm.actionlisteners.TextControlListener
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.utils.FormCombo
 import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.layout.panel
 import java.awt.event.ActionEvent
@@ -25,13 +28,11 @@ class RunSchematicPanel(
 ) {
   var json = ReadFile(project).readJsonFromFileUrl(schematicLocation)
   var required: JsonArray? = null
+  private var formControlGenerator: GenerateFormControl
 
   init {
     required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
-  }
-
-  private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
-    System.console().printf("Default Action")
+    formControlGenerator = GenerateFormControl(required, project)
   }
 
   private fun getWrappedTextAreaForLabel(label: String): JBTextArea {
@@ -48,16 +49,26 @@ class RunSchematicPanel(
     return textArea
   }
 
+  private fun getFormControlKeys(props: JsonObject): List<FormCombo> {
+    val formControls = props.keySet()
+      .mapNotNull { key ->
+        formControlGenerator.getFormControl(
+          props.get(key).asJsonObject,
+          key
+        )
+      }
+    formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
+    return formControls
+  }
+
   fun generateCenterPanel(
     withBorder: Boolean = false,
     addButtons: Boolean = false,
-    dryRunAction: (ActionEvent) -> Unit = defaultAction,
-    runAction: (ActionEvent) -> Unit = defaultAction
+    dryRunAction: (ActionEvent) -> Unit = {},
+    runAction: (ActionEvent) -> Unit = {}
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
-    val formControls = props.keySet()
-      .mapNotNull { key -> GenerateFormControl(required).getFormControl(props.get(key).asJsonObject, key) }
-    formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
+    val formControls = getFormControlKeys(props)
 
     val panel = panel {
       row {
@@ -93,6 +104,9 @@ class RunSchematicPanel(
               FormControlType.BOOL -> checkBox(
                 control.description ?: "", vbg, vbs
               ).component.addActionListener(CheckboxListener(formMap, control))
+              FormControlType.AUTOCOMPLETE -> (comp().component as JTextField).document.addDocumentListener(
+                TextControlListener(formMap, control)
+              )
               else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }
@@ -108,9 +122,13 @@ class RunSchematicPanel(
       }
     }
 
+    this.setBorder(panel, withBorder)
+    return panel
+  }
+
+  private fun setBorder(panel: DialogPanel, withBorder: Boolean) {
     if (withBorder) {
       panel.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))
     }
-    return panel
   }
 }

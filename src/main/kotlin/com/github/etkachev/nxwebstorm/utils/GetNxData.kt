@@ -4,11 +4,11 @@ import com.google.gson.JsonObject
 import com.intellij.openapi.project.Project
 
 class GetNxData(private val project: Project) {
-  fun getProjects(): List<String> {
-    val json = this.readNxJson() ?: return emptyList()
+  fun getProjects(): Array<String> {
+    val json = this.readNxJson() ?: return emptyArray()
 
     val projects = json.getAsJsonObject("projects").keySet()
-    return projects.toList()
+    return projects.toTypedArray()
   }
 
   fun isValidNxProject(): Boolean {

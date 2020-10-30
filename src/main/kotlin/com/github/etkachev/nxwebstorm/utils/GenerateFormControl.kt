@@ -1,7 +1,11 @@
 package com.github.etkachev.nxwebstorm.utils
 
+import com.github.etkachev.nxwebstorm.models.FormComboStringParams
+import com.github.etkachev.nxwebstorm.ui.formcontrols.BasicAutoCompleteField
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.openapi.ui.ComboBox
@@ -9,8 +13,9 @@ import com.intellij.openapi.ui.ComboBox
 /**
  * Generate Form control based on json representation of schema.json of schematic
  */
-class GenerateFormControl(private val required: JsonArray?) {
+class GenerateFormControl(private val required: JsonArray?, val project: Project) {
   private var generated: FormCombo? = null
+  private var allProjects = GetNxData(project).getProjects()
 
   private val requiredFields: List<String>
     get() = required?.mapNotNull { r -> r?.asString } ?: emptyList()
@@ -22,6 +27,7 @@ class GenerateFormControl(private val required: JsonArray?) {
 
     val type = prop.get("type").asString
     val description = if (prop.has("description")) prop.get("description").asString else null
+    val source = getDefaultObjectProps(prop, "\$source")
     val enums = if (prop.has("enum")) prop.get("enum").asJsonArray else null
     val xPrompt = if (prop.has("x-prompt")) prop.get("x-prompt") else null
     val xPromptIsObject = xPrompt?.isJsonObject == true
@@ -32,7 +38,7 @@ class GenerateFormControl(private val required: JsonArray?) {
         getBoolControl(description, default), FormControlType.BOOL, name, description, null,
         requiredFields
       )
-      "string" -> getFormComboOfString(name, description, enums, xPromptObj, default)
+      "string" -> getFormComboOfString(FormComboStringParams(name, description, enums, xPromptObj, default, source))
       "number" -> FormCombo(
         getTextField(default),
         FormControlType.NUMBER,
@@ -70,15 +76,18 @@ class GenerateFormControl(private val required: JsonArray?) {
   }
 
   private fun getFormComboOfString(
-    name: String,
-    description: String?,
-    enums: JsonArray?,
-    xPrompt: JsonObject?,
-    default: String?
+    params: FormComboStringParams
   ): FormCombo {
+    val (name, description, enums, xPrompt, default, source) = params
     val isList = if (xPrompt?.has("type") == true) xPrompt.get("type").asString == "list" else false
     val xPromptItems = if (xPrompt?.has("items") == true) xPrompt.get("items").asJsonArray else null
     if (enums == null && (!isList || xPromptItems == null)) {
+      if (source != null) {
+        if (source.asString == "projectName") {
+          val autoComplete = BasicAutoCompleteField(this.allProjects).createComponent(default)
+          return FormCombo(autoComplete, FormControlType.AUTOCOMPLETE, name, description, null, requiredFields)
+        }
+      }
       return FormCombo(getTextField(default), FormControlType.STRING, name, description, enums, requiredFields)
     }
 
@@ -101,5 +110,16 @@ class GenerateFormControl(private val required: JsonArray?) {
       control.item = default
     }
     return control
+  }
+
+  private fun getDefaultObjectProps(prop: JsonObject, propName: String): JsonElement? {
+    if (!prop.has("\$default") || !prop.get("\$default").isJsonObject) {
+      return null
+    }
+    val obj = prop.get("\$default").asJsonObject
+    if (!obj.has(propName)) {
+      return null
+    }
+    return obj.get(propName)
   }
 }

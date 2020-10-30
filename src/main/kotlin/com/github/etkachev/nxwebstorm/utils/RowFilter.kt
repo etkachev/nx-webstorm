@@ -9,7 +9,11 @@ import javax.swing.event.DocumentListener
 import javax.swing.table.TableModel
 import javax.swing.table.TableRowSorter
 
-fun createRowFilter(table: JTable): JBTextField {
+fun createRowFilter(
+  table: JTable,
+  defaultValue: String = "",
+  fieldColumns: Int = 15
+): JBTextField {
   var rs: RowSorter<out TableModel?>? = table.rowSorter
   if (rs == null) {
     table.autoCreateRowSorter = true
@@ -17,7 +21,7 @@ fun createRowFilter(table: JTable): JBTextField {
   }
   val rowSorter: TableRowSorter<out TableModel?> = (if (rs is TableRowSorter<*>) rs else null)
     ?: throw NoSuchElementException("Cannot find appropriate rowSorter: $rs")
-  val tf = JBTextField(15)
+  val tf = JBTextField(defaultValue, fieldColumns)
   tf.document.addDocumentListener(object : DocumentListener {
     override fun insertUpdate(e: DocumentEvent) {
       update()

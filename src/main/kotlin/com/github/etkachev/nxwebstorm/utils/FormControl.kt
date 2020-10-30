@@ -6,7 +6,7 @@ import javax.swing.JComponent
 import com.intellij.openapi.ui.ComboBox
 
 enum class FormControlType {
-  INVALID, BOOL, STRING, NUMBER, INTEGER, LIST
+  INVALID, BOOL, STRING, NUMBER, INTEGER, LIST, AUTOCOMPLETE
 }
 
 class FormCombo(

@@ -58,7 +58,12 @@ class RunSchematicPanel(
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = props.keySet()
-      .mapNotNull { key -> formControlGenerator.getFormControl(props.get(key).asJsonObject, key) }
+      .mapNotNull { key ->
+        formControlGenerator.getFormControl(
+          props.get(key).asJsonObject,
+          key
+        )
+      }
     formControls.forEach { f -> formMap.setFormValueOfKey(f.name, f.value) }
 
     val panel = panel {
@@ -95,7 +100,9 @@ class RunSchematicPanel(
               FormControlType.BOOL -> checkBox(
                 control.description ?: "", vbg, vbs
               ).component.addActionListener(CheckboxListener(formMap, control))
-              FormControlType.AUTOCOMPLETE -> comp()
+              FormControlType.AUTOCOMPLETE -> (comp().component as JTextField).document.addDocumentListener(
+                TextControlListener(formMap, control)
+              )
               else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }

@@ -35,10 +35,6 @@ class RunSchematicPanel(
     formControlGenerator = GenerateFormControl(required, project)
   }
 
-  private var defaultAction: (ActionEvent) -> Unit = fun(_: ActionEvent) {
-    System.console().printf("Default Action")
-  }
-
   private fun getWrappedTextAreaForLabel(label: String): JBTextArea {
     val textArea = JBTextArea(2, 15)
     textArea.text = label
@@ -68,8 +64,8 @@ class RunSchematicPanel(
   fun generateCenterPanel(
     withBorder: Boolean = false,
     addButtons: Boolean = false,
-    dryRunAction: (ActionEvent) -> Unit = defaultAction,
-    runAction: (ActionEvent) -> Unit = defaultAction
+    dryRunAction: (ActionEvent) -> Unit = {},
+    runAction: (ActionEvent) -> Unit = {}
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = getFormControlKeys(props)

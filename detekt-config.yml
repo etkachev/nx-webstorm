@@ -15,3 +15,7 @@ style:
     active: false
   MagicNumber:
     active: false
+
+empty-blocks:
+  EmptyFunctionBlock:
+    ignoreOverridden: true

@@ -10,13 +10,9 @@ class AutoCompleteKeyUpDownListener(
   private val field: JBTextField,
   private val autoCompleteFocusListener: AutoCompleteFocusListenerPopup
 ) : KeyListener {
-  override fun keyTyped(e: KeyEvent?) {
-    this.logEvent()
-  }
+  override fun keyTyped(e: KeyEvent?) {}
 
-  override fun keyPressed(e: KeyEvent?) {
-    this.logEvent()
-  }
+  override fun keyPressed(e: KeyEvent?) {}
 
   override fun keyReleased(e: KeyEvent?) {
     if (e == null) {
@@ -28,10 +24,6 @@ class AutoCompleteKeyUpDownListener(
       KeyEvent.VK_ENTER -> makeTableSelection()
       else -> makeSurePopupIsOpen()
     }
-  }
-
-  private fun logEvent() {
-    System.console().printf("Key Event")
   }
 
   private fun makeSurePopupIsOpen() {

@@ -1,7 +1,7 @@
 package com.github.etkachev.nxwebstorm.ui
 
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
-import com.github.etkachev.nxwebstorm.utils.GetNxData
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -24,6 +24,7 @@ class GenerateToolWindow : ToolWindowFactory {
   }
 
   override fun isApplicable(project: Project): Boolean {
-    return GetNxData(project).isValidNxProject()
+    val projectService = project.getService<MyProjectService>(MyProjectService::class.java)
+    return projectService.isValidNxProject
   }
 }

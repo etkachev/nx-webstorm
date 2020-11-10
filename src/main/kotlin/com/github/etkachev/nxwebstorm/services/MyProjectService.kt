@@ -6,22 +6,18 @@ import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
 
 class MyProjectService(project: Project) {
-  private var _projectList: Array<String>? = null
   private var readFile = ReadFile(project)
-  var nxJson = readNxJson()
-  var angularJson = readAngularJson()
+  val nxJson: JsonObject?
+    get() = readNxJson()
+  val angularJson: JsonObject?
+    get() = readAngularJson()
 
   /**
    * full list of projects/libraries within current project.
    */
   val projectList: Array<String>
     get() {
-      if (this._projectList != null) {
-        return this._projectList!!
-      }
-
-      this._projectList = this.getProjects()
-      return this._projectList!!
+      return this.getProjects()
     }
 
   /**
@@ -56,9 +52,16 @@ class MyProjectService(project: Project) {
   }
 
   private fun getProjects(): Array<String> {
-    val json = this.nxJson ?: return emptyArray()
+    if (this.isValidNxProject) {
+      val json = this.nxJson ?: return emptyArray()
 
-    val projects = json.getAsJsonObject("projects").keySet()
-    return projects.toTypedArray()
+      val projects = json.getAsJsonObject("projects").keySet()
+      return projects.toTypedArray()
+    } else if (this.isAngularProject) {
+      val angularJson = this.angularJson ?: return emptyArray()
+      val angularProjects = angularJson.getAsJsonObject("projects").keySet()
+      return angularProjects.toTypedArray()
+    }
+    return emptyArray()
   }
 }

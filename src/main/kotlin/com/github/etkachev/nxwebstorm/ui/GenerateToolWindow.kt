@@ -7,12 +7,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
-import icons.PluginIcons
 
 class GenerateToolWindow : ToolWindowFactory {
   private var tabName = "Generate"
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    toolWindow.setIcon(PluginIcons.NRWL_ICON)
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val schematicFetcher = FindAllSchematics(project)
     val allSchematics = schematicFetcher.findAll()

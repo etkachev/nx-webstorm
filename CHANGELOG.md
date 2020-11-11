@@ -13,6 +13,7 @@
 ### Removed
 
 ### Fixed
+- Loading Nrwl icon correctly on load.
 
 ### Security
 ## [0.4.0]

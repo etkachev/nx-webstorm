@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.actions
 
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunSchematicDialog
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.ui.SchematicsListDialog
@@ -16,6 +17,7 @@ class Generate : AnAction() {
 
     val proj = e.project!!
     val schematics = FindAllSchematics(proj).findAll()
+    val nxService = proj.getService<MyProjectService>(MyProjectService::class.java)
 
     val dialog = SchematicsListDialog(proj, schematics)
     dialog.setSize(1000, 800)
@@ -28,7 +30,8 @@ class Generate : AnAction() {
       val formOk = formDialog.showAndGet()
       if (formOk) {
         val values = formDialog.formMap.formVal
-        val command = getSchematicCommandFromValues(type, id, values, false)
+        val projectType = nxService.nxProjectType
+        val command = getSchematicCommandFromValues(type, id, values, projectType, false)
         val terminal = RunTerminalWindow(proj, "Run")
         terminal.runAndShow(command)
       }

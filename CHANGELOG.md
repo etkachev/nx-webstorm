@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 ### Added
+- Added compatibility to allow regular angular projects (non-Nx projects), to use Generate UI.
 
 ### Changed
 
@@ -12,6 +13,7 @@
 ### Removed
 
 ### Fixed
+- Loading Nrwl icon correctly on load.
 
 ### Security
 ## [0.4.0]
@@ -24,13 +26,6 @@ This is for schematic properties that have `$default.$source` set to `projectNam
 - Plugin Settings are transferred to be project settings instead of application settings.
 - Some general refactor and performance tweaks
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 ## [0.3.0]
 ### Added
 - Added settings to configure plugin. Be able to configure things such as external packages to scan for schematics, and configuring location of custom schematics.

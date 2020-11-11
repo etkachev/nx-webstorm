@@ -1,6 +1,7 @@
 package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.FormComboStringParams
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.formcontrols.BasicAutoCompleteField
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -15,7 +16,8 @@ import com.intellij.openapi.ui.ComboBox
  */
 class GenerateFormControl(private val required: JsonArray?, val project: Project) {
   private var generated: FormCombo? = null
-  private var allProjects = GetNxData(project).getProjects()
+  private var projectService = project.getService<MyProjectService>(MyProjectService::class.java)
+  private var allProjects = projectService.projectList
 
   private val requiredFields: List<String>
     get() = required?.mapNotNull { r -> r?.asString } ?: emptyList()

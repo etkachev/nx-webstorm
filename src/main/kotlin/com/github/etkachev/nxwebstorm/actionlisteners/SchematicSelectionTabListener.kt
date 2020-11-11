@@ -2,6 +2,7 @@ package com.github.etkachev.nxwebstorm.actionlisteners
 
 import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
@@ -30,6 +31,7 @@ class SchematicSelectionTabListener(
   private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
   private var runTerminal = RunTerminalWindow(project, "Run")
   private var tabName = "Generate - Schematic"
+  private var nxService = project.getService<MyProjectService>(MyProjectService::class.java)
 
   private fun dryRunAction(
     type: String,
@@ -49,7 +51,8 @@ class SchematicSelectionTabListener(
     if (isMissingRequiredFields(required, values)) {
       return
     }
-    val command = getSchematicCommandFromValues(type, id, values, dryRun)
+    val projectType = this.nxService.nxProjectType
+    val command = getSchematicCommandFromValues(type, id, values, projectType, dryRun)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
     } else {

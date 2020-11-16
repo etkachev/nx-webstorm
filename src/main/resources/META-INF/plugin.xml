@@ -6,6 +6,7 @@
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScriptDebugger</depends>
     <depends>JavaScript</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.json</depends>
@@ -16,6 +17,8 @@
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyProjectService"/>
+        <configurationType
+            implementation="com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugConfigurationType"/>
         <toolWindow id="Nx" anchor="right"
                     icon="PluginIcons.NRWL_ICON"
                     factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"/>

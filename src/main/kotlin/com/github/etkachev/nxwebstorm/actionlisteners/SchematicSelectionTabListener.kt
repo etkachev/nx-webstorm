@@ -1,13 +1,27 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
+import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.models.NxProjectType
+import com.github.etkachev.nxwebstorm.models.RunSchematicConfig
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.runconfigurations.NxDebugProcessStarter
+import com.github.etkachev.nxwebstorm.runconfigurations.NxNodeDebugProgramRunner
+import com.github.etkachev.nxwebstorm.runconfigurations.NxProgramRunner
+import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugConfigurationType
+import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugRunConfiguration
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.google.gson.JsonArray
+import com.intellij.execution.ProgramRunnerUtil
+import com.intellij.execution.RunManager
+import com.intellij.execution.executors.DefaultDebugExecutor
+import com.intellij.execution.impl.RunConfigurationTemplateProvider
+import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.extensions.ProjectExtensionPointName
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindow
@@ -15,10 +29,20 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
+import com.intellij.xdebugger.XDebuggerManager
 import java.awt.event.ActionEvent
+import java.io.IOException
+import java.lang.IllegalStateException
+import java.net.ServerSocket
+import javax.net.ServerSocketFactory
 import javax.swing.SwingUtilities
 import javax.swing.event.ListSelectionEvent
+// import com.jetbrains.nodeJs.NodeJSDebuggableConfiguration
+// import com.intellij.javascript.nodejs.debug.NodeLocalDebuggableRunProfileStateSync
 import javax.swing.event.ListSelectionListener
+
+private val RUN_CONFIGURATION_TEMPLATE_PROVIDER_EP =
+  ProjectExtensionPointName<RunConfigurationTemplateProvider>("com.intellij.runConfigurationTemplateProvider")
 
 class SchematicSelectionTabListener(
   private val project: Project,
@@ -44,6 +68,83 @@ class SchematicSelectionTabListener(
 
   private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
     return { run(type, id, formMap, required, false) }
+  }
+
+  private fun debugAction(
+    type: String,
+    id: String,
+    formMap: FormValueMap,
+    required: JsonArray?
+  ): (ActionEvent) -> Unit {
+    return { runDebug(type, id, formMap, required) }
+  }
+
+  private fun runDebug(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
+    val values = formMap.formVal
+    if (isMissingRequiredFields(required, values)) {
+      return
+    }
+    val isCustomSchematic = type == "workspace-schematic"
+    val dryRunArg = if (dryRun) "--dry-run" else ""
+    val command = if (isCustomSchematic) "workspace-schematic" else "generate"
+    val name = if (isCustomSchematic) id else "$type:$id"
+    val cli = if (this.nxService.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
+    val schematicConfig = RunSchematicConfig(cli, command, name, values, listOf("--no-interactive", dryRunArg))
+    val availablePort = 0
+    // val m = RunManager.getInstance(this.project)
+    // val templates = RUN_CONFIGURATION_TEMPLATE_PROVIDER_EP.getExtensions(this.project)
+    val configFactory = SchematicDebugConfigurationType.getFactory()
+    val runManager = RunManager.getInstance(project)
+    val configuration = runManager
+      .createConfiguration(
+        SchematicDebugRunConfiguration(this.project, configFactory, "Nx Schematic", schematicConfig),
+        configFactory
+      )
+    val executor = DefaultDebugExecutor.getDebugExecutorInstance()
+    // val runner = NxProgramRunner(schematicConfig, availablePort, executor)
+    val runner = NxNodeDebugProgramRunner()
+    val env = ExecutionEnvironment(executor, runner, configuration, this.project)
+
+    runner.execute(env)
+    // XDebuggerManager.getInstance(this.project)
+    //   .startSessionAndShowTab("Nx Debug", null, NxDebugProcessStarter(schematicConfig, env, availablePort))
+    // XDebuggerManager.getInstance(this.project).startSession(env, NxDebugProcessStarter(runConfig, env))
+    // runner.execute(env)
+    // XDebuggerManagerImpl(this.project).startSessionAndShowTab(
+    //   "Debugging schematic",
+    //   null,
+    //   NxDebugProcessStarter(runConfig, env)
+    // )
+    // XDebuggerManager.getInstance(this.project)
+    //   .startSessionAndShowTab("Debugging Schematic", null, NxDebugProcessStarter(runConfig, env))
+    // ProgramRunnerUtil.executeConfiguration(run, DefaultDebugExecutor.getDebugExecutorInstance())
+  }
+
+  //
+  private fun findFreePort(): Int {
+    var socket: ServerSocket? = null
+    try {
+      socket = ServerSocket(0)
+      socket.reuseAddress = true
+      val port = socket.localPort
+      try {
+        socket.close()
+      } catch (e: IOException) {
+        // Ignore
+      }
+      return port
+    } catch (e: IOException) {
+
+    } finally {
+      if (socket != null) {
+        try {
+          socket.close()
+        } catch (e: IOException) {
+
+        }
+      }
+    }
+    throw IllegalStateException("Could not find free TCP/IP port")
   }
 
   private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
@@ -98,8 +199,11 @@ class SchematicSelectionTabListener(
     val schematicPanel = RunSchematicPanel(project, id, info.fileLocation, formMap)
     val required = schematicPanel.required
     val panel = schematicPanel.generateCenterPanel(
-      withBorder = true, addButtons = true,
-      dryRunAction = dryRunAction(type, id, formMap, required), runAction = runAction(type, id, formMap, required)
+      withBorder = true,
+      addButtons = true,
+      dryRunAction = dryRunAction(type, id, formMap, required),
+      runAction = runAction(type, id, formMap, required),
+      debugAction = debugAction(type, id, formMap, required)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

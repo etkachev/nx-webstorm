@@ -4,13 +4,19 @@ import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
+import com.intellij.openapi.vfs.VirtualFile
 
-class MyProjectService(project: Project) {
+class MyProjectService(private val project: Project) {
   private var readFile = ReadFile(project)
   val nxJson: JsonObject?
     get() = readNxJson()
   val angularJson: JsonObject?
     get() = readAngularJson()
+  val rootPath: String?
+    get() {
+      val thisProject = this.project
+      return thisProject.basePath
+    }
 
   /**
    * full list of projects/libraries within current project.
@@ -49,6 +55,10 @@ class MyProjectService(project: Project) {
 
   private fun readAngularJson(): JsonObject? {
     return readFile.readJsonFromFileUrl("angular.json")
+  }
+
+  private fun readNxJsonFile(): VirtualFile? {
+    return readFile.findVirtualFile("nx.json")
   }
 
   private fun getProjects(): Array<String> {

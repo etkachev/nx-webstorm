@@ -9,9 +9,17 @@ fun getSchematicCommandFromValues(
   nxProjectType: NxProjectType,
   dryRun: Boolean = true
 ): String {
-  val keys = values.keys
   val dryRunString = if (dryRun) " --dry-run" else ""
-  val flagCommands = keys.mapNotNull { key ->
+  val nx = "node node_modules/@nrwl/cli/bin/nx.js"
+  val ng = "node node_modules/@angular/cli/bin/ng"
+  val prefix = if (type == "workspace-schematic") "$nx workspace-schematic $id" else "$nx generate $type:$id"
+  val finalPrefix = if (nxProjectType == NxProjectType.Nx) prefix else "$ng generate $type:$id"
+  val flags = getCommandArguments(values).joinToString(" ")
+  return "$finalPrefix $flags --no-interactive$dryRunString"
+}
+
+fun getCommandArguments(values: Map<String, String>): List<String> {
+  return values.keys.mapNotNull { key ->
     val value = values[key]
     val finalText = if (value == "true" || value == "false") {
       if (value == "true") "--$key" else null
@@ -23,10 +31,4 @@ fun getSchematicCommandFromValues(
     }
     finalText
   }
-  val nx = "node node_modules/@nrwl/cli/bin/nx.js"
-  val ng = "node node_modules/@angular/cli/bin/ng"
-  val prefix = if (type == "workspace-schematic") "$nx workspace-schematic $id" else "$nx generate $type:$id"
-  val finalPrefix = if (nxProjectType == NxProjectType.Nx) prefix else "$ng generate $type:$id"
-  val flags = flagCommands.joinToString(" ")
-  return "$finalPrefix $flags --no-interactive$dryRunString"
 }

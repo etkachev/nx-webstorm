@@ -65,7 +65,8 @@ class RunSchematicPanel(
     withBorder: Boolean = false,
     addButtons: Boolean = false,
     dryRunAction: (ActionEvent) -> Unit = {},
-    runAction: (ActionEvent) -> Unit = {}
+    runAction: (ActionEvent) -> Unit = {},
+    debugAction: (ActionEvent) -> Unit = {}
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = getFormControlKeys(props)
@@ -118,6 +119,9 @@ class RunSchematicPanel(
           right {
             button("Run", runAction)
           }
+        }
+        row {
+          button("Debug", debugAction)
         }
       }
     }

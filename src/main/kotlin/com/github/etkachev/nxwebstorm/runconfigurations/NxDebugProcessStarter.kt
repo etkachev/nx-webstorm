@@ -253,7 +253,6 @@ class NxDebugProcess(
 
     commandLine.addParameters("$root/$path", config.command, config.name)
     commandLine.addParameters(getCommandArguments(config.args))
-    commandLine.addParameters(config.additionalArgs)
     // commandLine.addParameters(this.runSettings.tasks)
     // commandLine.addParameters(this.runSettings.arguments?.let { ParametersListUtil.parse(it) } ?: emptyList())
 

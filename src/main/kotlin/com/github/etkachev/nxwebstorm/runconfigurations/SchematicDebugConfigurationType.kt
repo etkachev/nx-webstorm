@@ -17,7 +17,7 @@ class SchematicDebugConfigurationType : SimpleConfigurationType(
   NotNullLazyValue.createValue { PluginIcons.NRWL_ICON }
 ) {
   override fun createTemplateConfiguration(project: Project): RunConfiguration {
-    val runConfig = RunSchematicConfig(CliCommands.NX, "generate", "", emptyMap(), emptyList())
+    val runConfig = RunSchematicConfig(CliCommands.NX, "generate", "", emptyMap())
     return SchematicDebugRunConfiguration(project, this, "Nx Schematics", runConfig)
   }
 

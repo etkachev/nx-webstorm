@@ -118,7 +118,6 @@ fun configureCommandLine(
 
   commandLine.addParameters("$root/$path", config.command, config.name)
   commandLine.addParameters(getCommandArguments(config.args))
-  commandLine.addParameters(config.additionalArgs)
 
   NodeCommandLineConfigurator.find(interpreter).configure(commandLine)
 }

@@ -15,6 +15,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyApplicationService"/>
         <applicationService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState"/>
+        <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.TemporaryDebugConfigState"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState"/>
         <projectService serviceImplementation="com.github.etkachev.nxwebstorm.services.MyProjectService"/>
         <configurationType

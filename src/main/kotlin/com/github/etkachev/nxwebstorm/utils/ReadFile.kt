@@ -1,50 +1,13 @@
 package com.github.etkachev.nxwebstorm.utils
 
-import com.google.gson.JsonParser
 import com.google.gson.JsonObject
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
-
-class ComputeReadJsonFile(
-  private val root: VirtualFile,
-  private val psi: PsiManager,
-  private val filePath: String
-) :
-  ThrowableComputable<JsonObject, NoSuchElementException> {
-  override fun compute(): JsonObject {
-    val file = root.findFileByRelativePath(filePath)
-      ?: throw NoSuchElementException("Could not find file for $filePath")
-    val fileContents = psi.findFile(file)
-      ?: throw NoSuchElementException("Could not find file for $filePath")
-    val json = JsonParser.parseString(fileContents.text)
-    return json.asJsonObject
-  }
-}
-
-class ComputeReadJsonFileFromVirtualFile(
-  private val file: VirtualFile,
-  private val psi: PsiManager
-) : ThrowableComputable<JsonObject, NoSuchElementException> {
-  override fun compute(): JsonObject {
-    val fileContents = psi.findFile(file) ?: throw NoSuchElementException("Could not find file for ${file.url}")
-    val json = JsonParser.parseString(fileContents.text)
-    return json.asJsonObject
-  }
-}
-
-class ComputeReadVirtualFile(
-  private val root: VirtualFile,
-  private val filePath: String
-) : ThrowableComputable<VirtualFile, NoSuchElementException> {
-  override fun compute(): VirtualFile {
-    return root.findFileByRelativePath(filePath)
-      ?: throw NoSuchElementException("Could not find file or directory for $filePath")
-  }
-}
+import org.jdom.Document
+import java.io.IOException
 
 class ReadFile(project: Project) {
   var root = ProjectRootManager.getInstance(project).contentRoots[0]
@@ -70,6 +33,20 @@ class ReadFile(project: Project) {
       ApplicationManager.getApplication().runReadAction(ComputeReadVirtualFile(startLocation, filePath))
     } catch (e: NoSuchElementException) {
       return null
+    }
+  }
+
+  fun saveXml(document: Document, filePath: String): Document? {
+    return try {
+      ApplicationManager.getApplication().runWriteAction(ComputeWriteXmlFile(document, filePath))
+    } catch (e: IOException) {
+      return null
+    }
+  }
+
+  companion object {
+    fun getInstance(project: Project): ReadFile {
+      return project.getService(ReadFile::class.java)
     }
   }
 }

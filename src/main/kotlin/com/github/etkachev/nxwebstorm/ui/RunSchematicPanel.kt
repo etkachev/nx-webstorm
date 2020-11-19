@@ -26,7 +26,7 @@ class RunSchematicPanel(
   schematicLocation: String,
   private val formMap: FormValueMap = FormValueMap()
 ) {
-  var json = ReadFile(project).readJsonFromFileUrl(schematicLocation)
+  var json = ReadFile.getInstance(project).readJsonFromFileUrl(schematicLocation)
   var required: JsonArray? = null
   private var formControlGenerator: GenerateFormControl
 

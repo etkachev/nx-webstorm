@@ -7,7 +7,7 @@ import com.google.gson.JsonObject
 import com.intellij.openapi.vfs.VirtualFile
 
 class MyProjectService(private val project: Project) {
-  private var readFile = ReadFile(project)
+  private var readFile = ReadFile.getInstance(project)
   val nxJson: JsonObject?
     get() = readNxJson()
   val angularJson: JsonObject?

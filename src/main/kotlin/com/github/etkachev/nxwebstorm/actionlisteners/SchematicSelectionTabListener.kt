@@ -9,7 +9,7 @@ import com.github.etkachev.nxwebstorm.runconfigurations.NxNodeDebugProgramRunner
 import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugConfigurationType
 import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugRunConfiguration
 import com.github.etkachev.nxwebstorm.services.MyProjectService
-import com.github.etkachev.nxwebstorm.services.TemporaryDebugConfigState
+import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
@@ -81,7 +81,7 @@ class SchematicSelectionTabListener(
     val cli = if (this.nxService.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
     val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
     val schematicConfig = RunSchematicConfig(cli, command, name, args)
-    val testing = TemporaryDebugConfigState.getInstance(this.project).testing(args)
+    NodeDebugConfigState.getInstance(this.project).setupDebug(command, name, args)
     if (false) {
       val availablePort = 0
       // val m = RunManager.getInstance(this.project)

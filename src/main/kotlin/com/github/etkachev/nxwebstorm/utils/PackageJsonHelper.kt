@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 data class PackageJsonInfo(val packageName: String, val json: JsonObject, val file: VirtualFile)
 
 class PackageJsonHelper(project: Project) {
-  var jsonFileReader = ReadFile(project)
+  var jsonFileReader = ReadFile.getInstance(project)
 
   fun getPackageFileInfo(directory: String): PackageJsonInfo? {
     val packageFile = jsonFileReader.findVirtualFile("$directory/package.json") ?: return null

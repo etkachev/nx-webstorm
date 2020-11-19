@@ -17,7 +17,7 @@ class DryRunAction(
   private val dialog: DialogWrapper
 ) : AbstractAction("Dry Run") {
   private var terminal = RunTerminalWindow(proj, "Dry Run")
-  private var nxService = proj.getService<MyProjectService>(MyProjectService::class.java)
+  private var nxService = MyProjectService.getInstance(proj)
   override fun actionPerformed(e: ActionEvent?) {
     val values = formValues.formVal
     val projectType = nxService.nxProjectType

@@ -16,7 +16,7 @@ import com.intellij.openapi.ui.ComboBox
  */
 class GenerateFormControl(private val required: JsonArray?, val project: Project) {
   private var generated: FormCombo? = null
-  private var projectService = project.getService<MyProjectService>(MyProjectService::class.java)
+  private var projectService = MyProjectService.getInstance(project)
   private var allProjects = projectService.projectList
 
   private val requiredFields: List<String>

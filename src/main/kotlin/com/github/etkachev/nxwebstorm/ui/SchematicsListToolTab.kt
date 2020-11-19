@@ -3,6 +3,8 @@ package com.github.etkachev.nxwebstorm.ui
 import com.github.etkachev.nxwebstorm.actionlisteners.ReFetchSchematicsListener
 import com.github.etkachev.nxwebstorm.actionlisteners.SchematicSelectionTabListener
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.services.MyProjectService
+import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -20,7 +22,7 @@ class SchematicsListToolTab(
   tabName: String,
   schematicFetcher: FindAllSchematics
 ) {
-
+  private val nxService = MyProjectService.getInstance(project)
   private var reFetchListener: ReFetchSchematicsListener = ReFetchSchematicsListener(
     toolWindow,
     contentFactory,
@@ -59,6 +61,11 @@ class SchematicsListToolTab(
     )
     val removeListener = getRemoveSelectionListener(table, listener)
     val scrollPane = JBScrollPane(table)
+
+    if (!nxService.nxDebugConfigSetup) {
+      NodeDebugConfigState.getInstance(project).setupDebugConfig()
+      nxService.setNxDebugConfigSetupDone()
+    }
 
     val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
     return panel {

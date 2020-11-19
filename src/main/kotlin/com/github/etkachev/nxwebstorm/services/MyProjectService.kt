@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.services
 
+import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
@@ -49,6 +50,23 @@ class MyProjectService(private val project: Project) {
       }
     }
 
+  /**
+   * returns meta data on whether you run nx command or just plain ng command for angular projects.
+   */
+  val cliCommand: CliCommands
+    get() {
+      return if (this.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
+    }
+
+  private var alreadySetupNxDebugConfig = false
+
+  val nxDebugConfigSetup: Boolean
+    get() = this.alreadySetupNxDebugConfig
+
+  fun setNxDebugConfigSetupDone() {
+    this.alreadySetupNxDebugConfig = true
+  }
+
   private fun readNxJson(): JsonObject? {
     return readFile.readJsonFromFileUrl("nx.json")
   }
@@ -73,5 +91,11 @@ class MyProjectService(private val project: Project) {
       return angularProjects.toTypedArray()
     }
     return emptyArray()
+  }
+
+  companion object {
+    fun getInstance(project: Project): MyProjectService {
+      return project.getService(MyProjectService::class.java)
+    }
   }
 }

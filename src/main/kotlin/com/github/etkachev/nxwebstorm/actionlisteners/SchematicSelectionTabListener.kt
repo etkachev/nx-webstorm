@@ -1,13 +1,8 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
-import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.FormValueMap
-import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.github.etkachev.nxwebstorm.models.RunSchematicConfig
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
-import com.github.etkachev.nxwebstorm.runconfigurations.NxNodeDebugProgramRunner
-import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugConfigurationType
-import com.github.etkachev.nxwebstorm.runconfigurations.SchematicDebugRunConfiguration
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
@@ -16,9 +11,6 @@ import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
 import com.github.etkachev.nxwebstorm.utils.foldListOfMaps
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.google.gson.JsonArray
-import com.intellij.execution.RunManager
-import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindow
@@ -27,9 +19,6 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
 import java.awt.event.ActionEvent
-import java.io.IOException
-import java.lang.IllegalStateException
-import java.net.ServerSocket
 import javax.swing.SwingUtilities
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
@@ -45,7 +34,7 @@ class SchematicSelectionTabListener(
   private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
   private var runTerminal = RunTerminalWindow(project, "Run")
   private var tabName = "Generate - Schematic"
-  private var nxService = project.getService<MyProjectService>(MyProjectService::class.java)
+  private var nxService = MyProjectService.getInstance(project)
 
   private fun dryRunAction(
     type: String,
@@ -78,67 +67,10 @@ class SchematicSelectionTabListener(
     val dryRunArg = if (dryRun) "true" else "false"
     val command = if (isCustomSchematic) "workspace-schematic" else "generate"
     val name = if (isCustomSchematic) id else "$type:$id"
-    val cli = if (this.nxService.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
+    val cli = this.nxService.cliCommand
     val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
     val schematicConfig = RunSchematicConfig(cli, command, name, args)
-    NodeDebugConfigState.getInstance(this.project).setupDebug(command, name, args)
-    if (false) {
-      val availablePort = 0
-      // val m = RunManager.getInstance(this.project)
-      // val templates = RUN_CONFIGURATION_TEMPLATE_PROVIDER_EP.getExtensions(this.project)
-      val configFactory = SchematicDebugConfigurationType.getFactory()
-      val runManager = RunManager.getInstance(project)
-      val configuration = runManager
-        .createConfiguration(
-          SchematicDebugRunConfiguration(this.project, configFactory, "Nx Schematic", schematicConfig),
-          configFactory
-        )
-      val executor = DefaultDebugExecutor.getDebugExecutorInstance()
-      // val runner = NxProgramRunner(schematicConfig, availablePort, executor)
-      val runner = NxNodeDebugProgramRunner()
-      val env = ExecutionEnvironment(executor, runner, configuration, this.project)
-
-      runner.execute(env)
-      // XDebuggerManager.getInstance(this.project)
-      //   .startSessionAndShowTab("Nx Debug", null, NxDebugProcessStarter(schematicConfig, env, availablePort))
-      // XDebuggerManager.getInstance(this.project).startSession(env, NxDebugProcessStarter(runConfig, env))
-      // runner.execute(env)
-      // XDebuggerManagerImpl(this.project).startSessionAndShowTab(
-      //   "Debugging schematic",
-      //   null,
-      //   NxDebugProcessStarter(runConfig, env)
-      // )
-      // XDebuggerManager.getInstance(this.project)
-      //   .startSessionAndShowTab("Debugging Schematic", null, NxDebugProcessStarter(runConfig, env))
-      // ProgramRunnerUtil.executeConfiguration(run, DefaultDebugExecutor.getDebugExecutorInstance())
-    }
-  }
-
-  //
-  private fun findFreePort(): Int {
-    var socket: ServerSocket? = null
-    try {
-      socket = ServerSocket(0)
-      socket.reuseAddress = true
-      val port = socket.localPort
-      try {
-        socket.close()
-      } catch (e: IOException) {
-        // Ignore
-      }
-      return port
-    } catch (e: IOException) {
-
-    } finally {
-      if (socket != null) {
-        try {
-          socket.close()
-        } catch (e: IOException) {
-
-        }
-      }
-    }
-    throw IllegalStateException("Could not find free TCP/IP port")
+    NodeDebugConfigState.getInstance(this.project).execute(command, name, args)
   }
 
   private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
@@ -209,6 +141,7 @@ class SchematicSelectionTabListener(
     toolWindow.contentManager.addContent(content)
     toolWindow.contentManager.setSelectedContent(content)
     searchField.text = ""
+
     table.clearSelection()
   }
 }

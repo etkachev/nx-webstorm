@@ -48,9 +48,9 @@ class NodeDebugConfigState(project: Project) {
       val doc = readWorkspaceFile()
       var hasExistingConfig = false
       for (content in doc.rootElement.children) {
-        if (content.name == "component" && content.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null) {
+        if (content.name == "component" && elementAttributesIsRunManager(content.attributes, runManagerName)) {
           for (runManagerChild in content.children) {
-            if (runManagerChild.name == configElementName && runManagerChild.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null) {
+            if (elementAttributesAreNxDebugConfig(runManagerChild, configElementName, nxDebugConfigName)) {
               hasExistingConfig = true
             }
           }
@@ -89,22 +89,32 @@ class NodeDebugConfigState(project: Project) {
     return "$command $name " + getCommandArguments(args).joinToString(" ")
   }
 
+  private fun setNxConfigAttributes(element: Element, command: String, name: String, args: Map<String, String>) {
+    for (runManagerChild in element.children) {
+      if (elementAttributesAreNxDebugConfig(runManagerChild, configElementName, nxDebugConfigName)) {
+        runManagerChild.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
+      }
+    }
+  }
+
   /**
-   * reads current workspace.xml and update the RunManager component config to update existing Nx.debug config with new arguments.
+   * reads current workspace.xml and update the RunManager component
+   * config to update existing Nx.debug config with new arguments.
    */
   private fun addOrUpdateNxDebugConfig(command: String, name: String, args: Map<String, String>): Document {
     val docFile = readWorkspaceFile()
     for (content in docFile.rootElement.children) {
-      if (content.name == "component" && content.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null) {
-        for (runManagerChild in content.children) {
-          if (runManagerChild.name == configElementName && runManagerChild.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null
-          ) {
-            runManagerChild.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
-          }
-        }
+      if (this.isComponentRunManager(content)) {
+        this.setNxConfigAttributes(content, command, name, args)
       }
     }
     return docFile
+  }
+
+  private fun isComponentRunManager(element: Element): Boolean {
+    val isComponent = element.name == "component"
+    val isRunManager = element.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null
+    return isComponent && isRunManager
   }
 
   /**
@@ -119,25 +129,6 @@ class NodeDebugConfigState(project: Project) {
       Attribute(argsAttribute, ""),
       Attribute("path-to-js-file", cli.data.exec),
       Attribute("working-dir", "\$PROJECT_DIR\$/$cliPath")
-    )
-    newConfig.attributes = attributes
-    val methodEl = Element("method")
-    methodEl.setAttribute("v", "2")
-    newConfig.addContent(methodEl)
-    return newConfig
-  }
-
-  /**
-   * generate new nx debug config as NodeJSConfigurationType using arguments passed in.
-   */
-  private fun generateNewNxDebugConfig(command: String, name: String, debugArgs: Map<String, String>): Element {
-    val newConfig = Element(configElementName)
-    val attributes = listOf(
-      Attribute("name", nxDebugConfigName),
-      Attribute("type", nodeJsConfigTypeName),
-      Attribute(argsAttribute, joinArgsWithCommand(command, name, debugArgs)),
-      Attribute("path-to-js-file", "nx.js"),
-      Attribute("working-dir", "\$PROJECT_DIR\$/node_modules/@nrwl/cli/bin")
     )
     newConfig.attributes = attributes
     val methodEl = Element("method")
@@ -175,4 +166,18 @@ class NodeDebugConfigState(project: Project) {
       return project.getService(NodeDebugConfigState::class.java)
     }
   }
+}
+
+internal fun elementAttributesIsRunManager(attributes: List<Attribute>, runManagerName: String): Boolean {
+  return attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null
+}
+
+internal fun elementAttributesAreNxDebugConfig(
+  element: Element,
+  configElementName: String,
+  nxDebugConfigName: String
+): Boolean {
+  val nameIsConfig = element.name == configElementName
+  val isNxDebugConfig = element.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null
+  return nameIsConfig && isNxDebugConfig
 }

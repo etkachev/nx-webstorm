@@ -2,6 +2,8 @@ package com.github.etkachev.nxwebstorm.services
 
 import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
+import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
+import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
@@ -56,6 +58,18 @@ class MyProjectService(private val project: Project) {
   val cliCommand: CliCommands
     get() {
       return if (this.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
+    }
+
+  /**
+   * where the schematic action buttons should be placed on ui window.
+   */
+  val actionBarPlacement: SchematicActionButtonPlacement
+    get() {
+      return when (PluginSettingsState.instance.schematicActionButtonsPlacement) {
+        SchematicActionButtonPlacement.TOP.data -> SchematicActionButtonPlacement.TOP
+        SchematicActionButtonPlacement.BOTTOM.data -> SchematicActionButtonPlacement.BOTTOM
+        else -> SchematicActionButtonPlacement.TOP
+      }
     }
 
   private var alreadySetupNxDebugConfig = false

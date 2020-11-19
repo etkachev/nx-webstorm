@@ -9,7 +9,6 @@ import com.intellij.psi.PsiManager
 import org.jdom.Document
 import java.io.File
 import java.io.IOException
-import java.nio.file.WatchService
 
 class ComputeReadJsonFile(
   private val root: VirtualFile,
@@ -39,15 +38,6 @@ class ComputeWriteXmlFile(
     }
     return JDOMUtil.loadDocument(File(filePath))
   }
-
-  // private fun isFileReady(): Boolean {
-  //   try {
-  //     val file = JDOMUtil.loadDocument(File(filePath))
-  //     return true
-  //   } catch (e: Exception) {
-  //     return false
-  //   }
-  // }
 }
 
 class ComputeReadJsonFileFromVirtualFile(

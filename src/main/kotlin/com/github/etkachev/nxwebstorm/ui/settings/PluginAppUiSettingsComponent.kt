@@ -28,7 +28,11 @@ class PluginAppUiSettingsComponent {
     set(value) {
       val matchedIndex = this.schematicActionButtonOptions.indexOf(value)
       val finalIndex =
-        if (matchedIndex < 0) this.schematicActionButtonOptions.indexOf(SchematicActionButtonPlacement.TOP.data) else matchedIndex
+        if (matchedIndex < 0) {
+          this.schematicActionButtonOptions.indexOf(SchematicActionButtonPlacement.TOP.data)
+        } else {
+          matchedIndex
+        }
       this.schematicActionButtonDropdown.selectedIndex = finalIndex
     }
 

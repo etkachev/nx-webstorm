@@ -4,8 +4,8 @@ import com.github.etkachev.nxwebstorm.actionlisteners.CheckboxListener
 import com.github.etkachev.nxwebstorm.actionlisteners.TextControlListener
 import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.buttons.SchematicActionButtons
-import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.github.etkachev.nxwebstorm.utils.FormCombo
 import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
@@ -36,14 +36,7 @@ class RunSchematicPanel(
   var json = ReadFile.getInstance(project).readJsonFromFileUrl(schematicLocation)
   var required: JsonArray? = null
   private var formControlGenerator: GenerateFormControl
-  val actionBarPlacement: SchematicActionButtonPlacement
-    get() {
-      return when (PluginSettingsState.instance.schematicActionButtonsPlacement) {
-        SchematicActionButtonPlacement.TOP.data -> SchematicActionButtonPlacement.TOP
-        SchematicActionButtonPlacement.BOTTOM.data -> SchematicActionButtonPlacement.BOTTOM
-        else -> SchematicActionButtonPlacement.TOP
-      }
-    }
+  private val nxService = MyProjectService.getInstance(project)
 
   init {
     required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
@@ -98,6 +91,18 @@ class RunSchematicPanel(
     return buttonList
   }
 
+  private fun getFormRowData(control: FormCombo): FormRowData {
+    val key = control.name
+    val vg = formMap.valueGetter(key)
+    val vs = formMap.valueSetter(key)
+    val vbg = formMap.boolValueGetter(key)
+    val vbs = formMap.boolValueSetter(key)
+    val nvg = formMap.nullValueGetter(key)
+    val nvs = formMap.nullValueSetter(key)
+    val descriptionLabel = getWrappedTextAreaForLabel(control.description ?: "")
+    return FormRowData(vg, vs, vbg, vbs, nvg, nvs, descriptionLabel)
+  }
+
   fun generateCenterPanel(
     withBorder: Boolean = false,
     addButtons: Boolean = false,
@@ -111,7 +116,7 @@ class RunSchematicPanel(
     val (runBtn, debugBtn, dryRunBtn) = actions
 
     val panel = panel {
-      if (addButtons && actionBarPlacement == SchematicActionButtonPlacement.TOP) {
+      if (addButtons && nxService.actionBarPlacement == SchematicActionButtonPlacement.TOP) {
         row {
           runBtn()
           dryRunBtn()
@@ -123,14 +128,7 @@ class RunSchematicPanel(
       }
       formControls.mapNotNull { control ->
         val comp = control.component ?: return@mapNotNull null
-        val key = control.name
-        val vg = formMap.valueGetter(key)
-        val vs = formMap.valueSetter(key)
-        val vbg = formMap.boolValueGetter(key)
-        val vbs = formMap.boolValueSetter(key)
-        val nvg = formMap.nullValueGetter(key)
-        val nvs = formMap.nullValueSetter(key)
-        val descriptionLabel = getWrappedTextAreaForLabel(control.description ?: "")
+        val (vg, vs, vbg, vbs, nvg, nvs, descriptionLabel) = getFormRowData(control)
         titledRow(control.finalName) {
           if (control.type != FormControlType.BOOL) {
             row { descriptionLabel() }
@@ -159,7 +157,7 @@ class RunSchematicPanel(
           }
         }
       }
-      if (addButtons && actionBarPlacement == SchematicActionButtonPlacement.BOTTOM) {
+      if (addButtons && nxService.actionBarPlacement == SchematicActionButtonPlacement.BOTTOM) {
         row {
           runBtn()
           dryRunBtn()
@@ -178,3 +176,13 @@ class RunSchematicPanel(
     }
   }
 }
+
+data class FormRowData(
+  val valueGetter: () -> String,
+  val valueSetter: (String) -> Unit,
+  val boolValueGetter: () -> Boolean,
+  val boolValueSetter: (Boolean) -> Unit,
+  val nullValueGetter: () -> String?,
+  val nullValueSetter: (String?) -> Unit,
+  val descriptionLabel: JBTextArea
+)

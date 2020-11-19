@@ -93,7 +93,6 @@ class NxNodeDebugProgramRunner : AsyncProgramRunner<RunnerSettings>() {
       val promise = this.getVersionPromise(interpreter)
       return promise.thenAsync { version ->
         val result = AsyncPromise<RunContentDescriptor?>()
-        // val modalityState: ModalityState? = null
         val app = ApplicationManager.getApplication()
         if (app.isDispatchThread) {
           val runPromise =

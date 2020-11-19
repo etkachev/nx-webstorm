@@ -25,15 +25,21 @@
                     icon="PluginIcons.NRWL_ICON"
                     factoryClass="com.github.etkachev.nxwebstorm.ui.GenerateToolWindow"/>
         <projectConfigurable parentId="tools"
-                             instance="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
+                             instance="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsConfigurable"
                              nonDefaultProject="true"
-                             id="com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsConfigurable"
+                             id="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsConfigurable"
                              displayName="Nx Plugin Settings">
-            <configurable nonDefaultProject="true"
-                          id="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
-                          instance="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
-                          displayName="External Schematics"/>
         </projectConfigurable>
+        <projectConfigurable parentId="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsConfigurable"
+                             id="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"
+                             displayName="External Schematics"
+                             nonDefaultProject="true"
+                             instance="com.github.etkachev.nxwebstorm.ui.settings.ExternalSchematicsSettingsConfigurable"/>
+        <applicationConfigurable parentId="com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsConfigurable"
+                                 instance="com.github.etkachev.nxwebstorm.ui.settings.PluginAppUiSettingsConfigurable"
+                                 id="com.github.etkachev.nxwebstorm.ui.settings.PluginAppUiSettingsConfigurable"
+                                 displayName="App Ui Settings"
+                                 nonDefaultProject="true"/>
     </extensions>
 
     <projectListeners>

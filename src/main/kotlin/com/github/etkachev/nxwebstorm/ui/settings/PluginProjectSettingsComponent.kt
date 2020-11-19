@@ -10,7 +10,7 @@ import javax.swing.BorderFactory
 /**
  * Supports creating and managing a JPanel for the Settings Dialog.
  */
-class PluginSettingsComponent {
+class PluginProjectSettingsComponent {
   val panel: JPanel
   private val myScanExplicitLibsStatus: JBCheckBox
   private val myCustomSchematicsDirectory: JBTextField = JBTextField()

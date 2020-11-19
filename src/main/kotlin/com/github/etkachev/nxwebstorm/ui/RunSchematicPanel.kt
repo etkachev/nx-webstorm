@@ -3,17 +3,24 @@ package com.github.etkachev.nxwebstorm.ui
 import com.github.etkachev.nxwebstorm.actionlisteners.CheckboxListener
 import com.github.etkachev.nxwebstorm.actionlisteners.TextControlListener
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
+import com.github.etkachev.nxwebstorm.ui.buttons.SchematicActionButtons
+import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.github.etkachev.nxwebstorm.utils.FormCombo
 import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.layout.panel
-import java.awt.event.ActionEvent
 import javax.swing.BorderFactory
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
@@ -29,6 +36,14 @@ class RunSchematicPanel(
   var json = ReadFile.getInstance(project).readJsonFromFileUrl(schematicLocation)
   var required: JsonArray? = null
   private var formControlGenerator: GenerateFormControl
+  val actionBarPlacement: SchematicActionButtonPlacement
+    get() {
+      return when (PluginSettingsState.instance.schematicActionButtonsPlacement) {
+        SchematicActionButtonPlacement.TOP.data -> SchematicActionButtonPlacement.TOP
+        SchematicActionButtonPlacement.BOTTOM.data -> SchematicActionButtonPlacement.BOTTOM
+        else -> SchematicActionButtonPlacement.TOP
+      }
+    }
 
   init {
     required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
@@ -61,17 +76,48 @@ class RunSchematicPanel(
     return formControls
   }
 
+  private fun getActionGroup(
+    runAction: () -> Unit,
+    debugAction: () -> Unit,
+    dryRunAction: () -> Unit
+  ): List<ActionButton> {
+    val actionGroup = DefaultActionGroup()
+    actionGroup.add(SchematicActionButtons.run(runAction))
+    actionGroup.add(SchematicActionButtons.debug(debugAction))
+    actionGroup.add(SchematicActionButtons.dryRun(dryRunAction))
+    val myActions = actionGroup.getChildren(null)
+    val buttonList = mutableListOf<ActionButton>()
+    for (action in myActions) {
+      if (action is Separator) {
+        continue
+      }
+      val presentation = action.templatePresentation
+      val button = ActionButton(action, presentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
+      buttonList.add(button)
+    }
+    return buttonList
+  }
+
   fun generateCenterPanel(
     withBorder: Boolean = false,
     addButtons: Boolean = false,
-    dryRunAction: (ActionEvent) -> Unit = {},
-    runAction: (ActionEvent) -> Unit = {},
-    debugAction: (ActionEvent) -> Unit = {}
+    dryRunAction: () -> Unit = {},
+    runAction: () -> Unit = {},
+    debugAction: () -> Unit = {}
   ): JComponent? {
     val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = getFormControlKeys(props)
+    val actions = this.getActionGroup(runAction, debugAction, dryRunAction)
+    val (runBtn, debugBtn, dryRunBtn) = actions
 
     val panel = panel {
+      if (addButtons && actionBarPlacement == SchematicActionButtonPlacement.TOP) {
+        row {
+          runBtn()
+          dryRunBtn()
+          debugBtn()
+        }
+      }
       row {
         label("ng generate workspace-schematic:$id")
       }
@@ -113,15 +159,11 @@ class RunSchematicPanel(
           }
         }
       }
-      if (addButtons) {
+      if (addButtons && actionBarPlacement == SchematicActionButtonPlacement.BOTTOM) {
         row {
-          button("Dry Run", dryRunAction)
-          right {
-            button("Run", runAction)
-          }
-        }
-        row {
-          button("Debug", debugAction)
+          runBtn()
+          dryRunBtn()
+          debugBtn()
         }
       }
     }

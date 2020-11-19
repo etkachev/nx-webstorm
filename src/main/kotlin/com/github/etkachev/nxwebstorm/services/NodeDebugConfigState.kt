@@ -90,23 +90,18 @@ class NodeDebugConfigState(project: Project) {
   }
 
   /**
-   * reads current workspace.xml and update the RunManager component config to either update existing Nx.debug config with new arguments.
+   * reads current workspace.xml and update the RunManager component config to update existing Nx.debug config with new arguments.
    */
   private fun addOrUpdateNxDebugConfig(command: String, name: String, args: Map<String, String>): Document {
     val docFile = readWorkspaceFile()
-    // var hadExistingConfig = false
     for (content in docFile.rootElement.children) {
       if (content.name == "component" && content.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null) {
         for (runManagerChild in content.children) {
           if (runManagerChild.name == configElementName && runManagerChild.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null
           ) {
             runManagerChild.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
-            // hadExistingConfig = true
           }
         }
-        // if (!hadExistingConfig) {
-        //   content.addContent(generateNewNxDebugConfig(command, name, args))
-        // }
       }
     }
     return docFile

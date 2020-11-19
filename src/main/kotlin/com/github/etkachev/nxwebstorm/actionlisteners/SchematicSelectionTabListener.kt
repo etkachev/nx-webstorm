@@ -1,7 +1,6 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
 import com.github.etkachev.nxwebstorm.models.FormValueMap
-import com.github.etkachev.nxwebstorm.models.RunSchematicConfig
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
@@ -18,7 +17,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
-import java.awt.event.ActionEvent
 import javax.swing.SwingUtilities
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
@@ -41,11 +39,11 @@ class SchematicSelectionTabListener(
     id: String,
     formMap: FormValueMap,
     required: JsonArray?
-  ): (ActionEvent) -> Unit {
+  ): () -> Unit {
     return { run(type, id, formMap, required) }
   }
 
-  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
+  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): () -> Unit {
     return { run(type, id, formMap, required, false) }
   }
 
@@ -54,7 +52,7 @@ class SchematicSelectionTabListener(
     id: String,
     formMap: FormValueMap,
     required: JsonArray?
-  ): (ActionEvent) -> Unit {
+  ): () -> Unit {
     return { runDebug(type, id, formMap, required) }
   }
 
@@ -67,9 +65,7 @@ class SchematicSelectionTabListener(
     val dryRunArg = if (dryRun) "true" else "false"
     val command = if (isCustomSchematic) "workspace-schematic" else "generate"
     val name = if (isCustomSchematic) id else "$type:$id"
-    val cli = this.nxService.cliCommand
     val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
-    val schematicConfig = RunSchematicConfig(cli, command, name, args)
     NodeDebugConfigState.getInstance(this.project).execute(command, name, args)
   }
 
@@ -127,9 +123,9 @@ class SchematicSelectionTabListener(
     val panel = schematicPanel.generateCenterPanel(
       withBorder = true,
       addButtons = true,
-      dryRunAction = dryRunAction(type, id, formMap, required),
-      runAction = runAction(type, id, formMap, required),
-      debugAction = debugAction(type, id, formMap, required)
+      dryRunAction = this.dryRunAction(type, id, formMap, required),
+      runAction = this.runAction(type, id, formMap, required),
+      debugAction = this.debugAction(type, id, formMap, required)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

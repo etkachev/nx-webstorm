@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.5.0]
+### Added
 - \***Debugging Schematics**\* - you can now debug schematics within your IDE with a simple click of a button
 - Added compatibility to allow regular angular projects (non-Nx projects), to use Generate UI.
 - Added application setting page for ui

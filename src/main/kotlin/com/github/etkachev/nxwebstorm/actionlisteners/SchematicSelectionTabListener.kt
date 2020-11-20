@@ -3,9 +3,11 @@ package com.github.etkachev.nxwebstorm.actionlisteners
 import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.services.MyProjectService
+import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
+import com.github.etkachev.nxwebstorm.utils.foldListOfMaps
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
 import com.google.gson.JsonArray
 import com.intellij.openapi.project.Project
@@ -15,7 +17,6 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
-import java.awt.event.ActionEvent
 import javax.swing.SwingUtilities
 import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
@@ -31,19 +32,41 @@ class SchematicSelectionTabListener(
   private var dryRunTerminal = RunTerminalWindow(project, "Dry Run")
   private var runTerminal = RunTerminalWindow(project, "Run")
   private var tabName = "Generate - Schematic"
-  private var nxService = project.getService<MyProjectService>(MyProjectService::class.java)
+  private var nxService = MyProjectService.getInstance(project)
 
   private fun dryRunAction(
     type: String,
     id: String,
     formMap: FormValueMap,
     required: JsonArray?
-  ): (ActionEvent) -> Unit {
+  ): () -> Unit {
     return { run(type, id, formMap, required) }
   }
 
-  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): (ActionEvent) -> Unit {
+  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): () -> Unit {
     return { run(type, id, formMap, required, false) }
+  }
+
+  private fun debugAction(
+    type: String,
+    id: String,
+    formMap: FormValueMap,
+    required: JsonArray?
+  ): () -> Unit {
+    return { runDebug(type, id, formMap, required) }
+  }
+
+  private fun runDebug(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
+    val values = formMap.formVal
+    if (isMissingRequiredFields(required, values)) {
+      return
+    }
+    val isCustomSchematic = type == "workspace-schematic"
+    val dryRunArg = if (dryRun) "true" else "false"
+    val command = if (isCustomSchematic) "workspace-schematic" else "generate"
+    val name = if (isCustomSchematic) id else "$type:$id"
+    val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
+    NodeDebugConfigState.getInstance(this.project).execute(command, name, args)
   }
 
   private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
@@ -98,8 +121,11 @@ class SchematicSelectionTabListener(
     val schematicPanel = RunSchematicPanel(project, id, info.fileLocation, formMap)
     val required = schematicPanel.required
     val panel = schematicPanel.generateCenterPanel(
-      withBorder = true, addButtons = true,
-      dryRunAction = dryRunAction(type, id, formMap, required), runAction = runAction(type, id, formMap, required)
+      withBorder = true,
+      addButtons = true,
+      dryRunAction = this.dryRunAction(type, id, formMap, required),
+      runAction = this.runAction(type, id, formMap, required),
+      debugAction = this.debugAction(type, id, formMap, required)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()
@@ -111,6 +137,7 @@ class SchematicSelectionTabListener(
     toolWindow.contentManager.addContent(content)
     toolWindow.contentManager.setSelectedContent(content)
     searchField.text = ""
+
     table.clearSelection()
   }
 }

@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
+import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
@@ -28,6 +29,7 @@ class PluginSettingsState : PersistentStateComponent<PluginSettingsState?> {
   ).joinToString(", ")
   var scanExplicitLibs = true
   var customSchematicsLocation = "/tools/schematics"
+  var schematicActionButtonsPlacement = SchematicActionButtonPlacement.TOP.data
 
   override fun getState(): PluginSettingsState? {
     return this

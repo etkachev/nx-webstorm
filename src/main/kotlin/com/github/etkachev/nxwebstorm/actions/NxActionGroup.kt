@@ -14,7 +14,7 @@ class NxActionGroup : DefaultActionGroup() {
       return
     }
 
-    val projectService = project.getService<MyProjectService>(MyProjectService::class.java)
+    val projectService = MyProjectService.getInstance(project)
 
     val isValidNx = projectService.isValidNxProject || projectService.isAngularProject
     event.presentation.isEnabled = isValidNx

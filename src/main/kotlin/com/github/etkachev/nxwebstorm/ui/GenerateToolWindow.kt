@@ -23,7 +23,7 @@ class GenerateToolWindow : ToolWindowFactory {
   }
 
   override fun isApplicable(project: Project): Boolean {
-    val projectService = project.getService<MyProjectService>(MyProjectService::class.java)
+    val projectService = MyProjectService.getInstance(project)
     return projectService.nxProjectType == NxProjectType.Nx || projectService.nxProjectType == NxProjectType.Angular
   }
 }

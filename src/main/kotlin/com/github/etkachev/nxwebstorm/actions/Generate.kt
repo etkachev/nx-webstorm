@@ -17,7 +17,7 @@ class Generate : AnAction() {
 
     val proj = e.project!!
     val schematics = FindAllSchematics(proj).findAll()
-    val nxService = proj.getService<MyProjectService>(MyProjectService::class.java)
+    val nxService = MyProjectService.getInstance(proj)
 
     val dialog = SchematicsListDialog(proj, schematics)
     dialog.setSize(1000, 800)

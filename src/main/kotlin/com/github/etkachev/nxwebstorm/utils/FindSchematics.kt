@@ -12,7 +12,7 @@ import com.intellij.psi.search.GlobalSearchScopes
 
 data class CollectionInfo(val json: JsonObject, val file: VirtualFile)
 class FindSchematics(private val project: Project, private val externalLibs: Array<String>) {
-  var jsonFileReader = ReadFile(project)
+  var jsonFileReader = ReadFile.getInstance(project)
   var packageJsonHelper = PackageJsonHelper(project)
   var schematicPropName = "schematics"
   var nodeModulesFolder = "node_modules"

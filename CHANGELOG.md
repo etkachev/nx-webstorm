@@ -4,9 +4,13 @@
 
 ## [Unreleased]
 ### Added
+- \***Debugging Schematics**\* - you can now debug schematics within your IDE with a simple click of a button
 - Added compatibility to allow regular angular projects (non-Nx projects), to use Generate UI.
+- Added application setting page for ui
+  - Added ability to set the placement of the new action button icons within the schematic ui window.
 
 ### Changed
+- Schematic UI window "Dry Run" and "Run" buttons have been converted to icon buttons
 
 ### Deprecated
 

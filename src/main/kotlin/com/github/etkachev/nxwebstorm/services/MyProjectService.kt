@@ -1,16 +1,25 @@
 package com.github.etkachev.nxwebstorm.services
 
+import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
+import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
+import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
+import com.intellij.openapi.vfs.VirtualFile
 
-class MyProjectService(project: Project) {
-  private var readFile = ReadFile(project)
+class MyProjectService(private val project: Project) {
+  private var readFile = ReadFile.getInstance(project)
   val nxJson: JsonObject?
     get() = readNxJson()
   val angularJson: JsonObject?
     get() = readAngularJson()
+  val rootPath: String?
+    get() {
+      val thisProject = this.project
+      return thisProject.basePath
+    }
 
   /**
    * full list of projects/libraries within current project.
@@ -43,12 +52,45 @@ class MyProjectService(project: Project) {
       }
     }
 
+  /**
+   * returns meta data on whether you run nx command or just plain ng command for angular projects.
+   */
+  val cliCommand: CliCommands
+    get() {
+      return if (this.nxProjectType == NxProjectType.Nx) CliCommands.NX else CliCommands.NG
+    }
+
+  /**
+   * where the schematic action buttons should be placed on ui window.
+   */
+  val actionBarPlacement: SchematicActionButtonPlacement
+    get() {
+      return when (PluginSettingsState.instance.schematicActionButtonsPlacement) {
+        SchematicActionButtonPlacement.TOP.data -> SchematicActionButtonPlacement.TOP
+        SchematicActionButtonPlacement.BOTTOM.data -> SchematicActionButtonPlacement.BOTTOM
+        else -> SchematicActionButtonPlacement.TOP
+      }
+    }
+
+  private var alreadySetupNxDebugConfig = false
+
+  val nxDebugConfigSetup: Boolean
+    get() = this.alreadySetupNxDebugConfig
+
+  fun setNxDebugConfigSetupDone() {
+    this.alreadySetupNxDebugConfig = true
+  }
+
   private fun readNxJson(): JsonObject? {
     return readFile.readJsonFromFileUrl("nx.json")
   }
 
   private fun readAngularJson(): JsonObject? {
     return readFile.readJsonFromFileUrl("angular.json")
+  }
+
+  private fun readNxJsonFile(): VirtualFile? {
+    return readFile.findVirtualFile("nx.json")
   }
 
   private fun getProjects(): Array<String> {
@@ -63,5 +105,11 @@ class MyProjectService(project: Project) {
       return angularProjects.toTypedArray()
     }
     return emptyArray()
+  }
+
+  companion object {
+    fun getInstance(project: Project): MyProjectService {
+      return project.getService(MyProjectService::class.java)
+    }
   }
 }

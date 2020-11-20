@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.Nullable
 import javax.swing.JComponent
 
-class PluginSettingsConfigurable(val project: Project) : Configurable {
-  private var mySettingsComponent: PluginSettingsComponent? = null
+class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
+  private var mySettingsComponent: PluginProjectSettingsComponent? = null
 
   // A default constructor with no arguments is required because this implementation
   // is registered as an applicationConfigurable EP
@@ -22,7 +22,7 @@ class PluginSettingsConfigurable(val project: Project) : Configurable {
 
   @Nullable
   override fun createComponent(): JComponent? {
-    mySettingsComponent = PluginSettingsComponent()
+    mySettingsComponent = PluginProjectSettingsComponent()
     return mySettingsComponent!!.panel
   }
 

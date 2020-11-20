@@ -6,6 +6,7 @@
 ### Added
 
 ### Changed
+- Updated Readme to include the latest updates.
 
 ### Deprecated
 
@@ -24,14 +25,9 @@
 ### Changed
 - Schematic UI window "Dry Run" and "Run" buttons have been converted to icon buttons
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 - Loading Nrwl icon correctly on load.
 
-### Security
 ## [0.4.0]
 ### Added
 - Nrwl icon added to Nx tool tab

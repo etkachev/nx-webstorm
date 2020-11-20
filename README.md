@@ -8,17 +8,21 @@
 
 This plugin is the Webstorm version of [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) or at least in the process to be.
 This plugin will only work for projects that use [Nx](http://nx.dev/) dev tools. 
-And for this alpha release, this plugin will support the `Generate` functionality which will allow you to display and run custom schematics, along with default angular, ngrx, nestjs schematics.
+For this alpha release, this plugin will support the `Generate` functionality which will allow you to display and run/debug custom schematics, along with default angular, ngrx, nestjs schematics.
+
+#### Compatibility
+This works with any [Nx](http://nx.dev/) project. But this can also work with any regular Angular project that doesn't use Nx, since the schematics are built-in the `@schematics/angular` collection. 
 
 #### How it works 
 
-- On startup, this plugin will check if you have a valid nx.json file in your root directory, and only be enabled if so.
+- On startup, this plugin will check if you have a valid nx.json or angular.json file in your root directory, and only be enabled if so.
 - When clicking on the `Nx` menu (either at the top menubar, or top right tab), you will have option to `Generate` which will popup a list of schematics to choose from.
 - Upon choosing one of the schematics, the next screen will be an auto-generated form of all the field controls to fill out in order to run the schematic.
 - Required fields will have the label contain (*)
-- Upon filling out the form, you will have the option to either do a `Dry Run` or `Run/OK` at the bottom
+- If using the side tool-window Generate UI, you will have the option to either do `Run`, `Dry Run`, or `Debug`
   - `Dry Run` will open your IDE terminal and run the schematic with the filled out fields but without affecting your local files. You will see the output of what files will be affected in your repo.
-  - `Run/OK` will do the same things as `Dry Run` except it will actually affect your local files and add/update/delete files depending on what the selected schematic is designed to do.
+  - `Run` will do the same things as `Dry Run` except it will actually affect your local files and add/update/delete files depending on what the selected schematic is designed to do.
+  - `Debug` button allows you to setup breakpoints in your schematic files and run the debug execution, so you can easily and quickly debug your schematics right within Webstorm!
 
 <!-- Plugin description end -->
 

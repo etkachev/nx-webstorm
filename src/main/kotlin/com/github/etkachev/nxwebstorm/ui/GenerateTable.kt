@@ -15,18 +15,20 @@ class GenerateTable(data: Map<String, SchematicInfo>) {
   fun getTable(): SearchTableModel {
     val tableModel = createTableModel()
     val table = JBTable(tableModel)
+    table.removeColumn(table.columnModel.getColumn(3))
     val filterField = createRowFilter(table)
     return SearchTableModel(filterField, table)
   }
 
   private fun createTableModel(): TableModel {
-    val columns: Vector<String> = Vector(listOf("Type", "Name", "Description"))
+    val columns: Vector<String> = Vector(listOf("Collection", "Name", "Description", "TypeData"))
     val rows: Vector<Vector<Any>> = Vector()
     for (info in fullData) {
       val v: Vector<Any> = Vector()
-      v.add(info.type)
+      v.add(info.type.collection)
       v.add(info.id)
       v.add(info.description)
+      v.add(info.type.type.data)
       rows.add(v)
     }
     return object : DefaultTableModel(rows, columns) {

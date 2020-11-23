@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.actions
 
+import com.github.etkachev.nxwebstorm.models.mapSchematicTypeStringToEnum
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunSchematicDialog
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
@@ -24,14 +25,16 @@ class Generate : AnAction() {
     val ok = dialog.showAndGet()
     if (ok && dialog.schematicSelection.containsKey("id")) {
       val id = dialog.schematicSelection["id"] ?: ""
-      val type = dialog.schematicSelection["type"] ?: ""
+      val collection = dialog.schematicSelection["collection"] ?: ""
       val fileLocation = dialog.schematicSelection["file"] ?: ""
-      val formDialog = RunSchematicDialog(proj, type, id, fileLocation)
+      val type = dialog.schematicSelection["type"] ?: ""
+      val enumType = mapSchematicTypeStringToEnum(type)
+      val formDialog = RunSchematicDialog(proj, collection, id, fileLocation, enumType)
       val formOk = formDialog.showAndGet()
       if (formOk) {
         val values = formDialog.formMap.formVal
         val projectType = nxService.nxProjectType
-        val command = getSchematicCommandFromValues(type, id, values, projectType, false)
+        val command = getSchematicCommandFromValues(collection, id, values, projectType, false, enumType)
         val terminal = RunTerminalWindow(proj, "Run")
         terminal.runAndShow(command)
       }

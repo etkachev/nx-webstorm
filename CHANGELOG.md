@@ -4,6 +4,18 @@
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.6.0]
+### Added
 - Added support for running, debugging custom schematics within non-nx angular projects.
 
 ### Changed

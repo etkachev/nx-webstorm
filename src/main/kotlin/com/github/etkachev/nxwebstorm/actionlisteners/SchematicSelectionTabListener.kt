@@ -41,9 +41,10 @@ class SchematicSelectionTabListener(
     id: String,
     formMap: FormValueMap,
     required: JsonArray?,
-    type: SchematicTypeEnum
+    type: SchematicTypeEnum,
+    collectionPath: String?
   ): () -> Unit {
-    return { run(collection, id, formMap, required, type) }
+    return { run(collection, id, formMap, required, type, collectionPath) }
   }
 
   private fun runAction(
@@ -51,9 +52,10 @@ class SchematicSelectionTabListener(
     id: String,
     formMap: FormValueMap,
     required: JsonArray?,
-    type: SchematicTypeEnum
+    type: SchematicTypeEnum,
+    collectionPath: String?
   ): () -> Unit {
-    return { run(collection, id, formMap, required, type, false) }
+    return { run(collection, id, formMap, required, type, collectionPath, false) }
   }
 
   private fun debugAction(
@@ -61,9 +63,10 @@ class SchematicSelectionTabListener(
     id: String,
     formMap: FormValueMap,
     required: JsonArray?,
-    type: SchematicTypeEnum
+    type: SchematicTypeEnum,
+    collectionPath: String?
   ): () -> Unit {
-    return { runDebug(collection, id, formMap, required, type) }
+    return { runDebug(collection, id, formMap, required, type, collectionPath) }
   }
 
   private fun runDebug(
@@ -72,21 +75,27 @@ class SchematicSelectionTabListener(
     formMap: FormValueMap,
     required: JsonArray?,
     type: SchematicTypeEnum,
+    collectionPath: String?,
     dryRun: Boolean = true
   ) {
     val values = formMap.formVal
     if (isMissingRequiredFields(required, values)) {
       return
     }
-    /**
-     * @TODO do type logic
-     */
-    val isCustomSchematic = collection == "workspace-schematic"
     val dryRunArg = if (dryRun) "true" else "false"
-    val command = if (isCustomSchematic) "workspace-schematic" else "generate"
-    val name = if (isCustomSchematic) id else "$collection:$id"
+    val command = when (type) {
+      SchematicTypeEnum.CUSTOM_NX -> "workspace-schematic"
+      SchematicTypeEnum.PROVIDED -> "generate"
+      SchematicTypeEnum.CUSTOM_ANGULAR -> ""
+    }
+    val projDir = this.project.basePath
+    val name = when (type) {
+      SchematicTypeEnum.CUSTOM_NX -> id
+      SchematicTypeEnum.PROVIDED -> "$collection:$id"
+      SchematicTypeEnum.CUSTOM_ANGULAR -> "$projDir/$collectionPath:$id"
+    }
     val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
-    NodeDebugConfigState.getInstance(this.project).execute(command, name, args)
+    NodeDebugConfigState.getInstance(this.project).execute(command, name, args, type)
   }
 
   private fun run(
@@ -95,6 +104,7 @@ class SchematicSelectionTabListener(
     formMap: FormValueMap,
     required: JsonArray?,
     type: SchematicTypeEnum,
+    collectionPath: String?,
     dryRun: Boolean = true
   ) {
     val values = formMap.formVal
@@ -102,7 +112,7 @@ class SchematicSelectionTabListener(
       return
     }
     val projectType = this.nxService.nxProjectType
-    val command = getSchematicCommandFromValues(collection, id, values, projectType, dryRun, type)
+    val command = getSchematicCommandFromValues(collection, id, values, projectType, dryRun, type, collectionPath)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
     } else {
@@ -151,9 +161,9 @@ class SchematicSelectionTabListener(
     val panel = schematicPanel.generateCenterPanel(
       withBorder = true,
       addButtons = true,
-      dryRunAction = this.dryRunAction(collection, id, formMap, required, schematicInfo.type),
-      runAction = this.runAction(collection, id, formMap, required, schematicInfo.type),
-      debugAction = this.debugAction(collection, id, formMap, required, schematicInfo.type)
+      dryRunAction = this.dryRunAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath),
+      runAction = this.runAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath),
+      debugAction = this.debugAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

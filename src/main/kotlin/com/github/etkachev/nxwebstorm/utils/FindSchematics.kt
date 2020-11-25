@@ -17,6 +17,9 @@ import com.intellij.psi.search.GlobalSearchScopes
  */
 data class CollectionInfo(val json: JsonObject, val file: VirtualFile, val relativePath: String)
 
+/**
+ * util class for finding and loading schematics (both provided and custom schematics).
+ */
 class FindAllSchematics(private val project: Project) {
   private val projectSettings = PluginProjectSettingsState.getInstance(project)
   private val defaultToolsSchematicDir = "/tools/schematics"
@@ -35,6 +38,10 @@ class FindAllSchematics(private val project: Project) {
   private val splitSchematicDir: Array<String>
     get() = toolsSchematicDir.split("/").mapNotNull { s -> if (s.isBlank()) null else s }.toTypedArray()
 
+  /**
+   * Fetch both custom schematics and external schematics.
+   * Depending on settings for plugin, will either search explicit libs for external schematics or scan full node_modules for external schematics.
+   */
   fun findAll(): Map<String, SchematicInfo> {
     val customSchematics = getCustomSchematics()
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(project)
@@ -53,6 +60,11 @@ class FindAllSchematics(private val project: Project) {
     }
   }
 
+  /**
+   * Fetch custom schematics.
+   * - If nx project search just schema.json files within `/tools/schematics` (or overload folder).
+   * - Otherwise if regular angular project, search custom schematics from package.json file within expected schematics folder of project.
+   */
   private fun getCustomSchematics(): Map<String, SchematicInfo> {
     val rootPsiDirectory = getRootPsiDirectory(project)
     val projectBase = project.basePath ?: return emptyMap()
@@ -71,6 +83,9 @@ class FindAllSchematics(private val project: Project) {
     return emptyMap()
   }
 
+  /**
+   * for custom nx schematics, generate custom schematic id with additional schematic info.
+   */
   private fun getIdsFromSchema(file: PsiFile, projectBase: String): Pair<String, SchematicInfo>? {
     val json = JsonParser.parseString(file.text).asJsonObject ?: return null
     if (!json.has("id")) {
@@ -84,14 +99,15 @@ class FindAllSchematics(private val project: Project) {
     return uniqueId to info
   }
 
+  /**
+   * based on schematic options from collection file, generate full info of schematic with generated ids.
+   */
   private fun getSchematicEntries(
     schematicOptions: JsonObject,
-    directory: String,
     schematicCollection: VirtualFile,
     packageName: String,
     schematicType: SchematicTypeEnum,
-    collectionPath: String,
-    fileLocationMapper: (path: String) -> String
+    collectionPath: String
   ): Map<String, SchematicInfo> {
     return schematicOptions.entrySet().toTypedArray().fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
       val value = e.value.asJsonObject
@@ -99,8 +115,7 @@ class FindAllSchematics(private val project: Project) {
         return@fold acc
       }
 
-      val relativePath = getRelativePath(directory, value, schematicCollection) ?: return@fold acc
-      val fileLocation = fileLocationMapper(relativePath)
+      val fileLocation = getRelativePath(value, schematicCollection) ?: return@fold acc
       val id = generateUniqueSchematicKey(packageName, e.key, schematicType)
       val description = if (value.has("description")) value["description"].asString else null
       acc[id] = SchematicInfo(fileLocation, description, collectionPath)
@@ -108,6 +123,9 @@ class FindAllSchematics(private val project: Project) {
     }).toMap()
   }
 
+  /**
+   * for non-nx angular project, search for custom schematics via package.json file within expected custom schematics folder.
+   */
   private fun getAngularCustomSchematics(directory: String): Map<String, SchematicInfo>? {
     val packageJson = packageJsonHelper.getPackageFileInfo(directory) ?: return null
     val (packageName, packageFileJson, packageFile) = packageJson
@@ -115,15 +133,17 @@ class FindAllSchematics(private val project: Project) {
       ?: return null
     return getSchematicEntries(
       schematicOptions,
-      directory,
       schematicCollection,
       packageName,
       SchematicTypeEnum.CUSTOM_ANGULAR,
-      collectionPath,
-      fileLocationMapper = { path -> "$directory$path" }
+      collectionPath
     )
   }
 
+  /**
+   * find schematics info for expected node_modules directory.
+   * Searching for provided schematics.
+   */
   private fun getSchematicsFromNodeModulesDirectory(directory: String): Map<String, SchematicInfo>? {
     val packageJson = packageJsonHelper.getPackageFileInfo("$nodeModulesFolder/$directory") ?: return null
     val (packageName, packageFileJson, packageFile) = packageJson
@@ -131,15 +151,16 @@ class FindAllSchematics(private val project: Project) {
       ?: return null
     return getSchematicEntries(
       schematicsOptions,
-      directory,
       schematicCollection,
       packageName,
       SchematicTypeEnum.PROVIDED,
-      collectionPath,
-      fileLocationMapper = { path -> "$nodeModulesFolder/$directory$path" }
+      collectionPath
     )
   }
 
+  /**
+   * get collection info on schematic options for passed in package.json file.
+   */
   private fun getSchematicOptions(packageFileJson: JsonObject, packageFile: VirtualFile): CollectionInfo? {
     val schematicProp =
       (if (packageFileJson.has(schematicPropName)) packageFileJson[schematicPropName].asString else null)
@@ -155,25 +176,32 @@ class FindAllSchematics(private val project: Project) {
     return CollectionInfo(schematicsOptions, schematicCollection, relativePath)
   }
 
-  private fun getRelativePath(directory: String, value: JsonObject, schematicCollection: VirtualFile): String? {
+  /**
+   * gets relative path (to project) of schema file based on collection.json file.
+   */
+  private fun getRelativePath(value: JsonObject, schematicCollection: VirtualFile): String? {
     val schemaFileLocation = (if (value.has("schema")) value["schema"].asString else null) ?: return null
     val schemaFile =
       jsonFileReader.findVirtualFile(schemaFileLocation, schematicCollection.parent) ?: return null
-    val splitFile = schemaFile.path.split(directory)
-    return if (splitFile.count() < 2) null else splitFile[splitFile.count() - 1]
+    val splitFile = schemaFile.path.split(this.project.basePath ?: "")
+    return if (splitFile.count() == 2) splitFile[1] else null
   }
 
+  /**
+   * get schematic info based on external libs that are explicit to scan.
+   */
   private fun findByExternalLibs(externalLibs: Array<String>): Map<String, SchematicInfo> {
     val schematicMaps = externalLibs.mapNotNull { dir -> getSchematicsFromNodeModulesDirectory(dir) }
     return foldListOfMaps(schematicMaps.toTypedArray())
   }
 
+  /**
+   * can all possible external schematics within node_modules folder
+   */
   private fun scanAllForExternalSchematics(): Map<String, SchematicInfo> {
     val psiDir = getRootPsiDirectory(project) ?: return emptyMap()
 
     val nodeModules = psiDir.findSubdirectory(nodeModulesFolder) ?: return emptyMap()
-    val splitProjectRootPath = psiDir.virtualFile.path.split("/")
-    val projectRootFolder = splitProjectRootPath[splitProjectRootPath.count() - 1]
     val packageJsonFiles = FilenameIndex.getFilesByName(
       project,
       "package.json",
@@ -183,17 +211,12 @@ class FindAllSchematics(private val project: Project) {
         ?: return@mapNotNull null
       val (schematicsOptions, schematicCollection, collectionPath) = getSchematicOptions(packageFileJson, packageFile)
         ?: return@mapNotNull null
-      val splitFullFileLocation = f.parent!!.virtualFile.path.split("$projectRootFolder/$nodeModulesFolder/")
-      val nodeModulesFileLocation = splitFullFileLocation[1]
-      val packageFileLocation = "$nodeModulesFolder/$nodeModulesFileLocation"
       val results = getSchematicEntries(
         schematicsOptions,
-        nodeModulesFileLocation,
         schematicCollection,
         packageName,
         SchematicTypeEnum.PROVIDED,
-        collectionPath,
-        fileLocationMapper = { path -> "$packageFileLocation$path" }
+        collectionPath
       )
       return@mapNotNull if (results.isNotEmpty()) results else null
     }.toTypedArray()

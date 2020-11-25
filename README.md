@@ -13,6 +13,15 @@ For this alpha release, this plugin will support the `Generate` functionality wh
 #### Compatibility
 This works with any [Nx](http://nx.dev/) project. But this can also work with any regular Angular project that doesn't use Nx, since the schematics are built-in the `@schematics/angular` collection. 
 
+#### Nx Projects
+- Typically your custom schematics will be within your directory: `/tools/schematics`, but this can be configured within the Plugin Settings, if your project is setup differently.
+- Nx can be installed either globally or local to your project.
+
+#### Angular Projects
+- For [custom schematics](https://angular.io/guide/schematics-authoring), the plugin will search within the directory set in the Plugin Settings.
+Please update this for your regular angular project, since the default is set to `/tools/schematics` and this is the default for Nx Projects.
+- Make sure that you have `@angular-devkit/schematics-cli` installed either local to your project or globally for this to work with custom schematics.
+
 #### How it works 
 
 - On startup, this plugin will check if you have a valid nx.json or angular.json file in your root directory, and only be enabled if so.
@@ -23,6 +32,11 @@ This works with any [Nx](http://nx.dev/) project. But this can also work with an
   - `Dry Run` will open your IDE terminal and run the schematic with the filled out fields but without affecting your local files. You will see the output of what files will be affected in your repo.
   - `Run` will do the same things as `Dry Run` except it will actually affect your local files and add/update/delete files depending on what the selected schematic is designed to do.
   - `Debug` button allows you to setup breakpoints in your schematic files and run the debug execution, so you can easily and quickly debug your schematics right within Webstorm!
+
+#### Known Issues
+- When debugging schematics, any schematic that has a `path` property for the schematic, if it's left empty, it is defaulted to the path of the executable (usually within node_modules).
+This causes the output files placed in the incorrect place. To fix this, make sure you pass in the `path` property correctly pointing to the module you would like to run the schematic against.
+This is only an issue during debugging, and does not affect when you are doing regular `Dry Run` or `Run` executions.
 
 <!-- Plugin description end -->
 

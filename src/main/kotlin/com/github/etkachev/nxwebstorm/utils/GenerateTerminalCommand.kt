@@ -10,24 +10,20 @@ fun getSchematicCommandFromValues(
   values: MutableMap<String, String>,
   nxProjectType: NxProjectType,
   dryRun: Boolean = true,
-  schematicType: SchematicTypeEnum
+  schematicType: SchematicTypeEnum,
+  collectionPath: String?
 ): String {
   val dryRunString = if (dryRun) " --dry-run" else ""
   val (nxPath, nxExec) = CliCommands.NX.data
   val (ngPath, ngExec) = CliCommands.NG.data
   val nx = "node $nxPath/$nxExec"
   val ng = "node $ngPath/$ngExec"
-  // val prefix = if (type == "workspace-schematic") "$nx workspace-schematic $id" else "$nx generate $type:$id"
   val cli = if (nxProjectType == NxProjectType.Nx) nx else ng
   val newPrefix = when (schematicType) {
     SchematicTypeEnum.PROVIDED -> "$cli generate $collection:$id"
     SchematicTypeEnum.CUSTOM_NX -> "$cli workspace-schematic $id"
-    /**
-     * @TODO update to correct collection path
-     */
-    SchematicTypeEnum.CUSTOM_ANGULAR -> "schematics ./path-to-collection.json:$id"
+    SchematicTypeEnum.CUSTOM_ANGULAR -> "schematics .$collectionPath:$id"
   }
-  // val finalPrefix = if (nxProjectType == NxProjectType.Nx) prefix else "$ng generate $type:$id"
   val flags = getCommandArguments(values).joinToString(" ")
   return "$newPrefix $flags --no-interactive$dryRunString"
 }

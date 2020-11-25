@@ -5,4 +5,8 @@ enum class CliCommands(val data: CliData) {
   NG(CliData("node_modules/@angular/cli/bin", "ng"))
 }
 
+/**
+ * @property path the path to the executable within node_modules
+ * @property exec the js file for executing
+ */
 data class CliData(val path: String, val exec: String)

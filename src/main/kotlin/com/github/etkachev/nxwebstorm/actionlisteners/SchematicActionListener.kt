@@ -28,5 +28,6 @@ class SchematicActionListener(
     panel.schematicSelection["collection"] = schematicInfo.collection
     panel.schematicSelection["file"] = info.fileLocation
     panel.schematicSelection["type"] = schematicInfo.type.data
+    panel.schematicSelection["collectionPath"] = info.collectionPath ?: ""
   }
 }

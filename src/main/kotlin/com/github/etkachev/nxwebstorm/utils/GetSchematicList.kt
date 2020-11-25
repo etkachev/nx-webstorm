@@ -26,7 +26,6 @@ fun findFullSchematicIdByTypeAndId(
   type: SchematicTypeEnum
 ): String? {
   val toMatch = generateUniqueSchematicKey(collection, id, type)
-  // @TODO figure out why provided schematics are coming back as nx-custom
   return schematics.keys.find { key ->
     key == toMatch
   }

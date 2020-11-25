@@ -13,7 +13,8 @@ class RunSchematicDialog(
   private val collection: String,
   private val id: String,
   private val schematicLocation: String,
-  private val type: SchematicTypeEnum
+  private val type: SchematicTypeEnum,
+  private val collectionPath: String
 ) :
   DialogWrapper(project) {
   var formMap: FormValueMap = FormValueMap()
@@ -23,7 +24,7 @@ class RunSchematicDialog(
   }
 
   override fun createLeftSideActions(): Array<Action> {
-    return arrayOf(DryRunAction(project, collection, id, formMap, this, type))
+    return arrayOf(DryRunAction(project, collection, id, formMap, this, type, collectionPath))
   }
 
   override fun createCenterPanel(): JComponent? {

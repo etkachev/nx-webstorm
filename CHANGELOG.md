@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 ### Added
+- Added support for running, debugging custom schematics within non-nx angular projects.
 
 ### Changed
 - Updated Readme to include the latest updates.

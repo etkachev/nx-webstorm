@@ -2,12 +2,14 @@ package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
+import com.github.etkachev.nxwebstorm.models.SchematicCommandData
+import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 
 fun getSchematicCommandFromValues(
-  type: String,
+  collection: String,
   id: String,
   values: MutableMap<String, String>,
-  nxProjectType: NxProjectType,
+  commandData: SchematicCommandData,
   dryRun: Boolean = true
 ): String {
   val dryRunString = if (dryRun) " --dry-run" else ""
@@ -15,10 +17,15 @@ fun getSchematicCommandFromValues(
   val (ngPath, ngExec) = CliCommands.NG.data
   val nx = "node $nxPath/$nxExec"
   val ng = "node $ngPath/$ngExec"
-  val prefix = if (type == "workspace-schematic") "$nx workspace-schematic $id" else "$nx generate $type:$id"
-  val finalPrefix = if (nxProjectType == NxProjectType.Nx) prefix else "$ng generate $type:$id"
+  val (nxProjectType, schematicType, collectionPath) = commandData
+  val cli = if (nxProjectType == NxProjectType.Nx) nx else ng
+  val newPrefix = when (schematicType) {
+    SchematicTypeEnum.PROVIDED -> "$cli generate $collection:$id"
+    SchematicTypeEnum.CUSTOM_NX -> "$cli workspace-schematic $id"
+    SchematicTypeEnum.CUSTOM_ANGULAR -> "schematics .$collectionPath:$id"
+  }
   val flags = getCommandArguments(values).joinToString(" ")
-  return "$finalPrefix $flags --no-interactive$dryRunString"
+  return "$newPrefix $flags --no-interactive$dryRunString"
 }
 
 fun getCommandArguments(values: Map<String, String>): List<String> {

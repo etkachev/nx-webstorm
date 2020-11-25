@@ -7,10 +7,16 @@ import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
+import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterManager
+import com.intellij.javascript.nodejs.settings.NodeInstalledPackage
+import com.intellij.javascript.nodejs.settings.NodePackageManagementService
 import com.intellij.openapi.vfs.VirtualFile
 
 class MyProjectService(private val project: Project) {
   private var readFile = ReadFile.getInstance(project)
+  private var schematicsCliDir: String? = null
+  val schematicsCliDirectory: String?
+    get() = this.schematicsCliDir
   val nxJson: JsonObject?
     get() = readNxJson()
   val angularJson: JsonObject?
@@ -76,6 +82,17 @@ class MyProjectService(private val project: Project) {
 
   val nxDebugConfigSetup: Boolean
     get() = this.alreadySetupNxDebugConfig
+
+  init {
+    val interpreter = NodeJsInterpreterManager(project).interpreter
+    if (interpreter != null) {
+      val installed = NodePackageManagementService(project, interpreter).installedPackages
+      val schematicsPackage = installed.find { p -> p.name == "@angular-devkit/schematics-cli" }
+      if (schematicsPackage != null) {
+        this.schematicsCliDir = (schematicsPackage as NodeInstalledPackage).sourceRootDir.absolutePath
+      }
+    }
+  }
 
   fun setNxDebugConfigSetupDone() {
     this.alreadySetupNxDebugConfig = true

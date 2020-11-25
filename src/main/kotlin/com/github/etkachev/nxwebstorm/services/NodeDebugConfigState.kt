@@ -1,6 +1,7 @@
 package com.github.etkachev.nxwebstorm.services
 
 import com.github.etkachev.nxwebstorm.models.CliCommands
+import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.github.etkachev.nxwebstorm.utils.getCommandArguments
 import com.intellij.execution.ProgramRunnerUtil
@@ -23,8 +24,12 @@ class NodeDebugConfigState(project: Project) {
   private val runManagerName: String = "RunManager"
   private val configElementName: String = "configuration"
   private val argsAttribute: String = "application-parameters"
+  private val pathToJsFileAttribute: String = "path-to-js-file"
+  private val workDirAttribute: String = "working-dir"
   private val nxDebugConfigName: String = "Nx.Debug.Config"
   private val nodeJsConfigTypeName: String = "NodeJSConfigurationType"
+  private val nxService = MyProjectService.getInstance(this.proj)
+  private val schematicsCliDir = nxService.schematicsCliDirectory
   private val workspacePath: String
     get() {
       val workspaceFile = proj.workspaceFile
@@ -34,16 +39,16 @@ class NodeDebugConfigState(project: Project) {
   /**
    * execute and run debugger for your command
    */
-  fun execute(command: String, name: String, args: Map<String, String>) {
-    val doc = this.addOrUpdateNxDebugConfig(command, name, args)
+  fun execute(command: String, name: String, args: Map<String, String>, type: SchematicTypeEnum) {
+    val doc = this.addOrUpdateNxDebugConfig(command, name, args, type)
     this.saveWorkspaceFile(doc)
     val runManager = RunManager.getInstance(this.proj)
     (runManager as RunManagerImpl).copyTemplatesToProjectFromTemplate(this.proj)
-    this.runNodeDebug(command, name, args)
+    this.runNodeDebug(command, name, args, type)
   }
 
   fun setupDebugConfig() {
-    val cli = MyProjectService.getInstance(this.proj).cliCommand
+    val cli = nxService.cliCommand
     ApplicationManager.getApplication().invokeLater {
       val doc = readWorkspaceFile()
       var hasExistingConfig = false
@@ -82,18 +87,36 @@ class NodeDebugConfigState(project: Project) {
     return this.readFile.saveXml(document, workspacePath)
   }
 
-  /**
-   * combine the command, name, along with arguments into string to execute.
-   */
-  private fun joinArgsWithCommand(command: String, name: String, args: Map<String, String>): String {
-    return "$command $name " + getCommandArguments(args).joinToString(" ")
-  }
-
-  private fun setNxConfigAttributes(element: Element, command: String, name: String, args: Map<String, String>) {
+  private fun setNxConfigAttributes(
+    element: Element,
+    command: String,
+    name: String,
+    args: Map<String, String>,
+    type: SchematicTypeEnum
+  ) {
+    val cli = nxService.cliCommand
     for (runManagerChild in element.children) {
       if (elementAttributesAreNxDebugConfig(runManagerChild, configElementName, nxDebugConfigName)) {
         runManagerChild.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
+        this.setDirAttrBySchematicType(type, runManagerChild, cli)
       }
+    }
+  }
+
+  private fun setDirAttrBySchematicType(
+    type: SchematicTypeEnum,
+    runManagerChild: Element,
+    cli: CliCommands,
+    initialSetup: Boolean = true
+  ) {
+    if (type == SchematicTypeEnum.CUSTOM_ANGULAR) {
+      runManagerChild.setAttribute(workDirAttribute, "$schematicsCliDir/bin")
+      runManagerChild.setAttribute(pathToJsFileAttribute, "schematics.js")
+    } else {
+      val (path, exec) = cli.data
+      val projDir = if (initialSetup) "\$PROJECT_DIR\$" else this.proj.basePath
+      runManagerChild.setAttribute(pathToJsFileAttribute, exec)
+      runManagerChild.setAttribute(workDirAttribute, "$projDir/$path")
     }
   }
 
@@ -101,11 +124,16 @@ class NodeDebugConfigState(project: Project) {
    * reads current workspace.xml and update the RunManager component
    * config to update existing Nx.debug config with new arguments.
    */
-  private fun addOrUpdateNxDebugConfig(command: String, name: String, args: Map<String, String>): Document {
+  private fun addOrUpdateNxDebugConfig(
+    command: String,
+    name: String,
+    args: Map<String, String>,
+    type: SchematicTypeEnum
+  ): Document {
     val docFile = readWorkspaceFile()
     for (content in docFile.rootElement.children) {
       if (this.isComponentRunManager(content)) {
-        this.setNxConfigAttributes(content, command, name, args)
+        this.setNxConfigAttributes(content, command, name, args, type)
       }
     }
     return docFile
@@ -127,8 +155,8 @@ class NodeDebugConfigState(project: Project) {
       Attribute("name", nxDebugConfigName),
       Attribute("type", nodeJsConfigTypeName),
       Attribute(argsAttribute, ""),
-      Attribute("path-to-js-file", cli.data.exec),
-      Attribute("working-dir", "\$PROJECT_DIR\$/$cliPath")
+      Attribute(pathToJsFileAttribute, cli.data.exec),
+      Attribute(workDirAttribute, "\$PROJECT_DIR\$/$cliPath")
     )
     newConfig.attributes = attributes
     val methodEl = Element("method")
@@ -140,7 +168,7 @@ class NodeDebugConfigState(project: Project) {
   /**
    * find the Nx.Debug config and run it using the debug executor.
    */
-  private fun runNodeDebug(command: String, name: String, args: Map<String, String>) {
+  private fun runNodeDebug(command: String, name: String, args: Map<String, String>, type: SchematicTypeEnum) {
     ApplicationManager.getApplication().invokeLater {
       val runManager = RunManager.getInstance(this.proj)
       val allSettings = runManager.allSettings
@@ -153,6 +181,7 @@ class NodeDebugConfigState(project: Project) {
           @Suppress("UNCHECKED_CAST")
           val currentState = (match.configuration as LocatableConfigurationBase<Element>).state!!
           currentState.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
+          this.setDirAttrBySchematicType(type, currentState, nxService.cliCommand, false)
           @Suppress("UNCHECKED_CAST")
           (match.configuration as RunConfigurationBase<Element>).loadState(currentState)
         }
@@ -180,4 +209,11 @@ internal fun elementAttributesAreNxDebugConfig(
   val nameIsConfig = element.name == configElementName
   val isNxDebugConfig = element.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null
   return nameIsConfig && isNxDebugConfig
+}
+
+/**
+ * combine the command, name, along with arguments into string to execute.
+ */
+internal fun joinArgsWithCommand(command: String, name: String, args: Map<String, String>): String {
+  return "$command $name " + getCommandArguments(args).joinToString(" ")
 }

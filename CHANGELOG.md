@@ -4,9 +4,11 @@
 
 ## [Unreleased]
 ### Added
+- Added support for running, debugging custom schematics within non-nx angular projects.
 
 ### Changed
 - Updated Readme to include the latest updates.
+- Renamed the column "Type" to "Collection" within the schematic table search.
 
 ### Deprecated
 

@@ -1,14 +1,18 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.models.SchematicRunData
+import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
-import com.github.etkachev.nxwebstorm.utils.findFullSchematicIdByTypeAndId
 import com.github.etkachev.nxwebstorm.utils.foldListOfMaps
 import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
+import com.github.etkachev.nxwebstorm.utils.getSchematicIdFromTableSelect
+import com.github.etkachev.nxwebstorm.utils.splitSchematicId
 import com.google.gson.JsonArray
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -35,47 +39,60 @@ class SchematicSelectionTabListener(
   private var nxService = MyProjectService.getInstance(project)
 
   private fun dryRunAction(
-    type: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?
+    runData: SchematicRunData
   ): () -> Unit {
-    return { run(type, id, formMap, required) }
+    return { run(runData) }
   }
 
-  private fun runAction(type: String, id: String, formMap: FormValueMap, required: JsonArray?): () -> Unit {
-    return { run(type, id, formMap, required, false) }
+  private fun runAction(
+    runData: SchematicRunData
+  ): () -> Unit {
+    return { run(runData, false) }
   }
 
   private fun debugAction(
-    type: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?
+    runData: SchematicRunData
   ): () -> Unit {
-    return { runDebug(type, id, formMap, required) }
+    return { runDebug(runData) }
   }
 
-  private fun runDebug(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
+  private fun runDebug(
+    runData: SchematicRunData,
+    dryRun: Boolean = true
+  ) {
+    val (collection, id, formMap, required, type, collectionPath) = runData
     val values = formMap.formVal
     if (isMissingRequiredFields(required, values)) {
       return
     }
-    val isCustomSchematic = type == "workspace-schematic"
     val dryRunArg = if (dryRun) "true" else "false"
-    val command = if (isCustomSchematic) "workspace-schematic" else "generate"
-    val name = if (isCustomSchematic) id else "$type:$id"
+    val command = when (type) {
+      SchematicTypeEnum.CUSTOM_NX -> "workspace-schematic"
+      SchematicTypeEnum.PROVIDED -> "generate"
+      SchematicTypeEnum.CUSTOM_ANGULAR -> ""
+    }
+    val projDir = this.project.basePath
+    val name = when (type) {
+      SchematicTypeEnum.CUSTOM_NX -> id
+      SchematicTypeEnum.PROVIDED -> "$collection:$id"
+      SchematicTypeEnum.CUSTOM_ANGULAR -> "$projDir/$collectionPath:$id"
+    }
     val args = foldListOfMaps(arrayOf(values, mapOf(Pair("no-interactive", "true"), Pair("dry-run", dryRunArg))))
-    NodeDebugConfigState.getInstance(this.project).execute(command, name, args)
+    NodeDebugConfigState.getInstance(this.project).execute(command, name, args, type)
   }
 
-  private fun run(type: String, id: String, formMap: FormValueMap, required: JsonArray?, dryRun: Boolean = true) {
+  private fun run(
+    runData: SchematicRunData,
+    dryRun: Boolean = true
+  ) {
+    val (collection, id, formMap, required, type, collectionPath) = runData
     val values = formMap.formVal
     if (isMissingRequiredFields(required, values)) {
       return
     }
     val projectType = this.nxService.nxProjectType
-    val command = getSchematicCommandFromValues(type, id, values, projectType, dryRun)
+    val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
+    val command = getSchematicCommandFromValues(collection, id, values, schematicCommandData, dryRun)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
     } else {
@@ -113,19 +130,21 @@ class SchematicSelectionTabListener(
     if (selectedRow == -1) {
       return
     }
-    val type = table.getValueAt(selectedRow, 0).toString()
-    val id = table.getValueAt(selectedRow, 1).toString()
-    val fullId = findFullSchematicIdByTypeAndId(type, id, schematics) ?: return
+    val fullId = getSchematicIdFromTableSelect(table, selectedRow, schematics) ?: return
     val info = schematics[fullId] ?: return
+    val schematicInfo = splitSchematicId(fullId) ?: return
+    val collection = schematicInfo.collection
+    val id = schematicInfo.id
     val formMap = FormValueMap()
     val schematicPanel = RunSchematicPanel(project, id, info.fileLocation, formMap)
     val required = schematicPanel.required
+    val runData = SchematicRunData(collection, id, formMap, required, schematicInfo.type, info.collectionPath)
     val panel = schematicPanel.generateCenterPanel(
       withBorder = true,
       addButtons = true,
-      dryRunAction = this.dryRunAction(type, id, formMap, required),
-      runAction = this.runAction(type, id, formMap, required),
-      debugAction = this.debugAction(type, id, formMap, required)
+      dryRunAction = this.dryRunAction(runData),
+      runAction = this.runAction(runData),
+      debugAction = this.debugAction(runData)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

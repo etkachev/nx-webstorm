@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.actions
 
+import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.models.mapSchematicTypeStringToEnum
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunSchematicDialog
@@ -35,8 +36,9 @@ class Generate : AnAction() {
       if (formOk) {
         val values = formDialog.formMap.formVal
         val projectType = nxService.nxProjectType
+        val schematicCommandData = SchematicCommandData(projectType, enumType, collectionPath)
         val command =
-          getSchematicCommandFromValues(collection, id, values, projectType, false, enumType, collectionPath)
+          getSchematicCommandFromValues(collection, id, values, schematicCommandData, false)
         val terminal = RunTerminalWindow(proj, "Run")
         terminal.runAndShow(command)
       }

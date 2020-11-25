@@ -40,7 +40,8 @@ class FindAllSchematics(private val project: Project) {
 
   /**
    * Fetch both custom schematics and external schematics.
-   * Depending on settings for plugin, will either search explicit libs for external schematics or scan full node_modules for external schematics.
+   * Depending on settings for plugin, will either search explicit
+   * libs for external schematics or scan full node_modules for external schematics.
    */
   fun findAll(): Map<String, SchematicInfo> {
     val customSchematics = getCustomSchematics()
@@ -63,7 +64,8 @@ class FindAllSchematics(private val project: Project) {
   /**
    * Fetch custom schematics.
    * - If nx project search just schema.json files within `/tools/schematics` (or overload folder).
-   * - Otherwise if regular angular project, search custom schematics from package.json file within expected schematics folder of project.
+   * - Otherwise if regular angular project,
+   * search custom schematics from package.json file within expected schematics folder of project.
    */
   private fun getCustomSchematics(): Map<String, SchematicInfo> {
     val rootPsiDirectory = getRootPsiDirectory(project)
@@ -124,7 +126,8 @@ class FindAllSchematics(private val project: Project) {
   }
 
   /**
-   * for non-nx angular project, search for custom schematics via package.json file within expected custom schematics folder.
+   * for non-nx angular project, search for custom schematics
+   * via package.json file within expected custom schematics folder.
    */
   private fun getAngularCustomSchematics(directory: String): Map<String, SchematicInfo>? {
     val packageJson = packageJsonHelper.getPackageFileInfo(directory) ?: return null

@@ -2,22 +2,22 @@ package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
+import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 
 fun getSchematicCommandFromValues(
   collection: String,
   id: String,
   values: MutableMap<String, String>,
-  nxProjectType: NxProjectType,
-  dryRun: Boolean = true,
-  schematicType: SchematicTypeEnum,
-  collectionPath: String?
+  commandData: SchematicCommandData,
+  dryRun: Boolean = true
 ): String {
   val dryRunString = if (dryRun) " --dry-run" else ""
   val (nxPath, nxExec) = CliCommands.NX.data
   val (ngPath, ngExec) = CliCommands.NG.data
   val nx = "node $nxPath/$nxExec"
   val ng = "node $ngPath/$ngExec"
+  val (nxProjectType, schematicType, collectionPath) = commandData
   val cli = if (nxProjectType == NxProjectType.Nx) nx else ng
   val newPrefix = when (schematicType) {
     SchematicTypeEnum.PROVIDED -> "$cli generate $collection:$id"

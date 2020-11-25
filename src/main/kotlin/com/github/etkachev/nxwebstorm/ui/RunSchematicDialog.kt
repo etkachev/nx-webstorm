@@ -1,6 +1,7 @@
 package com.github.etkachev.nxwebstorm.ui
 
 import com.github.etkachev.nxwebstorm.actionlisteners.DryRunAction
+import com.github.etkachev.nxwebstorm.models.DryRunButtonData
 import com.github.etkachev.nxwebstorm.models.FormValueMap
 import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 import com.intellij.openapi.ui.DialogWrapper
@@ -24,7 +25,8 @@ class RunSchematicDialog(
   }
 
   override fun createLeftSideActions(): Array<Action> {
-    return arrayOf(DryRunAction(project, collection, id, formMap, this, type, collectionPath))
+    val runData = DryRunButtonData(collection, id, formMap, type, collectionPath)
+    return arrayOf(DryRunAction(project, runData, this))
   }
 
   override fun createCenterPanel(): JComponent? {

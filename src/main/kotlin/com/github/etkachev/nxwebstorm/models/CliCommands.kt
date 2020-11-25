@@ -10,3 +10,9 @@ enum class CliCommands(val data: CliData) {
  * @property exec the js file for executing
  */
 data class CliData(val path: String, val exec: String)
+
+data class SchematicCommandData(
+  val nxProjectType: NxProjectType,
+  val schematicType: SchematicTypeEnum,
+  val collectionPath: String?
+)

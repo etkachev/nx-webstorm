@@ -87,13 +87,6 @@ class NodeDebugConfigState(project: Project) {
     return this.readFile.saveXml(document, workspacePath)
   }
 
-  /**
-   * combine the command, name, along with arguments into string to execute.
-   */
-  private fun joinArgsWithCommand(command: String, name: String, args: Map<String, String>): String {
-    return "$command $name " + getCommandArguments(args).joinToString(" ")
-  }
-
   private fun setNxConfigAttributes(
     element: Element,
     command: String,
@@ -216,4 +209,11 @@ internal fun elementAttributesAreNxDebugConfig(
   val nameIsConfig = element.name == configElementName
   val isNxDebugConfig = element.attributes.find { rc -> rc.name == "name" && rc.value == nxDebugConfigName } != null
   return nameIsConfig && isNxDebugConfig
+}
+
+/**
+ * combine the command, name, along with arguments into string to execute.
+ */
+internal fun joinArgsWithCommand(command: String, name: String, args: Map<String, String>): String {
+  return "$command $name " + getCommandArguments(args).joinToString(" ")
 }

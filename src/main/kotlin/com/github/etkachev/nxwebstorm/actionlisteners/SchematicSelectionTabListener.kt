@@ -1,7 +1,9 @@
 package com.github.etkachev.nxwebstorm.actionlisteners
 
 import com.github.etkachev.nxwebstorm.models.FormValueMap
+import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
+import com.github.etkachev.nxwebstorm.models.SchematicRunData
 import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
@@ -37,47 +39,28 @@ class SchematicSelectionTabListener(
   private var nxService = MyProjectService.getInstance(project)
 
   private fun dryRunAction(
-    collection: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?,
-    type: SchematicTypeEnum,
-    collectionPath: String?
+    runData: SchematicRunData
   ): () -> Unit {
-    return { run(collection, id, formMap, required, type, collectionPath) }
+    return { run(runData) }
   }
 
   private fun runAction(
-    collection: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?,
-    type: SchematicTypeEnum,
-    collectionPath: String?
+    runData: SchematicRunData
   ): () -> Unit {
-    return { run(collection, id, formMap, required, type, collectionPath, false) }
+    return { run(runData, false) }
   }
 
   private fun debugAction(
-    collection: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?,
-    type: SchematicTypeEnum,
-    collectionPath: String?
+    runData: SchematicRunData
   ): () -> Unit {
-    return { runDebug(collection, id, formMap, required, type, collectionPath) }
+    return { runDebug(runData) }
   }
 
   private fun runDebug(
-    collection: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?,
-    type: SchematicTypeEnum,
-    collectionPath: String?,
+    runData: SchematicRunData,
     dryRun: Boolean = true
   ) {
+    val (collection, id, formMap, required, type, collectionPath) = runData
     val values = formMap.formVal
     if (isMissingRequiredFields(required, values)) {
       return
@@ -99,20 +82,17 @@ class SchematicSelectionTabListener(
   }
 
   private fun run(
-    collection: String,
-    id: String,
-    formMap: FormValueMap,
-    required: JsonArray?,
-    type: SchematicTypeEnum,
-    collectionPath: String?,
+    runData: SchematicRunData,
     dryRun: Boolean = true
   ) {
+    val (collection, id, formMap, required, type, collectionPath) = runData
     val values = formMap.formVal
     if (isMissingRequiredFields(required, values)) {
       return
     }
     val projectType = this.nxService.nxProjectType
-    val command = getSchematicCommandFromValues(collection, id, values, projectType, dryRun, type, collectionPath)
+    val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
+    val command = getSchematicCommandFromValues(collection, id, values, schematicCommandData, dryRun)
     if (dryRun) {
       dryRunTerminal.runAndShow(command)
     } else {
@@ -158,12 +138,13 @@ class SchematicSelectionTabListener(
     val formMap = FormValueMap()
     val schematicPanel = RunSchematicPanel(project, id, info.fileLocation, formMap)
     val required = schematicPanel.required
+    val runData = SchematicRunData(collection, id, formMap, required, schematicInfo.type, info.collectionPath)
     val panel = schematicPanel.generateCenterPanel(
       withBorder = true,
       addButtons = true,
-      dryRunAction = this.dryRunAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath),
-      runAction = this.runAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath),
-      debugAction = this.debugAction(collection, id, formMap, required, schematicInfo.type, info.collectionPath)
+      dryRunAction = this.dryRunAction(runData),
+      runAction = this.runAction(runData),
+      debugAction = this.debugAction(runData)
     )
     val scrollPane = JBScrollPane(panel)
     val contentFactory = ContentFactory.SERVICE.getInstance()

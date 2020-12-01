@@ -6,6 +6,7 @@
 ### Added
 
 ### Changed
+- Updated gradle configs and ymls to latest plugin template 0.7.0
 
 ### Deprecated
 

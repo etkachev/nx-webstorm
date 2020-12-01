@@ -83,7 +83,7 @@ tasks {
 
   runIde {
     setIdeDirectory(
-      "/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/202.7660.23/WebStorm.app/Contents"
+      "/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/203.5981.135/WebStorm.app/Contents"
     )
   }
 

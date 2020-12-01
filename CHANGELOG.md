@@ -12,6 +12,7 @@
 ### Removed
 
 ### Fixed
+- update `pluginUntilBuild` to latest 203.* to handle latest webstorm update
 
 ### Security
 ## [0.6.0]

@@ -49,13 +49,16 @@ fun getSchematicData(schematics: Map<String, SchematicInfo>): Array<FullSchemati
 }
 
 fun flattenMultipleMaps(vararg maps: Map<String, SchematicInfo>): Map<String, SchematicInfo> {
-  return arrayOf(maps).flatten().fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
-    for (key in e.keys) {
-      val value = e[key] ?: continue
-      acc[key] = value
+  return arrayOf(maps).flatten().fold(
+    mutableMapOf<String, SchematicInfo>(),
+    { acc, e ->
+      for (key in e.keys) {
+        val value = e[key] ?: continue
+        acc[key] = value
+      }
+      return@fold acc
     }
-    return@fold acc
-  }).toMap()
+  ).toMap()
 }
 
 fun getSchematicIdFromTableSelect(table: JBTable, selectedRow: Int, schematics: Map<String, SchematicInfo>): String? {

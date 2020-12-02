@@ -62,6 +62,6 @@ This is only an issue during debugging, and does not affect when you are doing r
 - [x] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 ---
-Plugin based on the [IntelliJ Platform Plugin Template][template].
+Plugin based on the [IntelliJ Platform Plugin Template][template] v0.7.0.
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template

@@ -22,27 +22,29 @@ fun createRowFilter(
   val rowSorter: TableRowSorter<out TableModel?> = (if (rs is TableRowSorter<*>) rs else null)
     ?: throw NoSuchElementException("Cannot find appropriate rowSorter: $rs")
   val tf = JBTextField(defaultValue, fieldColumns)
-  tf.document.addDocumentListener(object : DocumentListener {
-    override fun insertUpdate(e: DocumentEvent) {
-      update()
-    }
+  tf.document.addDocumentListener(
+    object : DocumentListener {
+      override fun insertUpdate(e: DocumentEvent) {
+        update()
+      }
 
-    override fun removeUpdate(e: DocumentEvent) {
-      update()
-    }
+      override fun removeUpdate(e: DocumentEvent) {
+        update()
+      }
 
-    override fun changedUpdate(e: DocumentEvent) {
-      update()
-    }
+      override fun changedUpdate(e: DocumentEvent) {
+        update()
+      }
 
-    private fun update() {
-      val text = tf.text
-      if (text.trim { it <= ' ' }.isEmpty()) {
-        rowSorter.setRowFilter(null)
-      } else {
-        rowSorter.setRowFilter(RowFilter.regexFilter("(?i)$text"))
+      private fun update() {
+        val text = tf.text
+        if (text.trim { it <= ' ' }.isEmpty()) {
+          rowSorter.setRowFilter(null)
+        } else {
+          rowSorter.setRowFilter(RowFilter.regexFilter("(?i)$text"))
+        }
       }
     }
-  })
+  )
   return tf
 }

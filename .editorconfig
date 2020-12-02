@@ -1,4 +1,4 @@
-[*.{kt, kts}]
+[*.{kt,kts,gradle}]
 disabled_rules = import-ordering
 indent_size = 2
 indent_style = space

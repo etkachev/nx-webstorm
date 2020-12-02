@@ -9,7 +9,6 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMUtil
@@ -42,8 +41,6 @@ class NodeDebugConfigState(project: Project) {
   fun execute(command: String, name: String, args: Map<String, String>, type: SchematicTypeEnum) {
     val doc = this.addOrUpdateNxDebugConfig(command, name, args, type)
     this.saveWorkspaceFile(doc)
-    val runManager = RunManager.getInstance(this.proj)
-    (runManager as RunManagerImpl).copyTemplatesToProjectFromTemplate(this.proj)
     this.runNodeDebug(command, name, args, type)
   }
 

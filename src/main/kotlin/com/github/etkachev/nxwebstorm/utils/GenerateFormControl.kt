@@ -37,7 +37,11 @@ class GenerateFormControl(private val required: JsonArray?, val project: Project
     val default = if (prop.has("default")) prop.get("default").asString else null
     val result = when (type) {
       "boolean" -> FormCombo(
-        getBoolControl(description, default), FormControlType.BOOL, name, description, null,
+        getBoolControl(description, default),
+        FormControlType.BOOL,
+        name,
+        description,
+        null,
         requiredFields
       )
       "string" -> getFormComboOfString(FormComboStringParams(name, description, enums, xPromptObj, default, source))
@@ -94,14 +98,21 @@ class GenerateFormControl(private val required: JsonArray?, val project: Project
     }
 
     val stringOptions = enums?.map { o -> o.asString }?.toTypedArray()
-      ?: (xPromptItems?.mapNotNull { i ->
-        val obj = i.asJsonObject
-        val value = if (obj.has("value")) obj.get("value").asString else null
-        value
-      }?.toTypedArray()
-        ?: emptyArray<String>())
+      ?: (
+        xPromptItems?.mapNotNull
+        { i ->
+          val obj = i.asJsonObject
+          val value = if (obj.has("value")) obj.get("value").asString else null
+          value
+        }?.toTypedArray()
+          ?: emptyArray<String>()
+        )
     return FormCombo(
-      getSelectDropdown(stringOptions, default), FormControlType.LIST, name, description, stringOptions,
+      getSelectDropdown(stringOptions, default),
+      FormControlType.LIST,
+      name,
+      description,
+      stringOptions,
       requiredFields
     )
   }

@@ -6,6 +6,7 @@
 ### Added
 
 ### Changed
+- Updated gradle configs and ymls to latest plugin template 0.7.0
 
 ### Deprecated
 
@@ -35,13 +36,6 @@
 - Updated Readme to include the latest updates.
 - Renamed the column "Type" to "Collection" within the schematic table search.
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 ## [0.5.0]
 ### Added
 - \***Debugging Schematics**\* - you can now debug schematics within your IDE with a simple click of a button

@@ -74,7 +74,8 @@ class FindAllSchematics(private val project: Project) {
     if (nxService.isValidNxProject) {
       val schematics = findPsiDirectoryBySplitFolders(splitSchematicDir, rootPsiDirectory) ?: return emptyMap()
       val files = FilenameIndex.getFilesByName(
-        project, "schema.json",
+        project,
+        "schema.json",
         GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile)
       )
       return files.mapNotNull { file -> getIdsFromSchema(file, projectBase) }.toMap()
@@ -111,18 +112,21 @@ class FindAllSchematics(private val project: Project) {
     schematicType: SchematicTypeEnum,
     collectionPath: String
   ): Map<String, SchematicInfo> {
-    return schematicOptions.entrySet().toTypedArray().fold(mutableMapOf<String, SchematicInfo>(), { acc, e ->
-      val value = e.value.asJsonObject
-      if (value.has("hidden") && value["hidden"].asBoolean) {
+    return schematicOptions.entrySet().toTypedArray().fold(
+      mutableMapOf<String, SchematicInfo>(),
+      { acc, e ->
+        val value = e.value.asJsonObject
+        if (value.has("hidden") && value["hidden"].asBoolean) {
+          return@fold acc
+        }
+
+        val fileLocation = getRelativePath(value, schematicCollection) ?: return@fold acc
+        val id = generateUniqueSchematicKey(packageName, e.key, schematicType)
+        val description = if (value.has("description")) value["description"].asString else null
+        acc[id] = SchematicInfo(fileLocation, description, collectionPath)
         return@fold acc
       }
-
-      val fileLocation = getRelativePath(value, schematicCollection) ?: return@fold acc
-      val id = generateUniqueSchematicKey(packageName, e.key, schematicType)
-      val description = if (value.has("description")) value["description"].asString else null
-      acc[id] = SchematicInfo(fileLocation, description, collectionPath)
-      return@fold acc
-    }).toMap()
+    ).toMap()
   }
 
   /**

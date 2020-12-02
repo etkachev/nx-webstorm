@@ -40,10 +40,10 @@
                                  nonDefaultProject="true"/>
     </extensions>
 
-    <projectListeners>
+    <applicationListeners>
         <listener class="com.github.etkachev.nxwebstorm.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </projectListeners>
+    </applicationListeners>
     <actions>
         <!--Actions here-->
         <group id="Nx.Main" class="com.github.etkachev.nxwebstorm.actions.NxActionGroup" text="Nx"

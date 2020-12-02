@@ -26,7 +26,9 @@ class SchematicsListToolTab(
   private var reFetchListener: ReFetchSchematicsListener = ReFetchSchematicsListener(
     toolWindow,
     contentFactory,
-    tabName, this, schematicFetcher
+    tabName,
+    this,
+    schematicFetcher
   )
 
   /**

@@ -5,10 +5,10 @@ formatting:
   Indentation:
     active: false
     indentSize: 2
-    continuationIndentSize: 2
+    continuationIndentSize: 8
   ParameterListWrapping:
     active: false
-    indentSize: 2
+    indentSize: 8
 
 style:
   ReturnCount:
@@ -19,3 +19,7 @@ style:
 empty-blocks:
   EmptyFunctionBlock:
     ignoreOverridden: true
+
+complexity:
+  LongMethod:
+    threshold: 80

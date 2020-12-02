@@ -11,7 +11,6 @@ import com.github.etkachev.nxwebstorm.utils.FormControlType
 import com.github.etkachev.nxwebstorm.utils.GenerateFormControl
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -57,7 +56,8 @@ class RunSchematicPanel(
     return textArea
   }
 
-  private fun getFormControlKeys(props: JsonObject): List<FormCombo> {
+  private fun getFormControlKeys(): List<FormCombo>? {
+    val props = json?.get("properties")?.asJsonObject ?: return null
     val formControls = props.keySet()
       .mapNotNull { key ->
         formControlGenerator.getFormControl(
@@ -110,8 +110,7 @@ class RunSchematicPanel(
     runAction: () -> Unit = {},
     debugAction: () -> Unit = {}
   ): JComponent? {
-    val props = json?.get("properties")?.asJsonObject ?: return null
-    val formControls = getFormControlKeys(props)
+    val formControls = getFormControlKeys() ?: return null
     val actions = this.getActionGroup(runAction, debugAction, dryRunAction)
     val (runBtn, debugBtn, dryRunBtn) = actions
 
@@ -135,19 +134,23 @@ class RunSchematicPanel(
           }
           row {
             when (control.type) {
-              FormControlType.LIST -> (comboBox<String>(
-                DefaultComboBoxModel(control.enums), nvg,
-                nvs
-              ).component.editor.editorComponent as JTextField).document.addDocumentListener(
-                TextControlListener(formMap, control)
-              )
+              FormControlType.LIST ->
+                (
+                  comboBox<String>(
+                    DefaultComboBoxModel(control.enums),
+                    nvg,
+                    nvs
+                  ).component.editor.editorComponent as JTextField
+                  ).document.addDocumentListener(TextControlListener(formMap, control))
               FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField(
                 vg,
                 vs,
                 25
               ).component.document.addDocumentListener(TextControlListener(formMap, control))
               FormControlType.BOOL -> checkBox(
-                control.description ?: "", vbg, vbs
+                control.description ?: "",
+                vbg,
+                vbs
               ).component.addActionListener(CheckboxListener(formMap, control))
               FormControlType.AUTOCOMPLETE -> (comp().component as JTextField).document.addDocumentListener(
                 TextControlListener(formMap, control)
@@ -166,14 +169,15 @@ class RunSchematicPanel(
       }
     }
 
-    this.setBorder(panel, withBorder)
-    return panel
+    return this.setBorder(panel, withBorder)
   }
 
-  private fun setBorder(panel: DialogPanel, withBorder: Boolean) {
+  private fun setBorder(panel: DialogPanel, withBorder: Boolean): DialogPanel {
     if (withBorder) {
       panel.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))
     }
+
+    return panel
   }
 }
 

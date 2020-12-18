@@ -22,9 +22,9 @@ data class CollectionInfo(val json: JsonObject, val file: VirtualFile, val relat
  */
 class FindAllSchematics(private val project: Project) {
   private val projectSettings = PluginProjectSettingsState.getInstance(project)
-  private val defaultToolsSchematicDir = "/tools/schematics"
+  private val defaultToolsSchematicDir = MyProjectService.getInstance(this.project).defaultCustomSchematicsLocation
   private val configToolsSchematicDir: String
-    get() = projectSettings.customSchematicsLocation
+    get() = projectSettings.customSchematicsLocation ?: this.defaultToolsSchematicDir
   private val jsonFileReader = ReadFile.getInstance(project)
   private val packageJsonHelper = PackageJsonHelper(project)
   private val schematicPropName = "schematics"

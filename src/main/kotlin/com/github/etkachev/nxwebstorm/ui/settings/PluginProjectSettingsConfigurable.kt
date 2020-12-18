@@ -30,8 +30,10 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
   override fun isModified(): Boolean {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     var modified: Boolean = mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs
-    modified =
-      modified or (mySettingsComponent!!.customSchematicsDirText != settings.customSchematicsLocation && settings.customSchematicsLocation != null)
+    val settingCustomSchemDir = settings.customSchematicsLocation
+    val componentSchematicText = mySettingsComponent!!.customSchematicsDirText
+    modified = modified or
+      (componentSchematicText != settingCustomSchemDir && settingCustomSchemDir != null)
     return modified
   }
 

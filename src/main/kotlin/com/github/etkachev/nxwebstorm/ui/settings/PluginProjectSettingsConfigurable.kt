@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.ui.settings
 
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.Nls
@@ -30,7 +31,7 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     var modified: Boolean = mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs
     modified =
-      modified or (mySettingsComponent!!.customSchematicsDirText != settings.customSchematicsLocation)
+      modified or (mySettingsComponent!!.customSchematicsDirText != settings.customSchematicsLocation && settings.customSchematicsLocation != null)
     return modified
   }
 
@@ -42,8 +43,10 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
 
   override fun reset() {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
+    val projService = MyProjectService.getInstance(this.project)
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
-    mySettingsComponent!!.customSchematicsDirText = settings.customSchematicsLocation
+    mySettingsComponent!!.customSchematicsDirText =
+      settings.customSchematicsLocation ?: projService.defaultCustomSchematicsLocation
   }
 
   override fun disposeUIResources() {

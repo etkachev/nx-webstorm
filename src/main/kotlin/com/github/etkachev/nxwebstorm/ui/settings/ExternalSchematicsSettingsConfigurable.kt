@@ -14,8 +14,8 @@ class ExternalSchematicsSettingsConfigurable(val project: Project) : Configurabl
 
   override fun isModified(): Boolean {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
-    val current = settings.externalLibs.joinToString(",")
-    val newList = externalSchematicsComponent!!.externalSchematics.joinToString(",")
+    val current = settings.externalLibs.joinToString(",") { l -> l.trim() }
+    val newList = externalSchematicsComponent!!.externalSchematics.joinToString(",") { l -> l.trim() }
     return newList != current
   }
 

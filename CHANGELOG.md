@@ -8,6 +8,7 @@
 
 ### Changed
 
+- Updated default directory for custom schematics with Nx 11
 - Updated gradle configs and ymls to latest plugin template 0.7.1
 
 ### Deprecated
@@ -20,19 +21,9 @@
 
 ## [0.6.1]
 
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - update `pluginUntilBuild` to latest 203.* to handle latest webstorm update
-
-### Security
 
 ## [0.6.0]
 

@@ -19,9 +19,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSettingsState?> {
   var externalLibs = PluginSettingsState.instance.externalLibs.split(",").toTypedArray()
   var scanExplicitLibs = PluginSettingsState.instance.scanExplicitLibs
-  var customSchematicsLocation = PluginSettingsState.instance.customSchematicsLocation
+  var customSchematicsLocation: String? = null
 
-  override fun getState(): PluginProjectSettingsState? {
+  override fun getState(): PluginProjectSettingsState {
     return this
   }
 

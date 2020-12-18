@@ -8,13 +8,17 @@ import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
 import com.google.gson.JsonObject
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterManager
+import com.intellij.javascript.nodejs.packageJson.NodeInstalledPackageFinder
 import com.intellij.javascript.nodejs.settings.NodeInstalledPackage
 import com.intellij.javascript.nodejs.settings.NodePackageManagementService
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.text.SemVer
 
 class MyProjectService(private val project: Project) {
   private var readFile = ReadFile.getInstance(project)
   private var schematicsCliDir: String? = null
+  private var projectRoot = ProjectRootManager.getInstance(project).contentRoots[0]
   val schematicsCliDirectory: String?
     get() = this.schematicsCliDir
   val nxJson: JsonObject?
@@ -26,6 +30,15 @@ class MyProjectService(private val project: Project) {
       val thisProject = this.project
       return thisProject.basePath
     }
+
+  private val nxCliVersion: SemVer?
+    get() = NodeInstalledPackageFinder(this.project, this.projectRoot).findInstalledPackage("@nrwl/cli")?.version
+
+  private val isNx11OrAbove: Boolean
+    get() = this.nxCliVersion != null && this.nxCliVersion!!.major >= 11
+
+  val defaultCustomSchematicsLocation: String
+    get() = if (this.isNx11OrAbove) "/tools/generators" else "/tools/schematics"
 
   /**
    * full list of projects/libraries within current project.

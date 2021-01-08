@@ -8,6 +8,7 @@ object SchematicActionButtons {
   fun run(action: () -> Unit) = RunSchematicActionButton(action)
   fun debug(action: () -> Unit) = DebugSchematicActionButton(action)
   fun dryRun(action: () -> Unit) = DryRunSchematicActionButton(action)
+  fun refresh(action: () -> Unit) = RefreshSchematicsListActionButton(action)
 }
 
 class RunSchematicActionButton(private val action: () -> Unit) : AnAction(
@@ -34,6 +35,16 @@ class DryRunSchematicActionButton(private val action: () -> Unit) : AnAction(
   "Dry Run",
   "Dry Run Schematic",
   AllIcons.General.RunWithCoverage
+) {
+  override fun actionPerformed(e: AnActionEvent) {
+    this.action.invoke()
+  }
+}
+
+class RefreshSchematicsListActionButton(private val action: () -> Unit) : AnAction(
+  "Refresh",
+  "Re-fetch all possible schematics",
+  AllIcons.Actions.Refresh
 ) {
   override fun actionPerformed(e: AnActionEvent) {
     this.action.invoke()

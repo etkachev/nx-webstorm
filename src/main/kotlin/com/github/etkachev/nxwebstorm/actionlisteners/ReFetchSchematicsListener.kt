@@ -17,7 +17,7 @@ class ReFetchSchematicsListener(
   /**
    * gets the action listener re-fetching schematics.
    */
-  fun getActionListener(removeOldListener: () -> Unit): (ActionEvent) -> Unit {
+  fun getActionListener(removeOldListener: () -> Unit): () -> Unit {
     return { fetchSchematics(removeOldListener) }
   }
 

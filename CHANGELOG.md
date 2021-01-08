@@ -10,6 +10,7 @@
 
 - Refresh button for schematic list tool window is now an icon.
 - updated the plugin to the latest plugin template of 0.8.0
+- gradle.properties `platformVersion` updated to 2020.3
 
 ### Deprecated
 

@@ -4,7 +4,6 @@ import com.github.etkachev.nxwebstorm.ui.SchematicsListToolTab
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.content.ContentFactory
-import java.awt.event.ActionEvent
 
 class ReFetchSchematicsListener(
   private val toolWindow: ToolWindow,

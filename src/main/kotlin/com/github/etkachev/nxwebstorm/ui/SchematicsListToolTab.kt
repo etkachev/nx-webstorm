@@ -5,7 +5,12 @@ import com.github.etkachev.nxwebstorm.actionlisteners.SchematicSelectionTabListe
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
+import com.github.etkachev.nxwebstorm.ui.buttons.SchematicActionButtons
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.ActionToolbar
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.components.JBScrollPane
@@ -46,6 +51,15 @@ class SchematicsListToolTab(
     table.selectionModel.removeListSelectionListener(listener)
   }
 
+  private fun getRefreshButton(removeListener: () -> Unit): ActionButton {
+    val actionGroup = DefaultActionGroup()
+    actionGroup.add(SchematicActionButtons.refresh(this.reFetchListener.getActionListener(removeListener)))
+    val myActions = actionGroup.getChildren(null)
+    val firstBtn = myActions[0]
+    val presentation = firstBtn.templatePresentation
+    return ActionButton(firstBtn, presentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
+  }
+
   fun createCenterPanel(schematics: Map<String, SchematicInfo>): JComponent? {
     val generateTable = GenerateTable(schematics)
     val tableData = generateTable.getTable()
@@ -69,15 +83,15 @@ class SchematicsListToolTab(
       nxService.setNxDebugConfigSetupDone()
     }
 
+    val refreshButton = this.getRefreshButton(removeListener)
+    refreshButton.isEnabled = true
+
     val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
     return panel {
       row {
         searchField()
         right {
-          button(
-            "Refresh",
-            reFetchListener.getActionListener(removeListener)
-          )
+          refreshButton()
         }
       }
       row {

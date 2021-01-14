@@ -3,9 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
 ### Added
 
 ### Changed
+
+- updated the plugin to the latest plugin template of 0.8.0
 
 ### Deprecated
 
@@ -14,9 +17,8 @@
 ### Fixed
 
 ### Security
-## [0.7.1]
 
-### Added
+## [0.7.1]
 
 ### Changed
 
@@ -24,30 +26,12 @@
 - updated the plugin to the latest plugin template of 0.8.0
 - gradle.properties `platformVersion` updated to 2020.3
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
 ## [0.7.0]
-
-### Added
 
 ### Changed
 
 - Updated default directory for custom schematics with Nx 11
 - Updated gradle configs and ymls to latest plugin template 0.7.1
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [0.6.1]
 

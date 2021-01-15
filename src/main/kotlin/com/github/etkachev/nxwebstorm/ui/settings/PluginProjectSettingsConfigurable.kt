@@ -33,7 +33,7 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val settingCustomSchemDir = settings.customSchematicsLocation
     val componentSchematicText = mySettingsComponent!!.customSchematicsDirText
     modified = modified or
-      (componentSchematicText != settingCustomSchemDir && settingCustomSchemDir != null)
+      (componentSchematicText != settingCustomSchemDir)
     return modified
   }
 
@@ -47,8 +47,18 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     val projService = MyProjectService.getInstance(this.project)
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
-    mySettingsComponent!!.customSchematicsDirText =
-      settings.customSchematicsLocation ?: projService.defaultCustomSchematicsLocation
+    mySettingsComponent!!.customSchematicsDirText = this.getCustomSchematicsLocationFromState(settings, projService)
+  }
+
+  private fun getCustomSchematicsLocationFromState(
+    settings: PluginProjectSettingsState,
+    projService: MyProjectService
+  ): String {
+    return if (settings.customSchematicsLocation.isNotBlank()) {
+      settings.customSchematicsLocation
+    } else {
+      projService.defaultCustomSchematicsLocation
+    }
   }
 
   override fun disposeUIResources() {

@@ -24,7 +24,13 @@ class FindAllSchematics(private val project: Project) {
   private val projectSettings = PluginProjectSettingsState.getInstance(project)
   private val defaultToolsSchematicDir = MyProjectService.getInstance(this.project).defaultCustomSchematicsLocation
   private val configToolsSchematicDir: String
-    get() = if (projectSettings.customSchematicsLocation.isNotBlank()) projectSettings.customSchematicsLocation else this.defaultToolsSchematicDir
+    get() {
+      return if (projectSettings.customSchematicsLocation.isNotBlank()) {
+        projectSettings.customSchematicsLocation
+      } else {
+        this.defaultToolsSchematicDir
+      }
+    }
   private val jsonFileReader = ReadFile.getInstance(project)
   private val packageJsonHelper = PackageJsonHelper(project)
   private val schematicPropName = "schematics"

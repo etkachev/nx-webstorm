@@ -16,6 +16,8 @@
 
 ### Fixed
 
+- fixed issue where settings plugin for custom schematics directory was not able to configure or change.
+
 ### Security
 
 ## [0.7.1]

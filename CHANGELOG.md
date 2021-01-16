@@ -17,6 +17,7 @@
 ### Fixed
 
 - fixed issue where settings plugin for custom schematics directory was not able to configure or change.
+- fixed issue where commands run would sometimes be replaced when running bash shortcuts such as those starting with "!"
 
 ### Security
 

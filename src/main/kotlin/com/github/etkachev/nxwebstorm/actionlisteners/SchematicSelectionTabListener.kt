@@ -10,7 +10,7 @@ import com.github.etkachev.nxwebstorm.services.NodeDebugConfigState
 import com.github.etkachev.nxwebstorm.ui.RunSchematicPanel
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.utils.foldListOfMaps
-import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
+import com.github.etkachev.nxwebstorm.utils.getSchematicCommandArgs
 import com.github.etkachev.nxwebstorm.utils.getSchematicIdFromTableSelect
 import com.github.etkachev.nxwebstorm.utils.splitSchematicId
 import com.google.gson.JsonArray
@@ -92,11 +92,11 @@ class SchematicSelectionTabListener(
     }
     val projectType = this.nxService.nxProjectType
     val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
-    val command = getSchematicCommandFromValues(collection, id, values, schematicCommandData, dryRun)
+    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, dryRun)
     if (dryRun) {
-      dryRunTerminal.runAndShow(command)
+      dryRunTerminal.runAndShow(commands.joinToString(" "))
     } else {
-      runTerminal.runAndShow(command)
+      runTerminal.runAndShow(commands.joinToString(" "))
     }
   }
 

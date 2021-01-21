@@ -4,7 +4,7 @@ import com.github.etkachev.nxwebstorm.models.DryRunButtonData
 import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
-import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
+import com.github.etkachev.nxwebstorm.utils.getSchematicCommandArgs
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import java.awt.event.ActionEvent
@@ -22,8 +22,8 @@ class DryRunAction(
     val values = formValues.formVal
     val projectType = nxService.nxProjectType
     val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
-    val command = getSchematicCommandFromValues(collection, id, values, schematicCommandData, true)
+    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, true)
     dialog.close(DialogWrapper.CANCEL_EXIT_CODE)
-    terminal.runAndShow(command)
+    terminal.runAndShow(commands.joinToString(" "))
   }
 }

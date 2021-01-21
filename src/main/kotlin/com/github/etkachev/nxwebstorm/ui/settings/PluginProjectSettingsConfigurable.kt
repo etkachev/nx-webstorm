@@ -32,8 +32,11 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     var modified: Boolean = mySettingsComponent!!.scanExplicitLibsStatus != settings.scanExplicitLibs
     val settingCustomSchemDir = settings.customSchematicsLocation
     val componentSchematicText = mySettingsComponent!!.customSchematicsDirText
+    val settingsRootDir = settings.rootDirectory
+    val componentRootDirText = mySettingsComponent!!.rootNxDirectoryText
     modified = modified or
-      (componentSchematicText != settingCustomSchemDir)
+      (componentSchematicText != settingCustomSchemDir) or
+      (componentRootDirText != settingsRootDir)
     return modified
   }
 
@@ -41,6 +44,7 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     settings.scanExplicitLibs = mySettingsComponent!!.scanExplicitLibsStatus
     settings.customSchematicsLocation = mySettingsComponent!!.customSchematicsDirText
+    settings.rootDirectory = this.getValidRootNxDirectory(mySettingsComponent!!.rootNxDirectoryText)
   }
 
   override fun reset() {
@@ -48,6 +52,16 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val projService = MyProjectService.getInstance(this.project)
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
     mySettingsComponent!!.customSchematicsDirText = this.getCustomSchematicsLocationFromState(settings, projService)
+    mySettingsComponent!!.rootNxDirectoryText = this.getRootNxDirectoryFromState(settings, projService)
+  }
+
+  private fun getValidRootNxDirectory(input: String): String {
+    val projService = MyProjectService.getInstance(this.project)
+    return if (input.trim().isNotBlank()) {
+      return input.trim()
+    } else {
+      projService.defaultRootDirectory
+    }
   }
 
   private fun getCustomSchematicsLocationFromState(
@@ -58,6 +72,17 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
       settings.customSchematicsLocation
     } else {
       projService.defaultCustomSchematicsLocation
+    }
+  }
+
+  private fun getRootNxDirectoryFromState(
+    settings: PluginProjectSettingsState,
+    projService: MyProjectService
+  ): String {
+    return if (settings.rootDirectory.trim().isNotBlank()) {
+      settings.rootDirectory
+    } else {
+      projService.defaultRootDirectory
     }
   }
 

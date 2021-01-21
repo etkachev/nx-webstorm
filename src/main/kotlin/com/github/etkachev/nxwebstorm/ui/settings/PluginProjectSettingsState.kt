@@ -20,6 +20,7 @@ class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSetting
   var externalLibs = PluginSettingsState.instance.externalLibs.split(",").toTypedArray()
   var scanExplicitLibs = PluginSettingsState.instance.scanExplicitLibs
   var customSchematicsLocation: String = ""
+  var rootDirectory: String = "/"
 
   override fun getState(): PluginProjectSettingsState {
     return this

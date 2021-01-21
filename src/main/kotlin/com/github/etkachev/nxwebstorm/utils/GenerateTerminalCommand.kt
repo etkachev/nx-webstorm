@@ -5,6 +5,9 @@ import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.github.etkachev.nxwebstorm.models.SchematicCommandData
 import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
 
+/**
+ * TODO remove later
+ */
 fun getSchematicCommandFromValues(
   collection: String,
   id: String,

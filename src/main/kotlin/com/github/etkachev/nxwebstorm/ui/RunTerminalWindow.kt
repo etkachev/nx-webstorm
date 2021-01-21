@@ -1,5 +1,6 @@
 package com.github.etkachev.nxwebstorm.ui
 
+import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -12,10 +13,13 @@ class RunTerminalWindow(private val proj: Project, private val tabName: String? 
 
   var terminalView: TerminalView = TerminalView.getInstance(proj)
   var shell: ShellTerminalWidget? = null
+  private val nxService = MyProjectService.getInstance(this.proj)
+  private val workingDir: String?
+    get() = if (nxService.configuredRootPath == "/") null else "${this.proj.basePath}/${nxService.configuredRootPath}"
   var terminalWindow = getWindowManager()
 
   private fun createShell(window: ToolWindow): Content {
-    shell = terminalView.createLocalShellWidget(null, tabName)
+    shell = terminalView.createLocalShellWidget(workingDir, tabName)
     val tabContent = window.contentManager.findContent(tabName)
     return tabContent!!
   }

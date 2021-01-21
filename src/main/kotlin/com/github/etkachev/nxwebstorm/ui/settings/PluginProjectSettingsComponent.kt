@@ -14,6 +14,7 @@ class PluginProjectSettingsComponent {
   val panel: JPanel
   private val myScanExplicitLibsStatus: JBCheckBox
   private val myCustomSchematicsDirectory: JBTextField = JBTextField()
+  private val myRootNxDirectory: JBTextField = JBTextField()
 
   val preferredFocusedComponent: JComponent
     get() = myScanExplicitLibsStatus
@@ -26,6 +27,12 @@ class PluginProjectSettingsComponent {
     get() = myCustomSchematicsDirectory.text
     set(dir) {
       myCustomSchematicsDirectory.text = dir
+    }
+
+  var rootNxDirectoryText: String
+    get() = myRootNxDirectory.text
+    set(dir) {
+      myRootNxDirectory.text = dir
     }
 
   init {
@@ -51,6 +58,14 @@ class PluginProjectSettingsComponent {
         }
         row {
           myCustomSchematicsDirectory()
+        }
+      }
+      titledRow("Root Nx Directory") {
+        row {
+          label("Enter directory where your nx project resides")
+        }
+        row {
+          myRootNxDirectory()
         }
       }
     }.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))

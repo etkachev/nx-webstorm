@@ -3,9 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
 ### Added
 
 ### Changed
+
+- Under plugin settings, the default list of external schematics to scan, now includes more default nrwl packages
 
 ### Deprecated
 
@@ -14,13 +17,14 @@
 ### Fixed
 
 ### Security
-## [unspecified]
+
+## [0.7.2]
 
 ### Added
 
 ### Changed
 
-- updated the plugin to the latest plugin template of 0.8.0
+- updated the plugin to the latest plugin template of 0.8.1
 
 ### Deprecated
 

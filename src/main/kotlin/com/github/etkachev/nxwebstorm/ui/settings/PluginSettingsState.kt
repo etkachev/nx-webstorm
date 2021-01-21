@@ -25,10 +25,16 @@ class PluginSettingsState : PersistentStateComponent<PluginSettingsState?> {
     "@nrwl/workspace",
     "@schematics/angular",
     "@nestjs/schematics",
-    "@ngrx/schematics"
+    "@ngrx/schematics",
+    "@nrwl/react",
+    "@nrwl/web",
+    "@nrwl/gatsby",
+    "@nrwl/bazel",
+    "@nrwl/express",
+    "@nrwl/next",
+    "@nrwl/nx-plugin"
   ).joinToString(", ")
   var scanExplicitLibs = true
-  var customSchematicsLocation = "/tools/schematics"
   var schematicActionButtonsPlacement = SchematicActionButtonPlacement.TOP.data
 
   override fun getState(): PluginSettingsState? {

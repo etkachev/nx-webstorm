@@ -22,6 +22,7 @@ class NodeDebugConfigState(project: Project) {
   private val readFile: ReadFile = ReadFile.getInstance(this.proj)
   private val runManagerName: String = "RunManager"
   private val configElementName: String = "configuration"
+  private val componentElementName = "component"
   private val argsAttribute: String = "application-parameters"
   private val pathToJsFileAttribute: String = "path-to-js-file"
   private val workDirAttribute: String = "working-dir"
@@ -49,8 +50,10 @@ class NodeDebugConfigState(project: Project) {
     ApplicationManager.getApplication().invokeLater {
       val doc = readWorkspaceFile()
       var hasExistingConfig = false
+      var hasExistingRunManager = false
       for (content in doc.rootElement.children) {
-        if (content.name == "component" && elementAttributesIsRunManager(content.attributes, runManagerName)) {
+        if (content.name == componentElementName && elementAttributesIsRunManager(content.attributes, runManagerName)) {
+          hasExistingRunManager = true
           for (runManagerChild in content.children) {
             if (elementAttributesAreNxDebugConfig(runManagerChild, configElementName, nxDebugConfigName)) {
               hasExistingConfig = true
@@ -61,10 +64,14 @@ class NodeDebugConfigState(project: Project) {
           }
         }
       }
+
+      if (!hasExistingRunManager) {
+        doc.rootElement.addContent(this.generateEmptyRunManager(cli))
+      }
       /**
        * only save if we added new config
        */
-      if (!hasExistingConfig) {
+      if (!hasExistingConfig || !hasExistingRunManager) {
         this.saveWorkspaceFile(doc)
       }
     }
@@ -112,8 +119,9 @@ class NodeDebugConfigState(project: Project) {
     } else {
       val (path, exec) = cli.data
       val projDir = if (initialSetup) "\$PROJECT_DIR\$" else this.proj.basePath
+      val baseDir = if (nxService.configuredRootPath == "/") "/" else "/${nxService.configuredRootPath}/"
       runManagerChild.setAttribute(pathToJsFileAttribute, exec)
-      runManagerChild.setAttribute(workDirAttribute, "$projDir/$path")
+      runManagerChild.setAttribute(workDirAttribute, "$projDir$baseDir$path")
     }
   }
 
@@ -137,7 +145,7 @@ class NodeDebugConfigState(project: Project) {
   }
 
   private fun isComponentRunManager(element: Element): Boolean {
-    val isComponent = element.name == "component"
+    val isComponent = element.name == this.componentElementName
     val isRunManager = element.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null
     return isComponent && isRunManager
   }
@@ -148,17 +156,26 @@ class NodeDebugConfigState(project: Project) {
   private fun generateEmptyNxDebugConfig(cli: CliCommands): Element {
     val newConfig = Element(configElementName)
     val cliPath = cli.data.path
+    val rootDir = if (nxService.configuredRootPath == "/") "/" else "/${nxService.configuredRootPath}/"
     val attributes = listOf(
       Attribute("name", nxDebugConfigName),
       Attribute("type", nodeJsConfigTypeName),
       Attribute(argsAttribute, ""),
       Attribute(pathToJsFileAttribute, cli.data.exec),
-      Attribute(workDirAttribute, "\$PROJECT_DIR\$/$cliPath")
+      Attribute(workDirAttribute, "\$PROJECT_DIR\$$rootDir$cliPath")
     )
     newConfig.attributes = attributes
     val methodEl = Element("method")
     methodEl.setAttribute("v", "2")
     newConfig.addContent(methodEl)
+    return newConfig
+  }
+
+  private fun generateEmptyRunManager(cli: CliCommands): Element {
+    val newConfig = Element(componentElementName)
+    val attributes = listOf(Attribute("name", runManagerName))
+    newConfig.attributes = attributes
+    newConfig.addContent(generateEmptyNxDebugConfig(cli))
     return newConfig
   }
 

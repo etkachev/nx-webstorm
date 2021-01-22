@@ -7,7 +7,7 @@ import com.github.etkachev.nxwebstorm.ui.RunSchematicDialog
 import com.github.etkachev.nxwebstorm.ui.RunTerminalWindow
 import com.github.etkachev.nxwebstorm.ui.SchematicsListDialog
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
-import com.github.etkachev.nxwebstorm.utils.getSchematicCommandFromValues
+import com.github.etkachev.nxwebstorm.utils.getSchematicCommandArgs
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 
@@ -37,10 +37,9 @@ class Generate : AnAction() {
         val values = formDialog.formMap.formVal
         val projectType = nxService.nxProjectType
         val schematicCommandData = SchematicCommandData(projectType, enumType, collectionPath)
-        val command =
-          getSchematicCommandFromValues(collection, id, values, schematicCommandData, false)
+        val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, false)
         val terminal = RunTerminalWindow(proj, "Run")
-        terminal.runAndShow(command)
+        terminal.runAndShow(commands.joinToString(" "))
       }
     }
   }

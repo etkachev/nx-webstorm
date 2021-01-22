@@ -6,6 +6,8 @@
 
 ### Added
 
+- New Plugin Setting for configuring root directory of nx project. By default, it will be `/`
+
 ### Changed
 
 - Under plugin settings, the default list of external schematics to scan, now includes more default nrwl packages
@@ -15,6 +17,9 @@
 ### Removed
 
 ### Fixed
+
+- Fixed situations where Debug schematic wouldn't work if workspace did not have any other run configs setup in
+  Jetbrains IDE.
 
 ### Security
 

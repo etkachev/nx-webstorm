@@ -3,6 +3,7 @@ package com.github.etkachev.nxwebstorm.services
 import com.github.etkachev.nxwebstorm.models.CliCommands
 import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
+import com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState
 import com.github.etkachev.nxwebstorm.ui.settings.PluginSettingsState
 import com.intellij.openapi.project.Project
 import com.github.etkachev.nxwebstorm.utils.ReadFile
@@ -31,6 +32,36 @@ class MyProjectService(private val project: Project) {
       return thisProject.basePath
     }
 
+  val configuredRootPath: String
+    get() {
+      val projSettings = PluginProjectSettingsState.getInstance(this.project)
+      val trimmedRoot = projSettings.rootDirectory.trim()
+      var cleanedRoot = trimmedRoot
+
+      if (cleanedRoot == "/") {
+        return "/"
+      }
+
+      if (cleanedRoot.startsWith("/")) {
+        cleanedRoot = cleanedRoot.substring(1)
+      }
+
+      if (cleanedRoot.endsWith("/")) {
+        cleanedRoot = cleanedRoot.substring(0, cleanedRoot.length - 1)
+      }
+
+      return cleanedRoot
+    }
+
+  val rootNxJsonPath: String
+    get() {
+      if (this.configuredRootPath == "/") {
+        return "nx.json"
+      }
+
+      return "${this.configuredRootPath}/nx.json"
+    }
+
   private val nxCliVersion: SemVer?
     get() = NodeInstalledPackageFinder(this.project, this.projectRoot).findInstalledPackage("@nrwl/cli")?.version
 
@@ -39,6 +70,12 @@ class MyProjectService(private val project: Project) {
 
   val defaultCustomSchematicsLocation: String
     get() = if (this.isNx11OrAbove) "/tools/generators" else "/tools/schematics"
+
+  /**
+   * root directory at which your nx monorepo resides within open project
+   */
+  val defaultRootDirectory: String
+    get() = "/"
 
   /**
    * full list of projects/libraries within current project.
@@ -112,7 +149,7 @@ class MyProjectService(private val project: Project) {
   }
 
   private fun readNxJson(): JsonObject? {
-    return readFile.readJsonFromFileUrl("nx.json")
+    return readFile.readJsonFromFileUrl(this.rootNxJsonPath)
   }
 
   private fun readAngularJson(): JsonObject? {

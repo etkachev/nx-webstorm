@@ -22,7 +22,8 @@ data class CollectionInfo(val json: JsonObject, val file: VirtualFile, val relat
  */
 class FindAllSchematics(private val project: Project) {
   private val projectSettings = PluginProjectSettingsState.getInstance(project)
-  private val defaultToolsSchematicDir = MyProjectService.getInstance(this.project).defaultCustomSchematicsLocation
+  private val nxService = MyProjectService.getInstance(project)
+  private val defaultToolsSchematicDir = this.nxService.defaultCustomSchematicsLocation
   private val configToolsSchematicDir: String
     get() {
       return if (projectSettings.customSchematicsLocation.isNotBlank()) {
@@ -34,8 +35,15 @@ class FindAllSchematics(private val project: Project) {
   private val jsonFileReader = ReadFile.getInstance(project)
   private val packageJsonHelper = PackageJsonHelper(project)
   private val schematicPropName = "schematics"
-  private var nodeModulesFolder = "node_modules"
-  private val nxService = MyProjectService.getInstance(project)
+  private val nodeModulesFolder: String
+    get() {
+      val rootDir = this.nxService.configuredRootPath
+      return if (rootDir == "/") {
+        "node_modules"
+      } else {
+        "$rootDir/node_modules"
+      }
+    }
 
   private val cleanedUpConfigToolsSchematicDir: String
     get() = if (configToolsSchematicDir.startsWith("/")) configToolsSchematicDir else "/$configToolsSchematicDir"

@@ -137,17 +137,11 @@ class NodeDebugConfigState(project: Project) {
   ): Document {
     val docFile = readWorkspaceFile()
     for (content in docFile.rootElement.children) {
-      if (this.isComponentRunManager(content)) {
+      if (isComponentRunManager(content, this.componentElementName, runManagerName)) {
         this.setNxConfigAttributes(content, command, name, args, type)
       }
     }
     return docFile
-  }
-
-  private fun isComponentRunManager(element: Element): Boolean {
-    val isComponent = element.name == this.componentElementName
-    val isRunManager = element.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null
-    return isComponent && isRunManager
   }
 
   /**
@@ -230,4 +224,10 @@ internal fun elementAttributesAreNxDebugConfig(
  */
 internal fun joinArgsWithCommand(command: String, name: String, args: Map<String, String>): String {
   return "$command $name " + getCommandArguments(args).joinToString(" ")
+}
+
+internal fun isComponentRunManager(element: Element, componentElementName: String, runManagerName: String): Boolean {
+  val isComponent = element.name == componentElementName
+  val isRunManager = element.attributes.find { ca -> ca.name == "name" && ca.value == runManagerName } != null
+  return isComponent && isRunManager
 }

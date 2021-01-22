@@ -62,7 +62,7 @@ class PluginProjectSettingsComponent {
       }
       titledRow("Root Nx Directory") {
         row {
-          label("Enter directory where your nx project resides")
+          label("Enter directory where your nx project resides. (Most of the time it will be '/')")
         }
         row {
           myRootNxDirectory()

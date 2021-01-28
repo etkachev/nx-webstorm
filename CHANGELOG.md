@@ -28,16 +28,10 @@
 
 - Under plugin settings, the default list of external schematics to scan, now includes more default nrwl packages
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Fixed situations where Debug schematic wouldn't work if workspace did not have any other run configs setup in
   Jetbrains IDE.
-
-### Security
 
 ## [0.7.2]
 

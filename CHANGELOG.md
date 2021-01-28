@@ -3,9 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
 ### Added
 
 ### Changed
+
+- added support for build 211.*
 
 ### Deprecated
 
@@ -14,7 +17,8 @@
 ### Fixed
 
 ### Security
-## [unspecified]
+
+## [0.8.0]
 
 ### Added
 

@@ -3,9 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
 ### Added
 
 ### Changed
+
+- Updated Plugin template to v0.8.2
 
 ### Deprecated
 
@@ -14,7 +17,8 @@
 ### Fixed
 
 ### Security
-## [unspecified]
+
+## [0.8.1]
 
 ### Added
 

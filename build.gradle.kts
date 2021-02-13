@@ -7,11 +7,11 @@ plugins {
   // Java support
   id("java")
   // Kotlin support
-  id("org.jetbrains.kotlin.jvm") version "1.4.21"
+  id("org.jetbrains.kotlin.jvm") version "1.4.30"
   // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
   id("org.jetbrains.intellij") version "0.6.5"
   // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-  id("org.jetbrains.changelog") version "1.0.0"
+  id("org.jetbrains.changelog") version "1.1.1"
   // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
   id("io.gitlab.arturbosch.detekt") version "1.15.0"
   // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
@@ -58,6 +58,12 @@ intellij {
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
   // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
   setPlugins(*platformPlugins.split(',').map(String::trim).filter(String::isNotEmpty).toTypedArray())
+}
+
+// Configure gradle-changelog-plugin plugin.
+// Read more: https://github.com/JetBrains/gradle-changelog-plugin
+changelog {
+  version = pluginVersion
 }
 
 // Configure detekt plugin.
@@ -130,7 +136,7 @@ tasks {
     token(System.getenv("PUBLISH_TOKEN"))
     // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
     // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-    // https://jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html#specifying-a-release-channel
+    // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
     channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
   }
 }

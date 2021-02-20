@@ -9,12 +9,15 @@
 ### Changed
 
 - Updated Plugin template to v0.8.2
+- Switched gradle-wrapper `distributionUrl` back to `-all` config.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Fixing issue [#54](https://github.com/etkachev/nx-webstorm/issues/54) with possible index out of bounds on dir split.
 
 ### Security
 

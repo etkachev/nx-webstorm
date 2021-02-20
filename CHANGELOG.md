@@ -9,6 +9,7 @@
 ### Changed
 
 - Updated Plugin template to v0.8.2
+- Switched gradle-wrapper `distributionUrl` back to `-all` config.
 
 ### Deprecated
 

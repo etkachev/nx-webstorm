@@ -190,6 +190,9 @@ class FindAllSchematics(private val project: Project) {
     val collectionJson = jsonFileReader.readJsonFromFile(schematicCollection) ?: return null
     val projPath = project.basePath ?: return null
     val relativePathSplit = schematicCollection.path.split(projPath)
+    if (relativePathSplit.count() < 2) {
+      return null
+    }
     val relativePath = relativePathSplit[1]
     val schematicsOptions =
       (if (collectionJson.has(schematicPropName)) collectionJson[schematicPropName].asJsonObject else null)

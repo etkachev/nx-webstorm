@@ -16,6 +16,8 @@
 
 ### Fixed
 
+- Fixing issue [#54](https://github.com/etkachev/nx-webstorm/issues/54) with possible index out of bounds on dir split.
+
 ### Security
 
 ## [0.8.1]

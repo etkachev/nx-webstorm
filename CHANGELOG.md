@@ -10,6 +10,7 @@
 
 - Updated Plugin template to v0.10.1
 - Switched gradle-wrapper `distributionUrl` back to `-all` config.
+- Update `pluginUntilBuild` to upcoming Webstorm version `212.*`
 
 ### Deprecated
 

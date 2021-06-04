@@ -13,7 +13,6 @@ import com.intellij.javascript.nodejs.packageJson.NodeInstalledPackageFinder
 import com.intellij.javascript.nodejs.settings.NodeInstalledPackage
 import com.intellij.javascript.nodejs.settings.NodePackageManagementService
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.text.SemVer
 
 class MyProjectService(private val project: Project) {
@@ -154,10 +153,6 @@ class MyProjectService(private val project: Project) {
 
   private fun readAngularJson(): JsonObject? {
     return readFile.readJsonFromFileUrl("angular.json")
-  }
-
-  private fun readNxJsonFile(): VirtualFile? {
-    return readFile.findVirtualFile("nx.json")
   }
 
   private fun getProjects(): Array<String> {

@@ -23,3 +23,7 @@ empty-blocks:
 complexity:
   LongMethod:
     threshold: 80
+
+exceptions:
+  SwallowedException:
+    active: false

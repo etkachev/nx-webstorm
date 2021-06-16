@@ -2,6 +2,7 @@ package com.github.etkachev.nxwebstorm.utils
 
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.github.etkachev.nxwebstorm.models.SchematicTypeEnum
+import com.github.etkachev.nxwebstorm.models.getIdFromJsonSchema
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.ui.settings.PluginProjectSettingsState
 import com.google.gson.JsonObject
@@ -105,10 +106,7 @@ class FindAllSchematics(private val project: Project) {
    */
   private fun getIdsFromSchema(file: PsiFile, projectBase: String): Pair<String, SchematicInfo>? {
     val json = JsonParser.parseString(file.text).asJsonObject ?: return null
-    if (!json.has("id")) {
-      return null
-    }
-    val id = json.get("id").asString
+    val id = getIdFromJsonSchema(json) ?: return null
     val splitDir = file.virtualFile.path.split(projectBase)
     val fileLocation = (if (splitDir.count() != 2) null else splitDir[1]) ?: return null
     val info = SchematicInfo(fileLocation)
@@ -127,20 +125,19 @@ class FindAllSchematics(private val project: Project) {
     collectionPath: String
   ): Map<String, SchematicInfo> {
     return schematicOptions.entrySet().toTypedArray().fold(
-      mutableMapOf<String, SchematicInfo>(),
-      { acc, e ->
-        val value = e.value.asJsonObject
-        if (value.has("hidden") && value["hidden"].asBoolean) {
-          return@fold acc
-        }
-
-        val fileLocation = getRelativePath(value, schematicCollection) ?: return@fold acc
-        val id = generateUniqueSchematicKey(packageName, e.key, schematicType)
-        val description = if (value.has("description")) value["description"].asString else null
-        acc[id] = SchematicInfo(fileLocation, description, collectionPath)
+      mutableMapOf<String, SchematicInfo>()
+    ) { acc, e ->
+      val value = e.value.asJsonObject
+      if (value.has("hidden") && value["hidden"].asBoolean) {
         return@fold acc
       }
-    ).toMap()
+
+      val fileLocation = getRelativePath(value, schematicCollection) ?: return@fold acc
+      val id = generateUniqueSchematicKey(packageName, e.key, schematicType)
+      val description = if (value.has("description")) value["description"].asString else null
+      acc[id] = SchematicInfo(fileLocation, description, collectionPath)
+      return@fold acc
+    }.toMap()
   }
 
   /**

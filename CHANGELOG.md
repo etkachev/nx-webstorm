@@ -3,6 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
+### Added
+
+- when searching custom schematics within nx workspaces, also search schema.json files for `$id` property, if `id` is
+  not found. Ticket [#71](https://github.com/etkachev/nx-webstorm/issues/71)
+
 ## [0.8.2]
 
 ### Added

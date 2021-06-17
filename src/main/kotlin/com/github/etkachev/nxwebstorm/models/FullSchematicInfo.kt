@@ -1,5 +1,7 @@
 package com.github.etkachev.nxwebstorm.models
 
+import com.google.gson.JsonObject
+
 data class FullSchematicInfo(
   val type: SchematicTypeData,
   val id: String,
@@ -19,6 +21,38 @@ fun mapSchematicTypeStringToEnum(type: String): SchematicTypeEnum {
     SchematicTypeEnum.CUSTOM_ANGULAR.data -> SchematicTypeEnum.CUSTOM_ANGULAR
     else -> SchematicTypeEnum.CUSTOM_NX
   }
+}
+
+/**
+ * get id from schema.json. Will first find `id`, if not found, then look for `$id`, otherwise return null
+ */
+fun getIdFromJsonSchema(json: JsonObject): String? {
+  val idProp = if (json.has(SchemaIdProp.STANDARD.prop)) {
+    SchemaIdProp.STANDARD
+  } else if (json.has(SchemaIdProp.NEW.prop)) {
+    SchemaIdProp.NEW
+  } else {
+    SchemaIdProp.NONE
+  }
+
+  return if (idProp == SchemaIdProp.NONE) null else json.get(idProp.prop).asString
+}
+
+enum class SchemaIdProp(val prop: String) {
+  /**
+   * the standard `id` prop of schema.json
+   */
+  STANDARD("id"),
+
+  /**
+   * the new preferred property of `$id` for schema.json
+   */
+  NEW("\$id"),
+
+  /**
+   * no property for id, used for null cases.
+   */
+  NONE("")
 }
 
 data class SchematicTypeData(val collection: String, val type: SchematicTypeEnum)

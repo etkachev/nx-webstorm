@@ -23,6 +23,9 @@ fun mapSchematicTypeStringToEnum(type: String): SchematicTypeEnum {
   }
 }
 
+/**
+ * get id from schema.json. Will first find `id`, if not found, then look for `$id`, otherwise return null
+ */
 fun getIdFromJsonSchema(json: JsonObject): String? {
   val idProp = if (json.has(SchemaIdProp.STANDARD.prop)) {
     SchemaIdProp.STANDARD
@@ -36,8 +39,19 @@ fun getIdFromJsonSchema(json: JsonObject): String? {
 }
 
 enum class SchemaIdProp(val prop: String) {
+  /**
+   * the standard `id` prop of schema.json
+   */
   STANDARD("id"),
+
+  /**
+   * the new preferred property of `$id` for schema.json
+   */
   NEW("\$id"),
+
+  /**
+   * no property for id, used for null cases.
+   */
   NONE("")
 }
 

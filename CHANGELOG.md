@@ -3,6 +3,7 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+## [0.9]
 
 ### Added
 

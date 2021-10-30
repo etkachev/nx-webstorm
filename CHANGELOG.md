@@ -3,7 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
-## [0.9]
+
+### Fixed
+
+- Fixed issue [#76](https://github.com/etkachev/nx-webstorm/issues/76) for projects using Nx 13
+
+## [0.9.0]
 
 ### Added
 

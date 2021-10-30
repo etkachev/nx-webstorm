@@ -25,6 +25,8 @@ class MyProjectService(private val project: Project) {
     get() = readNxJson()
   val angularJson: JsonObject?
     get() = readAngularJson()
+  val workspaceJson: JsonObject?
+    get() = readAngularJson() ?: readWorkspaceJson()
   val rootPath: String?
     get() {
       val thisProject = this.project
@@ -155,9 +157,13 @@ class MyProjectService(private val project: Project) {
     return readFile.readJsonFromFileUrl("angular.json")
   }
 
+  private fun readWorkspaceJson(): JsonObject? {
+    return readFile.readJsonFromFileUrl("workspace.json")
+  }
+
   private fun getProjects(): Array<String> {
     if (this.isValidNxProject) {
-      val json = this.nxJson ?: return emptyArray()
+      val json = this.workspaceJson ?: return emptyArray()
 
       val projects = json.getAsJsonObject("projects").keySet()
       return projects.toTypedArray()

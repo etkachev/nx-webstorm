@@ -74,7 +74,7 @@ tasks {
   }
 
   runIde {
-    ideDir.set(File("/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/211.7442.26/WebStorm.app/Contents"))
+    ideDir.set(File("/Users/edwardtkachev/Library/Application Support/JetBrains/Toolbox/apps/WebStorm/ch-0/212.5457.55/WebStorm.app/Contents"))
   }
 
   withType<Detekt> {

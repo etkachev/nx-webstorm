@@ -8,6 +8,10 @@
 
 - Fixed issue [#76](https://github.com/etkachev/nx-webstorm/issues/76) for projects using Nx 13
 
+### Changed
+
+- Updated Plugin template to v1.0.0
+
 ## [0.9.0]
 
 ### Added

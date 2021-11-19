@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- updated dependencies and plugin template to [1.1.0](https://github.com/JetBrains/intellij-platform-plugin-template/releases/tag/v1.1.0)
+
 ## [0.9.1]
 ### Fixed
 - Fixed issue [#76](https://github.com/etkachev/nx-webstorm/issues/76) for projects using Nx 13

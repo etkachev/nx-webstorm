@@ -4,8 +4,10 @@
 
 ## [Unreleased]
 
+## [0.9.2]
 ### Changed
 - updated dependencies and plugin template to [1.1.0](https://github.com/JetBrains/intellij-platform-plugin-template/releases/tag/v1.1.0)
+- update props to support latest webstorm version (2021.3)
 
 ## [0.9.1]
 ### Fixed

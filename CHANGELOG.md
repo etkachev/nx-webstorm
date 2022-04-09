@@ -3,6 +3,8 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+### Changed
+- updated dependencies and plugin template to [1.1.2](https://github.com/JetBrains/intellij-platform-plugin-template/releases/tag/v1.1.2)
 
 ## [0.9.2]
 ### Changed

@@ -5,6 +5,10 @@
 ## [Unreleased]
 ### Changed
 - updated dependencies and plugin template to [1.1.2](https://github.com/JetBrains/intellij-platform-plugin-template/releases/tag/v1.1.2)
+- updated to gradle-7.4.2
+- upgrade jvm kotlin to 1.6.20
+- upgrade intellij to 1.5.2
+- update to platform 221
 
 ## [0.9.2]
 ### Changed

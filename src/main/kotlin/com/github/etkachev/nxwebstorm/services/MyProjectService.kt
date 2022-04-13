@@ -18,7 +18,7 @@ import com.intellij.util.text.SemVer
 class MyProjectService(private val project: Project) {
   private var readFile = ReadFile.getInstance(project)
   private var schematicsCliDir: String? = null
-  private var projectRoot = ProjectRootManager.getInstance(project).contentRoots[0]
+  private var projectRoot = ProjectRootManager.getInstance(project).contentRootsFromAllModules[0]
   val schematicsCliDirectory: String?
     get() = this.schematicsCliDir
   val nxJson: JsonObject?

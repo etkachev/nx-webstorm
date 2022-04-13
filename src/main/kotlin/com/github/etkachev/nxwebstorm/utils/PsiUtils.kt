@@ -6,7 +6,7 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiManager
 
 fun getRootPsiDirectory(project: Project): PsiDirectory? {
-  val root = ProjectRootManager.getInstance(project).contentRoots[0]
+  val root = ProjectRootManager.getInstance(project).contentRootsFromAllModules[0]
   return PsiManager.getInstance(project).findDirectory(root)
 }
 

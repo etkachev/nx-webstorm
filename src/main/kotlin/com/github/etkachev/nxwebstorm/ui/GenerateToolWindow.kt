@@ -4,6 +4,7 @@ import com.github.etkachev.nxwebstorm.models.NxProjectType
 import com.github.etkachev.nxwebstorm.services.MyProjectService
 import com.github.etkachev.nxwebstorm.utils.FindAllSchematics
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
@@ -23,6 +24,10 @@ class GenerateToolWindow : ToolWindowFactory {
   }
 
   override fun isApplicable(project: Project): Boolean {
+    val projectRoot = ProjectRootManager.getInstance(project)
+    if (projectRoot.contentRootsFromAllModules.isEmpty()) {
+      return false
+    }
     val projectService = MyProjectService.getInstance(project)
     return projectService.nxProjectType == NxProjectType.Nx || projectService.nxProjectType == NxProjectType.Angular
   }

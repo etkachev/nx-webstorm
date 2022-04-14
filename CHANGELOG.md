@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 ### Changed
+- update to platformVersion 2022.1 (away from EAP snapshot)
+- Fix issue [#90](https://github.com/etkachev/nx-webstorm/issues/90) when launching IDE
+
+## [0.9.3]
+### Changed
 - updated dependencies and plugin template to [1.1.2](https://github.com/JetBrains/intellij-platform-plugin-template/releases/tag/v1.1.2)
 - updated to gradle-7.4.2
 - upgrade jvm kotlin to 1.6.20

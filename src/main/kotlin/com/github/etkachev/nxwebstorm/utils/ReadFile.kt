@@ -10,7 +10,7 @@ import org.jdom.Document
 import java.io.IOException
 
 class ReadFile(project: Project) {
-  var root = ProjectRootManager.getInstance(project).contentRoots[0]
+  var root = ProjectRootManager.getInstance(project).contentRootsFromAllModules[0]
   var psi = PsiManager.getInstance(project)
   fun readJsonFromFileUrl(filePath: String): JsonObject? {
     return try {

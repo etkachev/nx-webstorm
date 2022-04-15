@@ -4,7 +4,8 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import javax.swing.JComponent
 import javax.swing.JPanel
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import javax.swing.BorderFactory
 
 /**
@@ -44,28 +45,28 @@ class PluginProjectSettingsComponent {
     myScanExplicitLibsStatus = checkBox
 
     panel = panel {
-      titledRow("Scan Explicit External Libs?") {
+      group("Scan Explicit External Libs?") {
         row {
-          myScanExplicitLibsStatus()
+          cell(myScanExplicitLibsStatus)
         }
         row {
           label("If turned on, head over to 'External Schematics' setting page to configure")
         }
       }
-      titledRow("Custom Schematics Directory") {
+      group("Custom Schematics Directory") {
         row {
           label("Enter directory where custom schematics are located")
         }
         row {
-          myCustomSchematicsDirectory()
+          cell(myCustomSchematicsDirectory).horizontalAlign(HorizontalAlign.FILL)
         }
       }
-      titledRow("Root Nx Directory") {
+      group("Root Nx Directory") {
         row {
           label("Enter directory where your nx project resides. (Most of the time it will be '/')")
         }
         row {
-          myRootNxDirectory()
+          cell(myRootNxDirectory).horizontalAlign(HorizontalAlign.FILL)
         }
       }
     }.withBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))

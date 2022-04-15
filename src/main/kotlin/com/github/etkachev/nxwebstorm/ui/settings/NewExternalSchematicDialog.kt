@@ -3,7 +3,8 @@ package com.github.etkachev.nxwebstorm.ui.settings
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 
 class NewExternalSchematicDialog(private val existingList: Array<String>) : DialogWrapper(null) {
@@ -20,8 +21,7 @@ class NewExternalSchematicDialog(private val existingList: Array<String>) : Dial
         label("Enter package name to scan")
       }
       row {
-        textField({ getText() }, { value -> setText(value) }).withValidationOnInput { field -> validateText(field) }
-          .focused()
+        textField().bindText({ getText() }, { value -> setText(value) }).validationOnInput { field -> validateText(field) }.focused()
       }
     }
   }

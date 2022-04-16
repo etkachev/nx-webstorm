@@ -3,7 +3,7 @@ package com.github.etkachev.nxwebstorm.ui.settings
 import com.github.etkachev.nxwebstorm.models.SchematicActionButtonPlacement
 import com.intellij.openapi.ui.ComboBox
 import javax.swing.JPanel
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.DefaultComboBoxModel
 
 class PluginAppUiSettingsComponent {
@@ -38,12 +38,12 @@ class PluginAppUiSettingsComponent {
 
   init {
     this.panel = panel {
-      titledRow("Run Schematic Action Bar") {
+      group("Run Schematic Action Bar") {
         row {
           label("Select where you would like the action bar to be located")
         }
         row {
-          schematicActionButtonDropdown()
+          cell(schematicActionButtonDropdown)
         }
       }
     }

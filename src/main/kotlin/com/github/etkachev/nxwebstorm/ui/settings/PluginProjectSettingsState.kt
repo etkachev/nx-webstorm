@@ -32,7 +32,7 @@ class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSetting
 
   companion object {
     fun getInstance(project: Project): PluginProjectSettingsState {
-      return ServiceManager.getService(project, PluginProjectSettingsState::class.java)
+      return project.getService(PluginProjectSettingsState::class.java)
     }
   }
 }

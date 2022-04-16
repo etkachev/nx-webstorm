@@ -187,6 +187,7 @@ class NodeDebugConfigState(project: Project) {
           val currentState = generateEmptyNxDebugConfig(cli)
           currentState.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
           this.setDirAttrBySchematicType(type, currentState, nxService.cliCommand, false)
+          @Suppress("UNCHECKED_CAST")
           (match.configuration as RunConfigurationBase<Element>).loadState(currentState)
         }
         ProgramRunnerUtil.executeConfiguration(match, DefaultDebugExecutor.getDebugExecutorInstance())

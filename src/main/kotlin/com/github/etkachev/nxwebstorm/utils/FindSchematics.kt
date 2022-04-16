@@ -9,7 +9,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScopes
 
@@ -88,8 +87,7 @@ class FindAllSchematics(private val project: Project) {
 
     if (nxService.isValidNxProject) {
       val schematics = findPsiDirectoryBySplitFolders(splitSchematicDir, rootPsiDirectory) ?: return emptyMap()
-      val files = FilenameIndex.getFilesByName(
-        project,
+      val files = FilenameIndex.getVirtualFilesByName(
         "schema.json",
         GlobalSearchScopes.directoriesScope(project, true, schematics.virtualFile)
       )
@@ -104,10 +102,11 @@ class FindAllSchematics(private val project: Project) {
   /**
    * for custom nx schematics, generate custom schematic id with additional schematic info.
    */
-  private fun getIdsFromSchema(file: PsiFile, projectBase: String): Pair<String, SchematicInfo>? {
-    val json = JsonParser.parseString(file.text).asJsonObject ?: return null
+  private fun getIdsFromSchema(file: VirtualFile, projectBase: String): Pair<String, SchematicInfo>? {
+    val text = file.contentsToByteArray().decodeToString()
+    val json = JsonParser.parseString(text).asJsonObject ?: return null
     val id = getIdFromJsonSchema(json) ?: return null
-    val splitDir = file.virtualFile.path.split(projectBase)
+    val splitDir = file.path.split(projectBase)
     val fileLocation = (if (splitDir.count() != 2) null else splitDir[1]) ?: return null
     val info = SchematicInfo(fileLocation)
     val uniqueId = generateUniqueSchematicKey("workspace-schematic", id, SchematicTypeEnum.CUSTOM_NX)
@@ -223,12 +222,11 @@ class FindAllSchematics(private val project: Project) {
     val psiDir = getRootPsiDirectory(project) ?: return emptyMap()
 
     val nodeModules = psiDir.findSubdirectory(nodeModulesFolder) ?: return emptyMap()
-    val packageJsonFiles = FilenameIndex.getFilesByName(
-      project,
+    val packageJsonFiles = FilenameIndex.getVirtualFilesByName(
       "package.json",
       GlobalSearchScopes.directoriesScope(project, true, nodeModules.virtualFile)
     ).mapNotNull { f ->
-      val (packageName, packageFileJson, packageFile) = packageJsonHelper.getPackageFileByVirtualFile(f.virtualFile)
+      val (packageName, packageFileJson, packageFile) = packageJsonHelper.getPackageFileByVirtualFile(f)
         ?: return@mapNotNull null
       val (schematicsOptions, schematicCollection, collectionPath) = getSchematicOptions(packageFileJson, packageFile)
         ?: return@mapNotNull null

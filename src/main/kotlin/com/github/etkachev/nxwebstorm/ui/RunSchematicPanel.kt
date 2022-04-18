@@ -18,13 +18,14 @@ import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.components.JBTextArea
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.bindItem
+import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.BorderFactory
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.JTextField
-import javax.swing.UIManager
 
 class RunSchematicPanel(
   project: Project,
@@ -40,20 +41,6 @@ class RunSchematicPanel(
   init {
     required = if (json?.has("required") == true) json!!.get("required").asJsonArray else null
     formControlGenerator = GenerateFormControl(required, project)
-  }
-
-  private fun getWrappedTextAreaForLabel(label: String): JBTextArea {
-    val textArea = JBTextArea(2, 15)
-    textArea.text = label
-    textArea.wrapStyleWord = true
-    textArea.lineWrap = true
-    textArea.isOpaque = false
-    textArea.isEditable = false
-    textArea.isFocusable = false
-    textArea.background = UIManager.getColor("Label.background")
-    textArea.font = UIManager.getFont("Label.font")
-    textArea.border = UIManager.getBorder("Label.border")
-    return textArea
   }
 
   private fun getFormControlKeys(): List<FormCombo>? {
@@ -99,8 +86,7 @@ class RunSchematicPanel(
     val vbs = formMap.boolValueSetter(key)
     val nvg = formMap.nullValueGetter(key)
     val nvs = formMap.nullValueSetter(key)
-    val descriptionLabel = getWrappedTextAreaForLabel(control.description ?: "")
-    return FormRowData(vg, vs, vbg, vbs, nvg, nvs, descriptionLabel)
+    return FormRowData(vg, vs, vbg, vbs, nvg, nvs)
   }
 
   fun generateCenterPanel(
@@ -117,9 +103,9 @@ class RunSchematicPanel(
     val panel = panel {
       if (addButtons && nxService.actionBarPlacement == SchematicActionButtonPlacement.TOP) {
         row {
-          runBtn()
-          dryRunBtn()
-          debugBtn()
+          cell(runBtn)
+          cell(dryRunBtn)
+          cell(debugBtn)
         }
       }
       row {
@@ -127,44 +113,33 @@ class RunSchematicPanel(
       }
       formControls.mapNotNull { control ->
         val comp = control.component ?: return@mapNotNull null
-        val (vg, vs, vbg, vbs, nvg, nvs, descriptionLabel) = getFormRowData(control)
-        titledRow(control.finalName) {
-          if (control.type != FormControlType.BOOL) {
-            row { descriptionLabel() }
-          }
+        val (vg, vs, vbg, vbs, nvg, nvs) = getFormRowData(control)
+        group(control.finalName) {
+          row { cell() }.rowComment(control.description ?: "")
           row {
             when (control.type) {
               FormControlType.LIST ->
                 (
-                  comboBox<String>(
-                    DefaultComboBoxModel(control.enums),
-                    nvg,
-                    nvs
-                  ).component.editor.editorComponent as JTextField
+                  comboBox(DefaultComboBoxModel(control.enums)).bindItem(nvg, nvs).component.editor.editorComponent as JTextField
                   ).document.addDocumentListener(TextControlListener(formMap, control))
-              FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField(
-                vg,
-                vs,
-                25
-              ).component.document.addDocumentListener(TextControlListener(formMap, control))
-              FormControlType.BOOL -> checkBox(
-                control.description ?: "",
-                vbg,
-                vbs
-              ).component.addActionListener(CheckboxListener(formMap, control))
-              FormControlType.AUTOCOMPLETE -> (comp().component as JTextField).document.addDocumentListener(
+              FormControlType.STRING, FormControlType.INTEGER, FormControlType.NUMBER -> textField()
+                .bindText(vg, vs).component.document.addDocumentListener(TextControlListener(formMap, control))
+              FormControlType.BOOL -> (checkBox(
+                "Enabled",
+              ).bindSelected(vbg, vbs).resizableColumn().component.addActionListener(CheckboxListener(formMap, control)))
+              FormControlType.AUTOCOMPLETE -> (cell(comp).component as JTextField).document.addDocumentListener(
                 TextControlListener(formMap, control)
               )
-              else -> comp().onApply { formMap.setFormValueOfKey(control.name, control.value) }
+              else -> cell(comp).onApply { formMap.setFormValueOfKey(control.name, control.value) }
             }
           }
         }
       }
       if (addButtons && nxService.actionBarPlacement == SchematicActionButtonPlacement.BOTTOM) {
         row {
-          runBtn()
-          dryRunBtn()
-          debugBtn()
+          cell(runBtn)
+          cell(dryRunBtn)
+          cell(debugBtn)
         }
       }
     }
@@ -188,5 +163,4 @@ data class FormRowData(
   val boolValueSetter: (Boolean) -> Unit,
   val nullValueGetter: () -> String?,
   val nullValueSetter: (String?) -> Unit,
-  val descriptionLabel: JBTextArea
 )

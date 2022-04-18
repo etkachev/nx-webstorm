@@ -4,8 +4,7 @@ import com.github.etkachev.nxwebstorm.actionlisteners.SchematicActionListener
 import com.github.etkachev.nxwebstorm.models.SchematicInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 
 class SchematicsListDialog(val project: Project?, private val schematics: Map<String, SchematicInfo>) :
@@ -24,13 +23,12 @@ class SchematicsListDialog(val project: Project?, private val schematics: Map<St
     searchField.columns = 50
     val table = tableData.table
     table.selectionModel.addListSelectionListener(SchematicActionListener(table, schematics, this))
-    val scrollPane = JBScrollPane(table)
     return panel {
       row {
-        searchField()
+        cell(searchField)
       }
       row {
-        scrollPane()
+        scrollCell(table)
       }
     }
   }

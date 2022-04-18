@@ -183,11 +183,8 @@ class NodeDebugConfigState(project: Project) {
       val match = allSettings.find { setting -> setting.name == nxDebugConfigName }
       if (match != null) {
         if (match.configuration is LocatableConfigurationBase<*>) {
-          /**
-           * workspace xml is setup so that these castings should pass.
-           */
-          @Suppress("UNCHECKED_CAST")
-          val currentState = (match.configuration as LocatableConfigurationBase<Element>).state!!
+          val cli = nxService.cliCommand
+          val currentState = generateEmptyNxDebugConfig(cli)
           currentState.setAttribute(argsAttribute, joinArgsWithCommand(command, name, args))
           this.setDirAttrBySchematicType(type, currentState, nxService.cliCommand, false)
           @Suppress("UNCHECKED_CAST")

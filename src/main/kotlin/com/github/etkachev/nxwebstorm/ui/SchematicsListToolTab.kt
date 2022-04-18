@@ -13,9 +13,11 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.impl.ActionButton
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
-import com.intellij.ui.layout.panel
+import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
 import javax.swing.BorderFactory
 import javax.swing.JComponent
@@ -76,7 +78,6 @@ class SchematicsListToolTab(
       listener
     )
     val removeListener = getRemoveSelectionListener(table, listener)
-    val scrollPane = JBScrollPane(table)
 
     if (!nxService.nxDebugConfigSetup) {
       NodeDebugConfigState.getInstance(project).setupDebugConfig()
@@ -89,14 +90,12 @@ class SchematicsListToolTab(
     val border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
     return panel {
       row {
-        searchField()
-        right {
-          refreshButton()
-        }
-      }
+        cell(searchField)
+        cell(refreshButton)
+      }.layout(RowLayout.PARENT_GRID)
       row {
-        scrollPane()
-      }
+        scrollCell(table).resizableColumn().horizontalAlign(HorizontalAlign.FILL).verticalAlign(VerticalAlign.FILL)
+      }.layout(RowLayout.PARENT_GRID).resizableRow()
     }.withBorder(border)
   }
 }

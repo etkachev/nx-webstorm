@@ -3,11 +3,13 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+- upgraded to latest DSL ui builder
+- Updated and fixed usage of generator debugger
+
+## [0.10.0]
 ### Changed
 - update to platformVersion 2022.1 (away from EAP snapshot)
 - Fix issue [#90](https://github.com/etkachev/nx-webstorm/issues/90) when launching IDE
-- upgraded to latest DSL ui builder
-- Updated and fixed usage of generator debugger
 
 ## [0.9.3]
 ### Changed

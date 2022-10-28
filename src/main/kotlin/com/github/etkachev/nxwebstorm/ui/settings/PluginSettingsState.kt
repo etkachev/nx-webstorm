@@ -35,6 +35,7 @@ class PluginSettingsState : PersistentStateComponent<PluginSettingsState?> {
     "@nrwl/nx-plugin"
   ).joinToString(", ")
   var scanExplicitLibs = true
+  var isPnpm = false
   var schematicActionButtonsPlacement = SchematicActionButtonPlacement.TOP.data
 
   override fun getState(): PluginSettingsState? {

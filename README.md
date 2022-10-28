@@ -84,6 +84,6 @@ use Nx, since the schematics are built-in the `@schematics/angular` collection.
   about releases containing new features and fixes.
 
 ---
-Plugin based on the [IntelliJ Platform Plugin Template][template] v1.1.2.
+Plugin based on the [IntelliJ Platform Plugin Template][template] v1.2.0.
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template

@@ -129,6 +129,15 @@ class MyProjectService(private val project: Project) {
       }
     }
 
+  /**
+   * whether this is toggled as pnpm project
+   */
+  val isPnpm: Boolean
+    get() {
+      val settings = PluginProjectSettingsState.getInstance(this.project)
+      return settings.isPnpm
+    }
+
   private var alreadySetupNxDebugConfig = false
 
   val nxDebugConfigSetup: Boolean

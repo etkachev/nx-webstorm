@@ -22,7 +22,8 @@ class DryRunAction(
     val values = formValues.formVal
     val projectType = nxService.nxProjectType
     val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
-    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, true)
+    val isPnpm = nxService.isPnpm
+    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, true, isPnpm)
     dialog.close(DialogWrapper.CANCEL_EXIT_CODE)
     terminal.runAndShow(commands.joinToString(" "))
   }

@@ -14,6 +14,7 @@ import javax.swing.BorderFactory
 class PluginProjectSettingsComponent {
   val panel: JPanel
   private val myScanExplicitLibsStatus: JBCheckBox
+  private val myPnpmToggle: JBCheckBox
   private val myCustomSchematicsDirectory: JBTextField = JBTextField()
   private val myRootNxDirectory: JBTextField = JBTextField()
 
@@ -24,6 +25,13 @@ class PluginProjectSettingsComponent {
     set(newStatus) {
       myScanExplicitLibsStatus.isSelected = newStatus
     }
+
+  var isPnpm: Boolean
+    get() = myPnpmToggle.isSelected
+    set(toggled) {
+      myPnpmToggle.isSelected = toggled
+    }
+
   var customSchematicsDirText: String
     get() = myCustomSchematicsDirectory.text
     set(dir) {
@@ -44,6 +52,9 @@ class PluginProjectSettingsComponent {
       )
     myScanExplicitLibsStatus = checkBox
 
+    val pnpmCheckbox = JBCheckBox("Whether you are using pnpm for this workspace")
+    myPnpmToggle = pnpmCheckbox
+
     panel = panel {
       group("Scan Explicit External Libs?") {
         row {
@@ -51,6 +62,11 @@ class PluginProjectSettingsComponent {
         }
         row {
           label("If turned on, head over to 'External Schematics' setting page to configure")
+        }
+      }
+      group("Pnpm") {
+        row {
+          cell(myPnpmToggle)
         }
       }
       group("Custom Schematics Directory") {

@@ -92,7 +92,8 @@ class SchematicSelectionTabListener(
     }
     val projectType = this.nxService.nxProjectType
     val schematicCommandData = SchematicCommandData(projectType, type, collectionPath)
-    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, dryRun)
+    val isPnpm = this.nxService.isPnpm
+    val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, dryRun, isPnpm)
     if (dryRun) {
       dryRunTerminal.runAndShow(commands.joinToString(" "))
     } else {

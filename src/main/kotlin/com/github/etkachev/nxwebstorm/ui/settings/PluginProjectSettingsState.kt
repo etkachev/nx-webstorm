@@ -19,6 +19,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class PluginProjectSettingsState : PersistentStateComponent<PluginProjectSettingsState?> {
   var externalLibs = PluginSettingsState.instance.externalLibs.split(",").toTypedArray()
   var scanExplicitLibs = PluginSettingsState.instance.scanExplicitLibs
+  var isPnpm = PluginSettingsState.instance.isPnpm
   var customSchematicsLocation: String = ""
   var rootDirectory: String = "/"
 

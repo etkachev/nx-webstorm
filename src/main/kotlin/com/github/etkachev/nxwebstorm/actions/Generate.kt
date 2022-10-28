@@ -31,13 +31,14 @@ class Generate : AnAction() {
       val type = dialog.schematicSelection["type"] ?: ""
       val collectionPath = dialog.schematicSelection["collectionPath"] ?: ""
       val enumType = mapSchematicTypeStringToEnum(type)
+      val isPnpm = nxService.isPnpm
       val formDialog = RunSchematicDialog(proj, collection, id, fileLocation, enumType, collectionPath)
       val formOk = formDialog.showAndGet()
       if (formOk) {
         val values = formDialog.formMap.formVal
         val projectType = nxService.nxProjectType
         val schematicCommandData = SchematicCommandData(projectType, enumType, collectionPath)
-        val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, false)
+        val commands = getSchematicCommandArgs(collection, id, values, schematicCommandData, false, isPnpm)
         val terminal = RunTerminalWindow(proj, "Run")
         terminal.runAndShow(commands.joinToString(" "))
       }

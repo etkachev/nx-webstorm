@@ -3,8 +3,12 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+- Updated to latest intellij template
+- support for running nx with pnpm.
+
+## [0.11.0]
 - upgraded to latest DSL ui builder
-- Updated and fixed usage of generator debugger
+- Updated and fixed usage of generator debugger.
 
 ## [0.10.0]
 ### Changed

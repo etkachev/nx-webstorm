@@ -34,15 +34,19 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val componentSchematicText = mySettingsComponent!!.customSchematicsDirText
     val settingsRootDir = settings.rootDirectory
     val componentRootDirText = mySettingsComponent!!.rootNxDirectoryText
+    val settingsIsPnpm = settings.isPnpm
+    val componentIsPnpm = mySettingsComponent!!.isPnpm
     modified = modified or
       (componentSchematicText != settingCustomSchemDir) or
-      (componentRootDirText != settingsRootDir)
+      (componentRootDirText != settingsRootDir) or
+      (componentIsPnpm != settingsIsPnpm)
     return modified
   }
 
   override fun apply() {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     settings.scanExplicitLibs = mySettingsComponent!!.scanExplicitLibsStatus
+    settings.isPnpm = mySettingsComponent!!.isPnpm
     settings.customSchematicsLocation = mySettingsComponent!!.customSchematicsDirText
     settings.rootDirectory = this.getValidRootNxDirectory(mySettingsComponent!!.rootNxDirectoryText)
   }
@@ -51,6 +55,7 @@ class PluginProjectSettingsConfigurable(val project: Project) : Configurable {
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(this.project)
     val projService = MyProjectService.getInstance(this.project)
     mySettingsComponent!!.scanExplicitLibsStatus = settings.scanExplicitLibs
+    mySettingsComponent!!.isPnpm = settings.isPnpm
     mySettingsComponent!!.customSchematicsDirText = this.getCustomSchematicsLocationFromState(settings, projService)
     mySettingsComponent!!.rootNxDirectoryText = this.getRootNxDirectoryFromState(settings, projService)
   }

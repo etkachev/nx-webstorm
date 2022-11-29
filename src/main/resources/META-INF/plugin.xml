@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.github.etkachev.nxwebstorm</id>
-    <name>nx-webstorm</name>
+    <name>Nx Console UI</name>
     <vendor>etkachev</vendor>
 
     <!-- Product and plugin compatibility requirements -->

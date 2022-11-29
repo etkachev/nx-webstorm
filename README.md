@@ -8,13 +8,13 @@
 
 This plugin is the Webstorm version
 of [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) or at least in the process to
-be. This plugin will only work for projects that use [Nx](http://nx.dev/) dev tools. For this alpha release, this plugin
+be. This plugin will only work for projects that use [Nx](https://nx.dev/) dev tools. For this alpha release, this plugin
 will support the `Generate` functionality which will allow you to display and run/debug custom schematics, along with
 default angular, ngrx, nestjs schematics.
 
 #### Compatibility
 
-This works with any [Nx](http://nx.dev/) project. But this can also work with any regular Angular project that doesn't
+This works with any [Nx](https://nx.dev/) project. But this can also work with any regular Angular project that doesn't
 use Nx, since the schematics are built-in the `@schematics/angular` collection.
 
 #### Nx Projects
@@ -84,6 +84,6 @@ use Nx, since the schematics are built-in the `@schematics/angular` collection.
   about releases containing new features and fixes.
 
 ---
-Plugin based on the [IntelliJ Platform Plugin Template][template] v1.2.0.
+Plugin based on the [IntelliJ Platform Plugin Template][template] v1.3.0.
 
 [template]: https://github.com/JetBrains/intellij-platform-plugin-template

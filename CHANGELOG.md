@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 - Updated to latest intellij template
+- support for webstorm 2022.3
+
+## [0.12.0]
+- Updated to latest intellij template
 - support for running nx with pnpm.
 
 ## [0.11.0]

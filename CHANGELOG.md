@@ -3,6 +3,9 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+- Updated to latest intellij template (v1.4.0)
+
+## [0.13.0]
 - Updated to latest intellij template
 - support for webstorm 2022.3
 - Updated plugin name to Nx Console UI to meet requirements of Intellij plugin names. [More info](https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name)

@@ -8,7 +8,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import org.jdom.Document
 import java.io.IOException
+import com.intellij.openapi.components.Service
 
+@Service(Service.Level.PROJECT)
 class ReadFile(project: Project) {
   var root = ProjectRootManager.getInstance(project).contentRootsFromAllModules[0]
   var psi = PsiManager.getInstance(project)

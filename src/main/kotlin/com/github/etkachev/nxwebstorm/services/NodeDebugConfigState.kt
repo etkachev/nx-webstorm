@@ -16,7 +16,9 @@ import org.jdom.Attribute
 import org.jdom.Document
 import org.jdom.Element
 import java.io.File
+import com.intellij.openapi.components.Service
 
+@Service(Service.Level.PROJECT)
 class NodeDebugConfigState(project: Project) {
   private val proj: Project = project
   private val readFile: ReadFile = ReadFile.getInstance(this.proj)

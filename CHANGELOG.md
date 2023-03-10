@@ -3,6 +3,9 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+- Updated to latest intellij template (v1.5.0)
+
+## [0.14.0]
 - Updated to latest intellij template (v1.4.0)
 
 ## [0.13.0]

@@ -14,7 +14,9 @@ import com.intellij.javascript.nodejs.settings.NodeInstalledPackage
 import com.intellij.javascript.nodejs.settings.NodePackageManagementService
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.text.SemVer
+import com.intellij.openapi.components.Service
 
+@Service(Service.Level.PROJECT)
 class MyProjectService(private val project: Project) {
   private var readFile = ReadFile.getInstance(project)
   private var schematicsCliDir: String? = null

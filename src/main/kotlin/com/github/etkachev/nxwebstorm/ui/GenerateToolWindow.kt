@@ -12,7 +12,7 @@ import com.intellij.ui.content.ContentFactory
 class GenerateToolWindow : ToolWindowFactory {
   private var tabName = "Generate"
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    val contentFactory = ContentFactory.SERVICE.getInstance()
+    val contentFactory = ContentFactory.getInstance()
     val schematicFetcher = FindAllSchematics(project)
     val allSchematics = schematicFetcher.findAll()
     val listPanel =

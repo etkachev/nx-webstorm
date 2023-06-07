@@ -148,8 +148,7 @@ class SchematicSelectionTabListener(
       debugAction = this.debugAction(runData)
     )
     val scrollPane = JBScrollPane(panel)
-    val contentFactory = ContentFactory.SERVICE.getInstance()
-    val content = contentFactory.createContent(scrollPane, tabName, false)
+    val content = ContentFactory.getInstance().createContent(scrollPane, tabName, false)
     val existingTab = toolWindow.contentManager.findContent(tabName)
     if (existingTab != null) {
       toolWindow.contentManager.removeContent(existingTab, true)

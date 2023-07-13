@@ -35,6 +35,7 @@ class FindAllSchematics(private val project: Project) {
   private val jsonFileReader = ReadFile.getInstance(project)
   private val packageJsonHelper = PackageJsonHelper(project)
   private val schematicPropName = "schematics"
+  private val generatorPropName = "generators"
   private val nodeModulesFolder: String
     get() {
       val rootDir = this.nxService.configuredRootPath
@@ -59,6 +60,7 @@ class FindAllSchematics(private val project: Project) {
    */
   fun findAll(): Map<String, SchematicInfo> {
     val customSchematics = getCustomSchematics()
+    val customPluginGenerators = getPluginGenerators()
     val settings: PluginProjectSettingsState = PluginProjectSettingsState.getInstance(project)
     return if (settings.scanExplicitLibs) {
       val others = settings.externalLibs.mapNotNull { value ->
@@ -68,10 +70,10 @@ class FindAllSchematics(private val project: Project) {
       }
       val more =
         this.findByExternalLibs(others.toTypedArray())
-      flattenMultipleMaps(customSchematics, more)
+      flattenMultipleMaps(customPluginGenerators, customSchematics, more)
     } else {
       val allScanned = this.scanAllForExternalSchematics()
-      flattenMultipleMaps(customSchematics, allScanned)
+      flattenMultipleMaps(customPluginGenerators, customSchematics, allScanned)
     }
   }
 
@@ -97,6 +99,30 @@ class FindAllSchematics(private val project: Project) {
       return angularSchematics ?: emptyMap()
     }
     return emptyMap()
+  }
+
+  private fun getPluginGenerators(): Map<String, SchematicInfo> {
+    val rootPsiDirectory = getRootPsiDirectory(project)
+    val packageJsonsPaths = findPsiDirectoryBySplitFolders(arrayOf("libs"), rootPsiDirectory) ?: return emptyMap()
+    val files = FilenameIndex.getVirtualFilesByName(
+      "package.json",
+      GlobalSearchScopes.directoriesScope(project, true, packageJsonsPaths.virtualFile)
+    ).mapNotNull { f ->
+      val (packageName, packageFileJson, packageFile) = packageJsonHelper.getPackageFileByVirtualFile(f)
+        ?: return@mapNotNull null
+      val (generatorOptions, generatorCollection, collectionPath) = getGeneratorOptions(packageFileJson, packageFile)
+        ?: return@mapNotNull null
+      val results = getSchematicEntries(
+        generatorOptions,
+        generatorCollection,
+        packageName,
+        SchematicTypeEnum.PROVIDED,
+        collectionPath
+      )
+      return@mapNotNull if (results.isNotEmpty()) results else null
+    }.toTypedArray()
+
+    return foldListOfMaps(files)
   }
 
   /**
@@ -194,6 +220,23 @@ class FindAllSchematics(private val project: Project) {
       (if (collectionJson.has(schematicPropName)) collectionJson[schematicPropName].asJsonObject else null)
         ?: return null
     return CollectionInfo(schematicsOptions, schematicCollection, relativePath)
+  }
+
+  private fun getGeneratorOptions(packageFileJson: JsonObject, packageFile: VirtualFile): CollectionInfo? {
+    val generatorProp = (if (packageFileJson.has(generatorPropName)) packageFileJson[generatorPropName].asString else null)
+      ?: return null
+    val generatorCollection = jsonFileReader.findVirtualFile(generatorProp, packageFile.parent) ?: return null
+    val collectionJson = jsonFileReader.readJsonFromFile(generatorCollection) ?: return null
+    val projPath = project.basePath ?: return null
+    val relativePathSplit = generatorCollection.path.split(projPath)
+    if (relativePathSplit.count() < 2) {
+      return null
+    }
+    val relativePath = relativePathSplit[1]
+    val generatorOptions =
+      (if (collectionJson.has(generatorPropName)) collectionJson[generatorPropName].asJsonObject else null)
+        ?: return null
+    return CollectionInfo(generatorOptions, generatorCollection, relativePath)
   }
 
   /**

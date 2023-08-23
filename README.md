@@ -6,6 +6,9 @@
 
 <!-- Plugin description -->
 
+## ⚠️ This plugin is deprecated  ⚠️
+### Please use the official Nrwl nx plugin for intellij [here](https://plugins.jetbrains.com/plugin/21060-nx-console)
+
 This plugin is the Webstorm version
 of [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) or at least in the process to
 be. This plugin will only work for projects that use [Nx](https://nx.dev/) dev tools. For this alpha release, this plugin

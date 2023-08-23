@@ -3,6 +3,8 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+- Plugin is now deprecated.
+- Please use official nrwl nx plugin for intellij [here](https://plugins.jetbrains.com/plugin/21060-nx-console)
 
 ## [0.17.0] - 2023-07-17
 - Update to latest intellij template (v1.9.0)

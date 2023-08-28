@@ -3,6 +3,8 @@
 # nx-webstorm Changelog
 
 ## [Unreleased]
+
+## [0.18.0] - 2023-08-28
 - Plugin is now deprecated.
 - Please use official nrwl nx plugin for intellij [here](https://plugins.jetbrains.com/plugin/21060-nx-console)
 
@@ -203,7 +205,8 @@
 ### Added
 - `Generate` menu option to run schematics (including custom schematics) with `Dry Run` option.
 
-[Unreleased]: https://github.com/etkachev/nx-webstorm/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/etkachev/nx-webstorm/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/etkachev/nx-webstorm/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/etkachev/nx-webstorm/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/etkachev/nx-webstorm/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/etkachev/nx-webstorm/compare/v0.14.0...v0.15.0

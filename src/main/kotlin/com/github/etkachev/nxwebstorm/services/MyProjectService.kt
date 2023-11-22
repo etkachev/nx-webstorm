@@ -69,10 +69,19 @@ class MyProjectService(private val project: Project) {
     get() = NodeInstalledPackageFinder(this.project, this.projectRoot).findInstalledPackage("@nrwl/cli")?.version
 
   private val isNx11OrAbove: Boolean
-    get() = this.nxCliVersion != null && this.nxCliVersion!!.major >= 11
+    get() = this.nxCliVersion != null && this.nxCliVersion!!.major >= 11 
 
-  val defaultCustomSchematicsLocation: String
-    get() = if (this.isNx11OrAbove) "/tools/generators" else "/tools/schematics"
+   private val isNx16OrAbove: Boolean
+    get() = this.nxCliVersion != null && this.nxCliVersion!!.major >= 16 
+
+val defaultCustomSchematicsLocation: String
+    get() = if (this.isNx16OrAbove) {
+        "/tools/workspace-plugin/src/generators"
+    } else if (this.isNx10OrAbove) {
+        "/tools/schematics-nx10"
+    } else {
+        "/tools/schematics"
+    }
 
   /**
    * root directory at which your nx monorepo resides within open project
